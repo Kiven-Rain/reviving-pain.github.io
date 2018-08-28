@@ -4,7 +4,7 @@
     <div class='serverRequestContent'>
       <div v-for='item of content' :key='item.id'>
         <router-link :to='{name: "UserRoute", params:{name: item.author.loginname}}'>
-          <!--<img :src='item.author.avatar_url' :title='item.author.loginname' />-->
+          <img :src='item.author.avatar_url' :title='item.author.loginname' />
         </router-link>
         <div class='textDiv'>
           <router-link :to='{name:"ArticleRoute", params:{id:item.id}}'>{{item.title}}</router-link>
