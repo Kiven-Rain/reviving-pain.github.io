@@ -46,7 +46,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .content-wrap {
-  padding: 10px;
+  /* padding: 10px; */
   top:0px;
   bottom: 0px;
   left: 260px;
