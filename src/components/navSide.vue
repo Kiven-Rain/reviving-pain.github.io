@@ -14,6 +14,7 @@
         </ul>
       </li>
     </transition-group>
+    <a class="github" href='https://github.com/Reviving-Pain/reviving-pain.github.io' target="_blank">Github</a>
   </div>
 </template>
 
@@ -156,6 +157,7 @@ export default {
   border-bottom: 1px solid #e6e6e6;
   padding-left: 20px;
   font-size: 20px;
+  font-weight: bold;
   color: #a8a8a8;
   cursor: pointer;
   user-select: none;
@@ -185,6 +187,7 @@ export default {
   line-height: 30px;
   padding-left: 15px;
   font-size: 17px;
+  font-weight: normal;
 }
 .tabs .tabs-item .subTabs .subTabs-item:hover {
   background-color: #ddd;
@@ -193,5 +196,16 @@ export default {
 .router-link-active {
   background-color: #bbb;
   color: #fff;
+}
+
+.github {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 10px;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ccc;
 }
 </style>

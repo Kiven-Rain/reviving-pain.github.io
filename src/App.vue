@@ -47,7 +47,10 @@ html, body {
 }
 /*调整浏览器滚动条宽度*/
 ::-webkit-scrollbar {
+  /* 垂直滚动条宽度 */
   width: 8px;
+  /* 水平滚动条宽度 */
+  height: 8px;
 }
 /*定义滚动条滑块 内阴影+圆角+滑块颜色*/
 ::-webkit-scrollbar-thumb {

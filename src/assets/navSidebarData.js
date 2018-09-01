@@ -10,9 +10,9 @@ export var navSidebarData = [
     menu: '调用公共接口',
     path: '/getPublicApi',
     subTabs: [
-      { subMenu: '服务器请求', path: '/serverRequest' },
-      { subMenu: '用户', path: '/user' },
-      { subMenu: '文章详情', path: '/article' },
+      { subMenu: 'cnode社区', path: '/cnodejsTopic' },
+      // { subMenu: '用户', path: '/user' },
+      // { subMenu: '文章详情', path: '/article' },
       { subMenu: '瀑布流', path: '/waterfallFlow' }
     ]
   },

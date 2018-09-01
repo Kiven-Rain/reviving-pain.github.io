@@ -1,4 +1,3 @@
-<!-- 这是首页的内容，是个瀑布流！！！ -->
 <template>
   <div class='serverRequestWrp' ref="myReference">
     <div class='serverRequestContent'>
@@ -10,7 +9,8 @@
           <router-link :to='{name:"ArticleRoute", params:{id:item.id}}'>{{item.title}}</router-link>
           <div class='stuff'>
             <span>回复：{{item.reply_count}}</span>
-            <span>创建于：{{dealTime}}</span>
+            <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
+            <span></span>
           </div>
         </div>
       </div>
@@ -27,9 +27,6 @@ export default {
   data: function () {
     return {
       content: [],
-      item: {
-        create_at: '2017-02-22T11:32:43.547Z'
-      },
       // 初次请求的数据条目数量
       limit: 15
     }
@@ -37,7 +34,7 @@ export default {
   methods: {
     // 当滚动到底部时继续请求数据，这一部分写的有问题
     scrollMethod: function () {
-      var viewHeight = window.innerHeight - 110
+      var viewHeight = this.$refs.myReference.offsetHeight
       var scrollTop = this.$refs.myReference.scrollTop
       var scrollHeight = this.$refs.myReference.scrollHeight
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
@@ -68,12 +65,6 @@ export default {
     // console.log(this.refs)
     window.addEventListener('scroll', this.scrollMethod, true)
   },
-  computed: {
-    // 将获取到的create字段(帖子创建时间)直接做格式化处理
-    dealTime: function () {
-      return String(this.item.create_at).match(/.{10}/)[0]
-    }
-  },
   // created在实例创建完成后立即被调用
   // 当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
   created: function () {
@@ -95,13 +86,10 @@ export default {
 .serverRequestContent {
   width: auto;
   height: auto;
-  /* border: 1px solid #ddd; */
   background: #F9FAFC;
   display: flex;
   flex-direction: column;
   font-size: 22px;
-  /* padding: 2rem; */
-  /* min-height: 40rem; */
 }
 
 a {
@@ -113,7 +101,7 @@ a {
   justify-content: flex-start;
   align-items: center;
   margin: 0.5rem 0;
-  border-bottom: 2px solid #C0CCDA;
+  border-bottom: 2px solid #c60023;
   padding: 0px 15px 15px 15px;
 }
 
@@ -148,6 +136,6 @@ a {
 }
 
 .stuff span:first-child {
-  margin-right: 2rem;
+  margin-right: 20px;
 }
 </style>

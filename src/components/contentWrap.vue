@@ -3,7 +3,7 @@
     <div v-show="displayContentMask" @click="hideMobilSidebar" class="content-mask">我是content遮罩层</div>
     <router-view name="defaultContent"></router-view>
     <keep-alive>
-      <router-view name="serverRequest"></router-view>
+      <router-view name="cnodejsTopic"></router-view>
     </keep-alive>
     <router-view name="user"></router-view>
     <router-view name="article"></router-view>
@@ -46,7 +46,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .content-wrap {
-  /* padding: 10px; */
   top:0px;
   bottom: 0px;
   left: 260px;
