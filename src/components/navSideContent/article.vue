@@ -12,7 +12,7 @@
     <div class="articleContent" v-html='article.content'></div>
     <div class="articleComments">
       <div v-for='(comment, index) in article.replies' v-bind:key='index'>
-        <router-link v-bind:to='{name: "UserRoute", params: {name: article.author.loginname}}'>
+        <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'>
           <img class="comment_avatar" v-bind:src='comment.author.avatar_url'>
         </router-link>
         <div>
