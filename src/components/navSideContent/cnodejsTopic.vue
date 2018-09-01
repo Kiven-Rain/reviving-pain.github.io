@@ -38,7 +38,7 @@ export default {
       var scrollTop = this.$refs.myReference.scrollTop
       var scrollHeight = this.$refs.myReference.scrollHeight
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
-      if (viewHeight + scrollTop >= scrollHeight) {
+      if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
         this.getData()
       }
     },
