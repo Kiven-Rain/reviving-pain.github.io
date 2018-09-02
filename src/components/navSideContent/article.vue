@@ -7,6 +7,7 @@
         作者：{{article.author.loginname}}
       </router-link>
       <span>浏览量：{{article.visit_count}}</span>
+      <span>回复量：{{article.reply_count}}</span>
       <span>来自：{{article.tab}}</span>
     </div>
     <div class="articleContent" v-html='article.content'></div>
