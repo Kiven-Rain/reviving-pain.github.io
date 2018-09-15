@@ -1,5 +1,26 @@
 <template>
-  <div>
-    <span>我是没有点击任何侧边导航选项之前，右侧内容区域的初始内容</span>
+  <div class="defautlContentWrp">
+    <span class="temptext">H</span>
   </div>
 </template>
+
+<script>
+export default {
+}
+</script>
+
+<style scoped>
+.defautlContentWrp {
+  width: 100%;
+  height: 100%;
+  display: table;
+}
+.defautlContentWrp .temptext {
+  color: #ccc;
+  font-weight: bold;
+  font-size: 30vw;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+</style>

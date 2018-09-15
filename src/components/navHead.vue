@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <span @click="mobilSidebarBtn" class="fa fa-th-list"></span>
-    <a href="https://cn.vuejs.org/v2/guide/" target="_blank"><img class="vue-logo" src="../assets/logo.png"></a>
+    <a href="https://cn.vuejs.org/v2/guide/" target="_blank" title="VUE doc"><img class="vue-logo" src="../assets/logo.png"></a>
   </div>
 </template>
 

@@ -2,12 +2,12 @@
   <div class='serverRequestWrp' ref="myReference">
     <div class='serverRequestContent'>
       <div v-for='item of content' :key='item.id'>
-        <router-link :to='{name: "UserRoute", params:{name: item.author.loginname}}'>
-          <img :src='item.author.avatar_url' :title='item.author.loginname' />
+        <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
+          <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
         </router-link>
-        <div class='textDiv'>
-          <router-link :to='{name:"ArticleRoute", params:{id:item.id}}'>{{item.title}}</router-link>
-          <div class='stuff'>
+        <div class='articleTextInfo'>
+          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>{{item.title}}</router-link>
+          <div class='articleSubInfo'>
             <span>回复：{{item.reply_count}}</span>
             <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
             <span></span>
@@ -28,7 +28,7 @@ export default {
     return {
       content: [],
       // 初次请求的数据条目数量
-      limit: 15
+      limit: 10
     }
   },
   methods: {
@@ -75,34 +75,31 @@ export default {
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
 .serverRequestWrp {
-  overflow-y: auto;
   left: 0px;
   right: 0px;
   top: 0px;
   bottom: 0px;
   position: absolute;
+  overflow-y: auto;
 }
 .serverRequestContent {
   width: auto;
   height: auto;
-  background: #F9FAFC;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  font-size: 22px;
+  font-size: 1.5rem;
 }
-
-a {
-  text-decoration: none;
-}
-
 .serverRequestContent>div {
+  padding: 0.5rem;
+  border-bottom: 1px solid #c4c4c4;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 0.5rem 0;
-  border-bottom: 2px solid #c60023;
-  padding: 0px 15px 15px 15px;
+  flex-direction: row;    /* flex-direction属性默认是row */
+  align-items: center;    /* flex布局中，子元素中心线(水平or垂直)居中于父容器 */
 }
 
 .serverRequestContent>div img {
@@ -111,31 +108,31 @@ a {
   margin-right: 2rem;
 }
 
-.textDiv {
+.articleTextInfo {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   width: 100%;
 }
-
-.textDiv a {
-  color: black;
-  font-size: 0.7em;
+/* 帖子标题样式  */
+.articleTextInfo a {
+  color: #000;
+  font-size: 1rem;
   font-weight: bold;
 }
-
-.textDiv a:visited {
-  color: grey;
+/* 帖子标题被点击之后的样式  */
+.articleTextInfo a:visited {
+  color: #999;
 }
 
-.stuff {
-  font-size: 10px;
+/* 帖子标题下方部分样式  */
+.articleSubInfo {
+  font-size: 0.7rem;
   margin-top: 1rem;
-  color: #8492A6;
+  color: #666;
 }
-
-.stuff span:first-child {
-  margin-right: 20px;
+.articleSubInfo span:first-child {
+  margin-right: 1.5rem;
 }
 </style>

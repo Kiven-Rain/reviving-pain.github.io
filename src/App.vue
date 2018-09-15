@@ -42,6 +42,7 @@ html, body {
   height: 100%;
   margin: 0px;
   padding: 0px;
+  font-size: 15px;
   /*处理移动端点击时出现高亮蓝色背景的问题*/
   -webkit-tap-highlight-color: transparent;
 }
