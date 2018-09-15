@@ -1,5 +1,6 @@
 <template>
   <div class="userBackground">
+    <loading v-if="loading"></loading>
     <div class="userProfile">
       <div class="basicProfile commonBlockWrp">
         <img v-bind:src='userInfo.avatar_url' v-bind:title='userInfo.loginname'>
@@ -36,12 +37,17 @@
 </template>
 
 <script>
+import loading from './loading.vue'
 export default {
+  components: {
+    'loading': loading
+  },
   data: function () {
     return {
       userInfo: {
         create_at: ''
-      }
+      },
+      loading: true
     }
   },
   beforeCreate: function () {
@@ -52,6 +58,7 @@ export default {
       method: 'get'
     }).then(function (res) {
       _this.userInfo = res.data.data
+      _this.loading = false
     }).catch(function (err) {
       console.log('出错了,错误信息是：' + err)
     })

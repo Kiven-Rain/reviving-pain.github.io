@@ -1,7 +1,8 @@
 <template>
   <div class='serverRequestWrp' ref="myReference">
+    <loading v-if="loading"></loading>
     <div class='serverRequestContent'>
-      <div v-for='item of content' :key='item.id'>
+      <div v-for='item of content' :key='item.id' class="topicItem">
         <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
         </router-link>
@@ -14,6 +15,9 @@
           </div>
         </div>
       </div>
+      <div v-show="loadingBlock" class="loadingBlock">
+        <img src="../../assets/loadingBlock.gif">
+      </div>
     </div>
   </div>
 </template>
@@ -22,13 +26,19 @@
 // import {data} from '@/mock/mock.js'
 // // 测试输出结果
 // console.log(JSON.stringify(data, null, 2))
+import loading from './loading.vue'
 export default {
+  components: {
+    'loading': loading
+  },
   name: 'MainSection',
   data: function () {
     return {
       content: [],
       // 初次请求的数据条目数量
-      limit: 10
+      limit: 10,
+      loading: false,
+      loadingBlock: false
     }
   },
   methods: {
@@ -39,11 +49,13 @@ export default {
       var scrollHeight = this.$refs.myReference.scrollHeight
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
       if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
+        this.loadingBlock = true
         this.getData()
       }
     },
     // 发送接口请求，获取返回数据
     getData: function () {
+      this.loading = true
       this.limit += 3
       this.$http({
         url: 'https://cnodejs.org/api/v1/topics',
@@ -55,6 +67,8 @@ export default {
         }
       }).then((res) => {
         this.content = res.data.data
+        this.loading = false
+        this.loadingBlock = true
       }).catch((res) => {
         console.log('MaiSec.vue: ', res)
       })
@@ -101,13 +115,22 @@ a {
   flex-direction: row;    /* flex-direction属性默认是row */
   align-items: center;    /* flex布局中，子元素中心线(水平or垂直)居中于父容器 */
 }
-
-.serverRequestContent>div img {
+.loadingBlock {
+  width: 90%;
+  height: 4rem;
+  margin: 0 auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.loadingBlock img {
+  width: 50%;
+  margin: 0 auto;
+}
+.serverRequestContent .topicItem img {
   width: 4rem;
   height: 4rem;
   margin-right: 2rem;
 }
-
 .articleTextInfo {
   display: flex;
   flex-direction: column;

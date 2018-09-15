@@ -1,5 +1,6 @@
 <template>
   <div class="articleBackground">
+    <loading v-if="loading"></loading>
     <div class="articleWrp">
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
@@ -34,7 +35,11 @@
 </template>
 
 <script>
+import loading from './loading.vue'
 export default {
+  components: {
+    'loading': loading
+  },
   data: function () {
     return {
       article: {
@@ -47,7 +52,8 @@ export default {
         content: '',
         create_at: '',
         replies: ''
-      }
+      },
+      loading: true
     }
   },
   beforeCreate: function () {
@@ -58,6 +64,7 @@ export default {
     }).then(function (res) {
       if (res.data.success === true) {
         _this.article = res.data.data
+        _this.loading = false
       } else {
         _this.article = '数据请求出错了~'
       }
@@ -104,6 +111,7 @@ h2 {
   margin: 0 auto;
   /* 在恰当的断字点进行换行 */
   word-break: break-all;
+  z-index: 1;
 }
 .articleWrp >>> pre {
   /* pre-wrap保留空白符序列，但是正常地进行换行,浏览器默认为nowrap */
