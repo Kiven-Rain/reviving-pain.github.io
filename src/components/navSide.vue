@@ -6,7 +6,7 @@
         {{tab.menu}}<i v-if="tab.subTabs" v-bind:class="['fa', 'fa-chevron-right', {'chevron-right-rotate': index+1 === selectedTabNum}]"></i>
         <!-- 二级菜单选项 -->
         <ul v-if="tab.subTabs" v-show="index+1 === selectedTabNum" class="subTabs">
-          <router-link @click.native.stop="selectSubtabItem()"
+          <router-link @click.native.stop="selectSubtabItem(tab, subTab)"
           v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li" class="subTabs-item"
           :to="{path: tab.path + subTab.path}">
             {{subTab.subMenu}}
@@ -33,10 +33,13 @@ export default {
       // 记录当前选中的侧边栏一级菜单的序号
       selectedTabNum: 0,
       // 侧边导航菜单的数据
-      tabs: navSidebarData
+      tabs: navSidebarData,
+      // 页面标题数据
+      selectedSubTabName: 'vue-reviving'
     }
   },
   methods: {
+    // 选中一级菜单时触发的事件
     selectTabItem: function (tabNum, tab) {
       if ((this.selectedTabNum !== tabNum) && (tab.subTabs)) {
         this.selectedTabNum = tabNum
@@ -46,10 +49,16 @@ export default {
         this.$router.push({path: tab.path})
         this.selectedTabNum = tabNum
       }
-      // console.log(this)
+      // 处理无二级菜单的一级菜单选中时，修改对应的页面标题
+      if (!tab.subTabs) {
+        document.title = tab.menu
+      }
     },
-    // 防止二级菜单的点击事件冒泡
-    selectSubtabItem: function () {
+    // 选中二级菜单时触发的事件，同时防止二级菜单的点击事件冒泡
+    selectSubtabItem: function (tab, subtab) {
+      // 选中二级菜单更改页面标题
+      this.selectedSubTabName = subtab.subMenu
+      document.title = subtab.subMenu
     },
     // 当刷新或通过url直接访问的时候，以及，当浏览器前进后退浏览器rul发生变化的时候，检测url并决定展开哪个一级菜单
     urlVerify: function (self) {
@@ -58,12 +67,22 @@ export default {
       // console.log('观察this对象和self对象的变化', this, self)
       var url = window.location.href
       var browserTabUrl = '/' + url.split('/').slice(url.split('/').indexOf('#') + 1, url.split('/').indexOf('#') + 2)
-      // alert(url.split('/').slice(url.split('/').indexOf('vue-reviving')+1, url.split('/').indexOf('vue-reviving')+2))
+      // alert(url.split('/').slice(url.split('/').indexOf('#') + 1, url.split('/').indexOf('#') + 2))
       for (var i = 0; i < navSidebarData.length; i++) {
         if (navSidebarData[i].path === browserTabUrl) {
           if (self.selectedTabNum === 0) {
             // 通过url直接访问或者刷新页面，菜单展开样式的回填
             self.selectedTabNum = i + 1
+            // 刷新页面时更改标题
+            if (self.tabs[i].path.substr(1) === url.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
+              document.title = self.tabs[i].menu
+            } else { // 如果选中的是有下拉菜单的二级选项卡
+              for (var j = 0; j < self.tabs[i].subTabs.length; j++) {
+                if (self.tabs[i].subTabs[j].path.substr(1) === url.split('/').pop()) {
+                  document.title = self.tabs[i].subTabs[j].subMenu
+                }
+              }
+            }
           } else {
             // 使用浏览器前进后退按钮，检测到router的变化，执行菜单展开样式的回填
             this.selectedTabNum = i + 1
