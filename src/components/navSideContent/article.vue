@@ -112,6 +112,7 @@ h2 {
 
 /* 文章题头样式 */
 .articleHead {
+  padding: 10px;
 }
 .articleHead img {
   margin: 5px;
