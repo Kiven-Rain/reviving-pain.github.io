@@ -55,7 +55,6 @@ export default {
     },
     // 发送接口请求，获取返回数据
     getData: function () {
-      this.loading = true
       this.limit += 3
       this.$http({
         url: 'https://cnodejs.org/api/v1/topics',
@@ -83,6 +82,7 @@ export default {
   // 当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
   created: function () {
     // vue实例被创建之后，调用一次接口请求方法
+    this.loading = true
     this.getData()
   }
 }
