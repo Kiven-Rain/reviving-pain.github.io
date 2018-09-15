@@ -68,7 +68,7 @@ export default {
       }).then((res) => {
         this.content = res.data.data
         this.loading = false
-        this.loadingBlock = true
+        this.loadingBlock = false
       }).catch((res) => {
         console.log('MaiSec.vue: ', res)
       })
