@@ -1,6 +1,7 @@
 <template>
   <div class='serverRequestWrp' ref="myReference">
     <loading v-if="loading"></loading>
+    <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
     <div class='serverRequestContent'>
       <div v-for='item of content' :key='item.id' class="topicItem">
         <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
@@ -23,10 +24,8 @@
 </template>
 
 <script>
-// import {data} from '@/mock/mock.js'
-// // 测试输出结果
-// console.log(JSON.stringify(data, null, 2))
 import loading from './loading.vue'
+var scrollPosition = sessionStorage['scrollPosition']
 export default {
   components: {
     'loading': loading
@@ -38,19 +37,27 @@ export default {
       // 初次请求的数据条目数量
       limit: 10,
       loading: false,
-      loadingBlock: false
+      loadingBlock: false,
+      backToTopBtn: false
     }
   },
   methods: {
-    // 当滚动到底部时继续请求数据，这一部分写的有问题
     scrollMethod: function () {
       var viewHeight = this.$refs.myReference.offsetHeight
       var scrollTop = this.$refs.myReference.scrollTop
       var scrollHeight = this.$refs.myReference.scrollHeight
+      // 使用sessionStorage对象存储 “滚动距离” 和 “请求文章简讯数量”
+      sessionStorage['scrollPosition'] = this.$refs.myReference.scrollTop
+      sessionStorage['refreshApplyCount'] = this.limit
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
       if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
         this.loadingBlock = true
         this.getData()
+      }
+      if (scrollTop > 1000) {
+        this.backToTopBtn = true
+      } else {
+        this.backToTopBtn = false
       }
     },
     // 发送接口请求，获取返回数据
@@ -71,19 +78,48 @@ export default {
       }).catch((res) => {
         console.log('MaiSec.vue: ', res)
       })
+    },
+    // 将滚动条拉到顶部
+    backToTop: function () {
+      this.$refs.myReference.scrollTop = 0
+    },
+    // 页面刷新之后的浏览浏览位置定位
+    scrollReadPosition: function () {
+      // var scrollToLastPosition = confirm('是否要跳转到上次浏览的位置？')
+      // if (scrollToLastPosition) {
+      //   console.log('设置滚动逻辑，开始滚动')
+      // } else {
+      //   console.log('什么都不做，停在开头就好')
+      // }
     }
   },
-  // 所有模板渲染完成并基本完成挂载时，添加一个scroll鼠标滚动事件的监听器
-  mounted: function () {
-    // console.log(this.refs)
-    window.addEventListener('scroll', this.scrollMethod, true)
-  },
-  // created在实例创建完成后立即被调用
-  // 当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
+  // created在实例创建完成后立即被调用，当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
   created: function () {
     // vue实例被创建之后，调用一次接口请求方法
     this.loading = true
     this.getData()
+  },
+  // 所有模板渲染完成并基本完成挂载时，添加一个scroll鼠标滚动事件的监听器
+  mounted: function () {
+    window.addEventListener('scroll', this.scrollMethod, true)
+  },
+  updated: function () {
+    // 上次记录的scrollTop距离大于0, 当前的scrollTop为0
+    if ((sessionStorage['scrollPosition'] > 0) && (this.$refs.myReference.scrollTop === 0)) {
+      console.log('刷新前最后的滚动距离大于0，值为：' + sessionStorage['scrollPosition'])
+      this.scrollReadPosition()
+    }
+  },
+  beforeRouteLeave: function (to, from, next) {
+    // 切换路由时更新滚动条浏览位置的数据
+    scrollPosition = this.$refs.myReference.scrollTop
+    next()
+  },
+  beforeRouteEnter: function (to, from, next) {
+    // 切换至其他路由又切回来时还原上次的浏览位置
+    next(vm => {
+      vm.$refs.myReference.scrollTop = scrollPosition
+    })
   }
 }
 </script>
@@ -157,5 +193,36 @@ a {
 }
 .articleSubInfo span:first-child {
   margin-right: 1.5rem;
+}
+
+.backToTopBtn {
+  width: 6rem;
+  height: 3rem;
+  border: 2px solid black;
+  border-radius: 20px;
+  background: #009966;
+  position: fixed;
+  right: 2rem;
+  bottom: 4rem;
+  outline: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.backToTopBtn:hover {
+  width: 6rem;
+  height: 3rem;
+  border: 2px solid black;
+  border-radius: 20px;
+  background: #c60023;
+  position: fixed;
+  right: 2rem;
+  bottom: 4rem;
+  outline: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
 }
 </style>
