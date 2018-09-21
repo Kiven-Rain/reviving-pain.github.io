@@ -36,6 +36,8 @@
 
 <script>
 import loading from './loading.vue'
+import http from '../../assets/apiUtil.js'
+
 export default {
   components: {
     'loading': loading
@@ -45,6 +47,7 @@ export default {
       article: {
         title: '',
         author: {
+          // 给loginname设置缺省值，防止vue-router在console警告
           loginname: 'temp'
         },
         visit_count: '',
@@ -56,20 +59,13 @@ export default {
       loading: true
     }
   },
-  beforeCreate: function () {
-    var _this = this
-    _this.$http({
-      url: 'https://cnodejs.org/api/v1/topic/' + this.$route.path.split('/')[3],
-      method: 'get'
-    }).then(function (res) {
-      if (res.data.success === true) {
-        _this.article = res.data.data
-        _this.loading = false
-      } else {
-        _this.article = '数据请求出错了~'
-      }
-    }).catch(function (res) {
-      console.log('article.vue: ', res)
+  created: function () {
+    var articleId = this.$route.path.split('/')[3]
+    http.ajaxRequest('topic/' + articleId, 'get', {}, (res) => {
+      this.article = res.data.data
+      this.loading = false
+    }, (err) => {
+      console.log('文章被删除了,错误信息是：' + err)
     })
   }
 }
@@ -100,9 +96,10 @@ h2 {
 .commonBlockWrp {
   background: #fff;
   border-radius: 5px;
-  box-shadow: 5px 5px 4px #eee, 5px -5px 4px #eee, -5px 5px 15px #eee;
+  box-shadow: 0px 0px 10px #ccc;
 }
 .articleBackground {
+  min-height: 100%;
   background: #f6f6f6;
 }
 .articleWrp {
@@ -149,7 +146,7 @@ h2 {
   font-size: 1.2rem;
 }
 .articleContent >>> img {
-  max-width:  70%;
+  max-width:  80%;
   display: block;
   margin: 0 auto;
 }
@@ -176,8 +173,8 @@ h2 {
   padding-left: 10px;
 }
 .commentUsername {
-  height: 3rem;
-  line-height: 3rem;
+  height: 1rem;
+  line-height: 1rem;
   display: block;
   font-size: 1.2rem;
   font-weight: normal;

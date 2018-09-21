@@ -60,18 +60,14 @@ export default {
       this.selectedSubTabName = subtab.subMenu
       document.title = subtab.subMenu
     },
-    // 当刷新或通过url直接访问的时候，以及，当浏览器前进后退浏览器rul发生变化的时候，检测url并决定展开哪个一级菜单
+    // 当组件第一次or重新加载的时候，或者当前路由发生变化的时候，回填侧边栏展开样式，更改页面标题
     urlVerify: function (self) {
-      // 由于'$route'改变后触发方法是有默认形参传入的，这个默认形参是一个包含'当前路由发生变化的部分'的对象，这个对象里没有selectedTabNum这个数据字段，所以可以使用self.selectedTabNum值判定避开第一个判定选项的操作，null是不等于0的。
-      // 然而页面刷新或者通过url直接访问的时候，通过mounted去呼唤urlVerify()方法，如果不将this缓存并传过来，直接在urlVerify里使用this是拿不到vue对象实例的，这里的this指的是当前方法所处的宿主对象，即……methods对象！！！，所以这里只能用在mounted()里定义的真实的vue实例对象，即self
-      // console.log('观察this对象和self对象的变化', this, self)
+      // 'router'调用此方法默认传入参数不是vue对象，mounted调用此方法传入的是提前缓存的vue对象
       var url = window.location.href
       var browserTabUrl = '/' + url.split('/').slice(url.split('/').indexOf('#') + 1, url.split('/').indexOf('#') + 2)
-      // alert(url.split('/').slice(url.split('/').indexOf('#') + 1, url.split('/').indexOf('#') + 2))
       for (var i = 0; i < navSidebarData.length; i++) {
         if (navSidebarData[i].path === browserTabUrl) {
-          if (self.selectedTabNum === 0) {
-            // 通过url直接访问或者刷新页面，菜单展开样式的回填
+          if (self.selectedTabNum === 0) { // 通过url直接访问或者刷新页面，菜单展开样式的回填
             self.selectedTabNum = i + 1
             // 刷新页面时更改标题
             if (self.tabs[i].path.substr(1) === url.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
@@ -83,10 +79,8 @@ export default {
                 }
               }
             }
-          } else {
-            // 使用浏览器前进后退按钮，检测到router的变化，执行菜单展开样式的回填
+          } else { // 使用浏览器前进后退按钮，检测到router的变化，执行菜单展开样式的回填
             this.selectedTabNum = i + 1
-            // alert(self.selectedTabNum)
           }
         }
       }
@@ -98,14 +92,12 @@ export default {
     bus.$on('show-mobil-sidebar', function (msg) {
       self.navHeadBtnMsg = msg
     })
-    // 处理点击contentWrap区域隐藏侧边栏后，顶部的侧边栏呼出按钮需要点两次才可以才可以再次打开侧边栏的问题，需要对顶部的侧边栏呼出按钮的呼出命令进行复位
-    // 不复位的话点完左侧区域再点顶部侧边栏呼出按钮是无效的，因为它此时发出的命令是false(关闭侧边栏)，而用户需要发出的命令是true(呼出侧边栏)
+    // 复位header里菜单栏控制按钮的呼出命令
     bus.$on('hide-mobil-sidebar', function (msg) {
       self.navHeadBtnMsg = !msg
       bus.$emit('resetMobilsideBtn', msg)
     })
     self.$options.methods.urlVerify(self)
-    // console.log(this)
   },
   watch: {
     // 当从header传过来的侧边栏显示命令改变时，更改侧边导航的整体css样式
@@ -216,7 +208,7 @@ export default {
   background-color: #bbb;
   color: #fff;
 }
-
+/* 侧边栏底部github链接 */
 .github {
   position: absolute;
   left: 0px;

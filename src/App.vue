@@ -13,6 +13,7 @@
     <div class="footer-wrap">
       <footer-wrap></footer-wrap>
     </div>
+    <cnode-login></cnode-login>
   </div>
 </template>
 
@@ -20,6 +21,7 @@
 import navHead from './components/navHead.vue'
 import navSide from './components/navSide.vue'
 import contentWrap from './components/contentWrap.vue'
+import cnodeLogin from './components/cnodeLogin.vue'
 import footerWrap from './components/footerWrap.vue'
 
 export default {
@@ -27,6 +29,7 @@ export default {
     'nav-head': navHead,
     'nav-side': navSide,
     'content-wrap': contentWrap,
+    'cnode-login': cnodeLogin,
     'footer-wrap': footerWrap
   },
   data: function () {

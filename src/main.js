@@ -7,11 +7,17 @@ import app from './App.vue'
 import router from './router/index.js'
 import axios from 'axios'
 import 'font-awesome/css/font-awesome.css'
-// import ElementUI from 'element-ui'
 
+// 配置浏览器console里输出生产环境的提示
 Vue.config.productionTip = false
-Vue.prototype.$http = axios
-// Vue.use(ElementUI)
+
+// axios配置
+// 配置请求数据的默认类型
+axios.defaults.headers = {
+  'Content-Type': 'application/x-www-from-urlencoded'
+}
+// 配置默认的基础url
+axios.defaults.baseURL = 'https://cnodejs.org/api/v1'
 
 /* eslint-disable no-new */
 // 创建Vue根实例

@@ -48,6 +48,7 @@
 <script>
 import loading from './loading.vue'
 import http from '../../assets/apiUtil.js'
+import bus from '../../assets/eventBus.js'
 
 export default {
   components: {
@@ -63,20 +64,25 @@ export default {
     }
   },
   created: function () {
-    var userName = (this.$route.path).split('/')[3]
     // 请求用户基本信息
-    http.ajaxRequest('user/' + userName, 'get', {}, (res) => {
-      this.userInfo = res.data.data
-      this.loading = false
-    }, (err) => {
-      console.log('请求个人信息出错了，错误信息是：' + err)
-    })
-    // 请求用户收藏的文章
-    http.ajaxRequest('topic_collect/' + userName, 'get', {}, (res) => {
-      this.userCollect = res.data.data
-    }, (err) => {
-      console.log('无法获取用户收藏，错误信息是：' + err)
-    })
+    var username = sessionStorage['loginUsername']
+    if (username === '') {
+      alert('您尚未登录，请先登录')
+      bus.$emit('openLoginCard', true)
+    } else {
+      http.ajaxRequest('user/' + username, 'get', {}, (res) => {
+        this.userInfo = res.data.data
+        this.loading = false
+      }, (err) => {
+        console.log('请求个人信息出错了，错误信息是：' + err)
+      })
+      // 请求用户收藏的文章
+      http.ajaxRequest('topic_collect/' + username, 'get', {}, (res) => {
+        this.userCollect = res.data.data
+      }, (err) => {
+        console.log('无法获取用户收藏，错误信息是：' + err)
+      })
+    }
   }
 }
 </script>

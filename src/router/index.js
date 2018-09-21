@@ -4,7 +4,8 @@ import Router from 'vue-router'
 import cnodejsTopic from '../components/navSideContent/cnodejsTopic.vue'
 import user from '../components/navSideContent/user.vue'
 import article from '../components/navSideContent/article.vue'
-import waterfallFlow from '../components/navSideContent/waterfallFlow.vue'
+import createTopic from '../components/navSideContent/createTopic.vue'
+import cnodeProfile from '../components/navSideContent/cnodeProfile.vue'
 import css3Animation from '../components/navSideContent/css3Animation.vue'
 import defaultContent from '../components/navSideContent/defaultContent.vue'
 
@@ -20,7 +21,7 @@ export default new Router({
     },
     {
       // 这里做自定义path, 要与router-link里拼接出来的path一一对应
-      path: '/getPublicApi/cnodejsTopic',
+      path: '/cnodeCommunity/cnodejsTopic',
       // 冒号的前面对应cnodejsTopic里面的router-view里面的name
       // 冒号后面的cnodejsTopic是引入的cnodejsTopic子组件
       // 如果二者名字相同的话，写一个就可以
@@ -29,23 +30,29 @@ export default new Router({
       }
     },
     {
-      path: '/getPublicApi/user/:name',
+      path: '/cnodeCommunity/user/:name',
       name: 'UserRoute',
       components: {
         user: user
       }
     },
     {
-      path: '/getPublicApi/cnodejsTopic/:id',
+      path: '/cnodeCommunity/cnodejsTopic/:id',
       name: 'ArticleRoute',
       components: {
         article: article
       }
     },
     {
-      path: '/getPublicApi/waterfallFlow',
+      path: '/cnodeCommunity/createTopic',
       components: {
-        waterfallFlow: waterfallFlow
+        createTopic: createTopic
+      }
+    },
+    {
+      path: '/cnodeCommunity/profile',
+      components: {
+        cnodeProfile: cnodeProfile
       }
     },
     {

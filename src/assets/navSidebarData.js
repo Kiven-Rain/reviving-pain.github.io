@@ -1,19 +1,18 @@
 /*
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-24 19:19:49
-* @Last Modified by:   Reviving-Pain-Laptop
-* @Last Modified time: 2018-07-25 19:25:25
+ * @Last Modified by: Reviving-Pain-Laptop
+ * @Last Modified time: 2018-09-21 14:10:53
 */
 
 export var navSidebarData = [
   {
-    menu: '调用公共接口',
-    path: '/getPublicApi',
+    menu: '重写Cnode社区',
+    path: '/cnodeCommunity',
     subTabs: [
-      { subMenu: 'cnode社区', path: '/cnodejsTopic' },
-      // { subMenu: '用户', path: '/user' },
-      // { subMenu: '文章详情', path: '/article' },
-      { subMenu: '瀑布流', path: '/waterfallFlow' }
+      { subMenu: 'cnode主页', path: '/cnodejsTopic' },
+      { subMenu: '在cnode发布话题', path: '/createTopic' },
+      { subMenu: 'cnode个人中心', path: '/profile' }
     ]
   },
   {

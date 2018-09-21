@@ -25,7 +25,11 @@
 
 <script>
 import loading from './loading.vue'
+import http from '../../assets/apiUtil.js'
+
 var scrollPosition = sessionStorage['scrollPosition']
+
+window.onbeforeunload = function () {}
 export default {
   components: {
     'loading': loading
@@ -63,20 +67,17 @@ export default {
     // 发送接口请求，获取返回数据
     getData: function () {
       this.limit += 3
-      this.$http({
-        url: 'https://cnodejs.org/api/v1/topics',
-        method: 'get',
-        params: {
-          page: 1,
-          limit: this.limit,
-          mdrender: 'false'
-        }
-      }).then((res) => {
+      // 开始请求cnode社区主页数据
+      http.ajaxRequest('/topics', 'get', {
+        page: 1,
+        limit: this.limit,
+        mdrender: 'false'
+      }, (res) => {
         this.content = res.data.data
         this.loading = false
         this.loadingBlock = false
-      }).catch((res) => {
-        console.log('MaiSec.vue: ', res)
+      }, (err) => {
+        console.log(err.response.data.success)
       })
     },
     // 将滚动条拉到顶部
@@ -106,7 +107,7 @@ export default {
   updated: function () {
     // 上次记录的scrollTop距离大于0, 当前的scrollTop为0
     if ((sessionStorage['scrollPosition'] > 0) && (this.$refs.myReference.scrollTop === 0)) {
-      console.log('刷新前最后的滚动距离大于0，值为：' + sessionStorage['scrollPosition'])
+      // console.log('刷新前最后的滚动距离大于0，值为：' + sessionStorage['scrollPosition'])
       this.scrollReadPosition()
     }
   },
@@ -210,19 +211,6 @@ a {
   font-size: 1.2rem;
 }
 .backToTopBtn:hover {
-  width: 6rem;
-  height: 3rem;
-  border: 2px solid black;
-  border-radius: 20px;
   background: #c60023;
-  position: fixed;
-  right: 2rem;
-  bottom: 4rem;
-  outline: none;
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-  cursor: pointer;
-  user-select: none;
 }
 </style>
