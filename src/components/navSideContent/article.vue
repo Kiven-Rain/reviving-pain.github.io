@@ -67,6 +67,10 @@ export default {
     }, (err) => {
       console.log('文章被删除了,错误信息是：' + err)
     })
+  },
+  befroeRouteLeave: function (to, from, next) {
+    alert('准备离开了！')
+    next(false)
   }
 }
 </script>

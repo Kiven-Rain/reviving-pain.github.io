@@ -62,19 +62,25 @@ export default {
     },
     // 当组件第一次or重新加载的时候，或者当前路由发生变化的时候，回填侧边栏展开样式，更改页面标题
     urlVerify: function (self) {
-      // 'router'调用此方法默认传入参数不是vue对象，mounted调用此方法传入的是提前缓存的vue对象
-      var url = window.location.href
-      var browserTabUrl = '/' + url.split('/').slice(url.split('/').indexOf('#') + 1, url.split('/').indexOf('#') + 2)
+      var tabUrl = ''
+      var currentPath = ''
+      // '$route'的变化调用此方法默认传入参数不是vue对象，mounted调用此方法传入的是提前缓存的vue对象
+      if (self.path) {
+        currentPath = self.path
+      } else {
+        currentPath = self.$route.path
+      }
+      tabUrl = '/' + currentPath.split('/')[1]
       for (var i = 0; i < navSidebarData.length; i++) {
-        if (navSidebarData[i].path === browserTabUrl) {
+        if (navSidebarData[i].path === tabUrl) {
           if (self.selectedTabNum === 0) { // 通过url直接访问或者刷新页面，菜单展开样式的回填
             self.selectedTabNum = i + 1
             // 刷新页面时更改标题
-            if (self.tabs[i].path.substr(1) === url.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
+            if (self.tabs[i].path.substr(1) === currentPath.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
               document.title = self.tabs[i].menu
             } else { // 如果选中的是有下拉菜单的二级选项卡
               for (var j = 0; j < self.tabs[i].subTabs.length; j++) {
-                if (self.tabs[i].subTabs[j].path.substr(1) === url.split('/').pop()) {
+                if (self.tabs[i].subTabs[j].path.substr(1) === currentPath.split('/').pop()) {
                   document.title = self.tabs[i].subTabs[j].subMenu
                 }
               }

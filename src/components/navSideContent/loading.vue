@@ -10,13 +10,27 @@ export default {
 }
 
 <style scoped>
-.loadingWrp {
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-  background: rgba(255, 255, 255, 1);
-  position: absolute;
+@media only screen and (max-width: 900px) {
+  .loadingWrp {
+    transition: left 0.4s ease;
+    left: 0px;
+    right: 0px;
+    top: 60px;
+    bottom: 50px;
+    background: rgba(255, 255, 255, 1);
+    position: fixed;
+  }
+}
+@media only screen and (min-width: 900px) {
+  .loadingWrp {
+    transition: left 0.4s ease;
+    left: 260px;
+    right: 0px;
+    top: 60px;
+    bottom: 50px;
+    background: rgba(255, 255, 255, 1);
+    position: fixed;
+  }
 }
 .loadingWrp .loadingBox {
   width: 5rem;

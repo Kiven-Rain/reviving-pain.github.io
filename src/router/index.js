@@ -8,15 +8,24 @@ import createTopic from '../components/navSideContent/createTopic.vue'
 import cnodeProfile from '../components/navSideContent/cnodeProfile.vue'
 import css3Animation from '../components/navSideContent/css3Animation.vue'
 import defaultContent from '../components/navSideContent/defaultContent.vue'
+import notFoundComponent from '../components/navSideContent/notFoundComponent.vue'
 
 Vue.use(Router)
 
 export default new Router({
+  // 打开此模式之后，由于没有服务端支持，打包的项目运行时刷新可能会出现404错误
+  // mode: 'history',
   routes: [
     {
       path: '/',
       components: {
         defaultContent: defaultContent
+      }
+    },
+    {
+      path: '*',
+      components: {
+        notFoundComponent: notFoundComponent
       }
     },
     {

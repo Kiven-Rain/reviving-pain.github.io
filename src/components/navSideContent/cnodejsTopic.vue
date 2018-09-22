@@ -1,8 +1,15 @@
 <template>
-  <div class='serverRequestWrp' ref="myReference">
+  <div class='cnodeTopicsWrp' ref="cnodeTopics">
     <loading v-if="loading"></loading>
+    <div v-show="showTabbar" class="topicTabWrp">
+      <div @click="selectTab" class="tabBar">
+        <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
+          {{tab.name}}
+        </span>
+      </div>
+    </div>
     <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
-    <div class='serverRequestContent'>
+    <div class='cnodeTopicsContent'>
       <div v-for='item of content' :key='item.id' class="topicItem">
         <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
@@ -38,22 +45,45 @@ export default {
   data: function () {
     return {
       content: [],
+      tabs: [
+        { type: 'all', name: '全部' },
+        { type: 'good', name: '精华' },
+        { type: 'share', name: '分享' },
+        { type: 'ask', name: '问答' },
+        { type: 'job', name: '招聘' },
+        { type: 'dev', name: '测试' }
+      ],
+      // tab可选的有 all, good, share, ask, job, dev
+      currentTab: 'all',
       // 初次请求的数据条目数量
       limit: 10,
       loading: false,
       loadingBlock: false,
-      backToTopBtn: false
+      backToTopBtn: false,
+      showTabbar: true,
+      scrollTopBefore: 0
     }
   },
   methods: {
     scrollMethod: function () {
-      var viewHeight = this.$refs.myReference.offsetHeight
-      var scrollTop = this.$refs.myReference.scrollTop
-      var scrollHeight = this.$refs.myReference.scrollHeight
+      var viewHeight = this.$refs.cnodeTopics.offsetHeight
+      var scrollTop = this.$refs.cnodeTopics.scrollTop
+      var scrollHeight = this.$refs.cnodeTopics.scrollHeight
       // 使用sessionStorage对象存储 “滚动距离” 和 “请求文章简讯数量”
-      sessionStorage['scrollPosition'] = this.$refs.myReference.scrollTop
+      sessionStorage['scrollPosition'] = this.$refs.cnodeTopics.scrollTop
       sessionStorage['refreshApplyCount'] = this.limit
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
+      // 判断向上或者向下的滚动事件
+      if (this.scrollTopBefore < scrollTop) {
+        this.showTabbar = true
+      } else {
+        if (scrollTop === 0) {
+          this.showTabbar = true
+        } else {
+          this.showTabbar = false
+        }
+      }
+      this.scrollTopBefore = scrollTop
       if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
         this.loadingBlock = true
         this.getData()
@@ -71,7 +101,8 @@ export default {
       http.ajaxRequest('/topics', 'get', {
         page: 1,
         limit: this.limit,
-        mdrender: 'false'
+        mdrender: 'false',
+        tab: this.currentTab
       }, (res) => {
         this.content = res.data.data
         this.loading = false
@@ -82,16 +113,25 @@ export default {
     },
     // 将滚动条拉到顶部
     backToTop: function () {
-      this.$refs.myReference.scrollTop = 0
+      this.$refs.cnodeTopics.scrollTop = 0
+    },
+    // 点击cnode主页头部的浮动tab标签触发的事件
+    selectTab: function (e) {
+      if (this.currentTab !== e.target.id) {
+        // 在请求之前做一些初始化工作
+        // 如果要记忆上次滚动位置和请求数量的话每个选项卡需要单独的字段来存储,还有刷新时是否要记忆tab选中状态和请求状态
+        this.$refs.cnodeTopics.scrollTop = 0
+        this.loading = true
+        this.limit = 10
+        this.currentTab = e.target.id
+        // 开始请求
+        this.getData()
+      } else {
+        console.log('为什么要反复点呢？')
+      }
     },
     // 页面刷新之后的浏览浏览位置定位
     scrollReadPosition: function () {
-      // var scrollToLastPosition = confirm('是否要跳转到上次浏览的位置？')
-      // if (scrollToLastPosition) {
-      //   console.log('设置滚动逻辑，开始滚动')
-      // } else {
-      //   console.log('什么都不做，停在开头就好')
-      // }
     }
   },
   // created在实例创建完成后立即被调用，当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
@@ -106,20 +146,20 @@ export default {
   },
   updated: function () {
     // 上次记录的scrollTop距离大于0, 当前的scrollTop为0
-    if ((sessionStorage['scrollPosition'] > 0) && (this.$refs.myReference.scrollTop === 0)) {
+    if ((sessionStorage['scrollPosition'] > 0) && (this.$refs.cnodeTopics.scrollTop === 0)) {
       // console.log('刷新前最后的滚动距离大于0，值为：' + sessionStorage['scrollPosition'])
       this.scrollReadPosition()
     }
   },
   beforeRouteLeave: function (to, from, next) {
     // 切换路由时更新滚动条浏览位置的数据
-    scrollPosition = this.$refs.myReference.scrollTop
+    scrollPosition = this.$refs.cnodeTopics.scrollTop
     next()
   },
   beforeRouteEnter: function (to, from, next) {
     // 切换至其他路由又切回来时还原上次的浏览位置
     next(vm => {
-      vm.$refs.myReference.scrollTop = scrollPosition
+      vm.$refs.cnodeTopics.scrollTop = scrollPosition
     })
   }
 }
@@ -129,7 +169,9 @@ export default {
 a {
   text-decoration: none;
 }
-.serverRequestWrp {
+.cnodeTopicsWrp {
+  padding: 10px;
+  background: #f6f6f6;
   left: 0px;
   right: 0px;
   top: 0px;
@@ -137,15 +179,80 @@ a {
   position: absolute;
   overflow-y: auto;
 }
-.serverRequestContent {
-  width: auto;
+/* tab选项卡样式 */
+@media only screen and (min-width: 900px) {
+  .topicTabWrp{
+    max-width: 900px;
+    height: 70px;
+    padding: 10px;
+    margin: 0 auto;
+    position: fixed;
+    transition: left 0.4s ease;
+    top: 60px;
+    left: 250px;
+    right: 0px;
+    box-sizing: border-box;
+  }
+}
+@media only screen and (max-width: 900px) {
+  .topicTabWrp{
+    max-width: 900px;
+    height: 70px;
+    padding: 10px 18px 10px 10px;
+    margin: 0 auto;
+    position: fixed;
+    transition: left 0.4s ease;
+    top: 60px;
+    left: 0px;
+    right: 0px;
+    box-sizing: border-box;
+  }
+}
+.tabBar {
+  border: 1px solid #bbb;
+  margin: 0 auto;
+  box-shadow: 0px 0px 10px #ccc;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+ .tabBar > span {
+  width: 14.66%;
+  height: 40px;
+  line-height: 40px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 1%;
+  margin-right: 1%;
+  text-align: center;
+  display: block;
+  float: left;
+  cursor: pointer;
+  user-select: none;
+ }
+ .tabBar > span:hover {
+  background: #c60023;
+  color: #fff;
+ }
+ .tabBarActive {
+  background: #c60023;
+  color: #fff;
+ }
+
+/* cnode话题区样式 */
+.cnodeTopicsContent {
+  max-width: 800px;
   height: auto;
+  margin: 0 auto;
+  margin-top: 60px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #ccc;
   background: #fff;
   display: flex;
   flex-direction: column;
   font-size: 1.5rem;
 }
-.serverRequestContent>div {
+.cnodeTopicsContent>div {
   padding: 0.5rem;
   border-bottom: 1px solid #c4c4c4;
   display: flex;
@@ -163,7 +270,7 @@ a {
   width: 50%;
   margin: 0 auto;
 }
-.serverRequestContent .topicItem img {
+.cnodeTopicsContent .topicItem img {
   width: 4rem;
   height: 4rem;
   margin-right: 2rem;

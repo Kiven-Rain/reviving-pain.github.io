@@ -10,6 +10,7 @@
     <router-view name="createTopic"></router-view>
     <router-view name="cnodeProfile"></router-view>
     <router-view name="css3Animation"></router-view>
+    <router-view name="notFoundComponent"></router-view>
   </div>
 </template>
 

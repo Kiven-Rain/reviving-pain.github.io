@@ -34,7 +34,7 @@ export default {
   },
   data: function () {
     return {
-      msg: 'aaabbb'
+      // some data here
     }
   }
 }

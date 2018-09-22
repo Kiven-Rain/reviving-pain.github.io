@@ -37,6 +37,8 @@ export default {
     if (username === '') {
       alert('您尚未登陆，请先登录')
       bus.$emit('openLoginCard', true)
+    } else {
+      this.loading = false
     }
   }
 }

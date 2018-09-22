@@ -1,6 +1,6 @@
 <template>
   <div class="father">
-    <span>这页展示CSS3动画</span>
+    <span>CSS3动画</span>
     <img class="persona" src="@/assets/persona.png" alt="女神异闻录" />
   </div>
 </template>
@@ -24,6 +24,5 @@
 .persona:hover {
   transition: all 1s ease;
   transform: rotateY(360deg);
-  /* top: 0px; */
 }
 </style>

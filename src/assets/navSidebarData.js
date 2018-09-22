@@ -2,7 +2,7 @@
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-24 19:19:49
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-21 14:10:53
+ * @Last Modified time: 2018-09-22 17:30:41
 */
 
 export var navSidebarData = [

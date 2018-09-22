@@ -53,10 +53,10 @@ export default {
         http.ajaxRequest('/accesstoken', 'post', {
           accesstoken: this.accesstoken
         }, (res) => {
-          alert('认证成功')
           this.showLoginCard = false
           sessionStorage['accesstoken'] = this.accesstoken
           sessionStorage['loginUsername'] = res.data.loginname
+          alert('认证成功，欢迎' + sessionStorage['loginUsername'])
           location.reload()
         }, (err) => {
           alert('认证失败')
@@ -66,7 +66,12 @@ export default {
     }
   },
   mounted: function () {
-    let _this = this
+    // 初始化sessionStorage里存储的loginUsername值
+    if (sessionStorage['loginUsername'] === undefined) {
+      sessionStorage['loginUsername'] = ''
+    }
+    // 接收来自于其他组件的参数，控制该组件的打开与关闭
+    var _this = this
     bus.$on('openLoginCard', function (msg) {
       _this.showLoginCard = msg
     })
