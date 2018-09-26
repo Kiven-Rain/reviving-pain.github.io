@@ -14,6 +14,10 @@
       <footer-wrap></footer-wrap>
     </div>
     <cnode-login></cnode-login>
+    <!-- github的fork标签 -->
+    <a href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank">
+      <img class="fork-on-github" src="./assets/fork_on_github.png" alt="Fork me on GitHub">
+    </a>
   </div>
 </template>
 
@@ -89,5 +93,13 @@ html, body {
 }
 .footer-wrap{
   height: 50px;
+}
+.fork-on-github {
+  width: 120px;
+  height: 120px;
+  border: 0;
+  position: absolute;
+  bottom: 50px;
+  right: 0;
 }
 </style>

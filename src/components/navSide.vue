@@ -14,13 +14,12 @@
         </ul>
       </li>
     </transition-group>
-    <a class="github" href='https://github.com/Reviving-Pain/reviving-pain.github.io' target="_blank">Github</a>
   </div>
 </template>
 
 <script>
-import bus from '../assets/eventBus.js'
-import {navSidebarData} from '../assets/navSidebarData.js'
+import bus from '../util/eventBus.js'
+import {navSidebarData} from '../data/navSidebarData.js'
 export default {
   data: function () {
     return {
@@ -213,16 +212,5 @@ export default {
 .router-link-active {
   background-color: #bbb;
   color: #fff;
-}
-/* 侧边栏底部github链接 */
-.github {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  bottom: 10px;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-  color: #ccc;
 }
 </style>

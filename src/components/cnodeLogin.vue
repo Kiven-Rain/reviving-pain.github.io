@@ -11,18 +11,23 @@
       <div class="loginCardBody">
         <div v-show="loginTabActive">
           请输入认证码<br>
-          <input @keyup.enter="verifyIdentifyInfo" placeholder="cnode社区token" class="identityInfo" v-model="accesstoken" type="password">
+          <input @keyup.enter="verifyIdentifyInfo" placeholder="cnode社区token" class="identityInfo" v-model.trim="accesstoken" type="password">
+          <div @click="loginTips" class="loginTips">如何获取token？</div>
           <button @click="verifyIdentifyInfo" class="submitIdentifyInfo">检测认证信息</button>
         </div>
-        <div v-show="registerTabActive">尚未启用此功能</div>
+        <div v-show="registerTabActive">
+          <span>使用第三方CNode社区服务</span><br><br>
+          <span>点击下方链接注册，需要github账号</span><br><br>
+          <a href="https://cnodejs.org/" target="_blank">https://cnodejs.org/</a>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import bus from '../assets/eventBus.js'
-import http from '../assets/apiUtil.js'
+import bus from '../util/eventBus.js'
+import request from '../util/apiRequest.js'
 
 export default {
   data: function () {
@@ -38,6 +43,9 @@ export default {
       this.registerTabActive = false
       this.loginTabActive = true
     },
+    loginTips: function () {
+      alert('1.搜索引擎搜索CNode社区\n2.使用自己的github账号登入该社区\n3.打开右上角设置\n4.在页面最下方找到自己的token')
+    },
     registerTab: function () {
       this.loginTabActive = false
       this.registerTabActive = true
@@ -49,29 +57,31 @@ export default {
       if (this.accesstoken === '') {
         alert('请先填入认证码')
       } else {
-        // 开始接口请求验证token
-        http.ajaxRequest('/accesstoken', 'post', {
+        // 验证token
+        request.verifyAccesstoken({
           accesstoken: this.accesstoken
         }, (res) => {
           this.showLoginCard = false
           sessionStorage['accesstoken'] = this.accesstoken
           sessionStorage['loginUsername'] = res.data.loginname
+          sessionStorage['loginId'] = res.data.id
           alert('认证成功，欢迎' + sessionStorage['loginUsername'])
           location.reload()
         }, (err) => {
+          console.log('返回信息为：' + err.response.data.error_msg)
           alert('认证失败')
-          console.log('凭证不正确，返回值为' + err.response.data.success)
         })
       }
     }
   },
   mounted: function () {
-    // 初始化sessionStorage里存储的loginUsername值
-    if (sessionStorage['loginUsername'] === undefined) {
-      sessionStorage['loginUsername'] = ''
+    var _this = this
+    // 组件重新加载的时候判断当前登录状态
+    if (!sessionStorage['loginUsername']) {
+      console.log('尚未登录')
+      _this.showLoginCard = true
     }
     // 接收来自于其他组件的参数，控制该组件的打开与关闭
-    var _this = this
     bus.$on('openLoginCard', function (msg) {
       _this.showLoginCard = msg
     })
@@ -178,6 +188,16 @@ export default {
   border-radius: 3px;
   font-size: 1.2rem;
   text-align: center;
+}
+.loginTips {
+  margin-top: 5px;
+  float: left;
+  cursor: pointer;
+  color: #777;
+}
+.loginTips:hover {
+  color: #000;
+  text-decoration: underline;
 }
 .submitIdentifyInfo {
   width: 100%;

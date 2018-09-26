@@ -2,7 +2,7 @@
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-24 19:19:49
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-22 17:30:41
+ * @Last Modified time: 2018-09-26 00:26:41
 */
 
 export var navSidebarData = [
@@ -16,12 +16,10 @@ export var navSidebarData = [
     ]
   },
   {
-    menu: 'animation',
+    menu: 'Mock数据测试',
     path: '/animation',
     subTabs: [
-      { subMenu: 'css3动画', path: '/css3Animation' },
-      { subMenu: 'SVG动画', path: '/svgAnimation' },
-      { subMenu: 'canvas动画', path: '/canvasAnimation' }
+      { subMenu: 'css3动画', path: '/css3Animation' }
     ]
   },
   {

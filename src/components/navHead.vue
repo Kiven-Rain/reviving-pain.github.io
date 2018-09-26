@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import bus from '../assets/eventBus.js'
-import http from '../assets/apiUtil.js'
+import bus from '../util/eventBus.js'
+import request from '../util/apiRequest.js'
 
 export default {
   data: function () {
@@ -70,6 +70,7 @@ export default {
             console.log('执行注销登陆')
             sessionStorage['accesstoken'] = ''
             sessionStorage['loginUsername'] = ''
+            sessionStorage['loginId'] = ''
             location.reload()
             this.$router.push({path: '/cnodeCommunity/cnodejsTopic'})
           } else {
@@ -84,19 +85,20 @@ export default {
     bus.$on('resetMobilsideBtn', function (msg) {
       self.mobilSidebarOrder = msg
     })
-    console.log('当前存储的token为：' + sessionStorage['accesstoken'])
-    http.ajaxRequest('/accesstoken', 'post', {
-      accesstoken: sessionStorage['accesstoken']
-    }, (res) => {
-      this.baseUserInfo = res.data
-      this.isLogin = true
-    }, (err) => {
-      console.log('登录凭证已失效，返回值为' + err.response.data.success)
-      bus.$emit('openLoginCard', true)
-    })
-    // 在这里发送ajax请求验证sessionStorage里的accesstoken字段
-    // 成功的话替换头像，同时更改头像menu里的内容
-    // 失败的话直接打开touken输入窗口，即登录窗口
+    if (sessionStorage['accesstoken']) {
+      // token验证，拉取header需要的显示信息
+      request.verifyAccesstoken({
+        accesstoken: sessionStorage['accesstoken']
+      }, (res) => {
+        this.baseUserInfo = res.data
+        this.isLogin = true
+      }, (err) => {
+        console.log('登录凭证已失效，返回值为' + err.response.data.success)
+        bus.$emit('openLoginCard', true)
+      })
+    } else {
+      console.log('尚未登录，navHead无法获取登录者头像信息')
+    }
   }
 }
 </script>
@@ -118,6 +120,8 @@ export default {
   margin: 8px;
   float: right;
   background: #fff;
+  cursor: pointer;
+  user-select: none;
 }
 @media only screen and (min-width: 900px) {
   .header .avatarMenu {

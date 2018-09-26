@@ -1,6 +1,7 @@
 <template>
   <div class='cnodeTopicsWrp' ref="cnodeTopics">
     <loading v-if="loading"></loading>
+    <!-- cnode主页文章分类导航 -->
     <div v-show="showTabbar" class="topicTabWrp">
       <div @click="selectTab" class="tabBar">
         <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
@@ -8,14 +9,19 @@
         </span>
       </div>
     </div>
+    <!-- 返回顶部按钮 -->
     <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
+    <!-- cnode主页文章列表 -->
     <div class='cnodeTopicsContent'>
       <div v-for='item of content' :key='item.id' class="topicItem">
         <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
         </router-link>
         <div class='articleTextInfo'>
-          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>{{item.title}}</router-link>
+          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
+            <div v-if="item.top" class="topTag">置顶</div>
+            {{item.title}}
+          </router-link>
           <div class='articleSubInfo'>
             <span>回复：{{item.reply_count}}</span>
             <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
@@ -32,7 +38,7 @@
 
 <script>
 import loading from './loading.vue'
-import http from '../../assets/apiUtil.js'
+import request from '../../util/apiRequest.js'
 
 var scrollPosition = sessionStorage['scrollPosition']
 
@@ -83,11 +89,13 @@ export default {
           this.showTabbar = false
         }
       }
+      // 瀑布流底部请求
       this.scrollTopBefore = scrollTop
       if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
         this.loadingBlock = true
-        this.getData()
+        this.getData(this.currentTab)
       }
+      // 向下滚动距离大于1000显示回到顶部按钮
       if (scrollTop > 1000) {
         this.backToTopBtn = true
       } else {
@@ -95,14 +103,14 @@ export default {
       }
     },
     // 发送接口请求，获取返回数据
-    getData: function () {
+    getData: function (currentTab) {
       this.limit += 3
       // 开始请求cnode社区主页数据
-      http.ajaxRequest('/topics', 'get', {
+      request.getCnodeTopics({
         page: 1,
         limit: this.limit,
         mdrender: 'false',
-        tab: this.currentTab
+        tab: currentTab
       }, (res) => {
         this.content = res.data.data
         this.loading = false
@@ -124,32 +132,30 @@ export default {
         this.loading = true
         this.limit = 10
         this.currentTab = e.target.id
+        // 存储目标标签的id，用于刷新回填
+        sessionStorage['currentTab'] = this.currentTab
         // 开始请求
-        this.getData()
+        this.getData(this.currentTab)
       } else {
         console.log('为什么要反复点呢？')
       }
-    },
-    // 页面刷新之后的浏览浏览位置定位
-    scrollReadPosition: function () {
     }
   },
   // created在实例创建完成后立即被调用，当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
   created: function () {
     // vue实例被创建之后，调用一次接口请求方法
     this.loading = true
-    this.getData()
+    // 初次或重新加载的时候回填上次选择的
+    if (!sessionStorage['currentTab']) {
+      sessionStorage['currentTab'] = this.currentTab
+    } else {
+      this.currentTab = sessionStorage['currentTab']
+    }
+    this.getData(this.currentTab)
   },
   // 所有模板渲染完成并基本完成挂载时，添加一个scroll鼠标滚动事件的监听器
   mounted: function () {
     window.addEventListener('scroll', this.scrollMethod, true)
-  },
-  updated: function () {
-    // 上次记录的scrollTop距离大于0, 当前的scrollTop为0
-    if ((sessionStorage['scrollPosition'] > 0) && (this.$refs.cnodeTopics.scrollTop === 0)) {
-      // console.log('刷新前最后的滚动距离大于0，值为：' + sessionStorage['scrollPosition'])
-      this.scrollReadPosition()
-    }
   },
   beforeRouteLeave: function (to, from, next) {
     // 切换路由时更新滚动条浏览位置的数据
@@ -273,13 +279,13 @@ a {
 .cnodeTopicsContent .topicItem img {
   width: 4rem;
   height: 4rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #ccc;
   margin-right: 2rem;
 }
 .articleTextInfo {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
   width: 100%;
 }
 /* 帖子标题样式  */
@@ -292,6 +298,18 @@ a {
 .articleTextInfo a:visited {
   color: #999;
 }
+.topTag {
+  height: 1.0rem;
+  line-height: 1.1rem;
+  width: 35px;
+  border-radius: 5px;
+  margin-right: 5px;
+  background: #c60023;
+  font-size: .7rem;
+  color: #fff;
+  text-align: center;
+  float: left;
+}
 
 /* 帖子标题下方部分样式  */
 .articleSubInfo {
@@ -302,20 +320,19 @@ a {
 .articleSubInfo span:first-child {
   margin-right: 1.5rem;
 }
-
+/* 回到顶部按钮的样式 */
 .backToTopBtn {
-  width: 6rem;
-  height: 3rem;
+  width: 2rem;
+  height: 6rem;
   border: 2px solid black;
-  border-radius: 20px;
-  background: #009966;
+  border-radius: 5px;
+  background: rgba(85, 85, 85, 0.5);
   position: fixed;
   right: 2rem;
-  bottom: 4rem;
+  bottom: 12rem;
   outline: none;
   color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 .backToTopBtn:hover {
   background: #c60023;

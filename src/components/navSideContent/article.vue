@@ -2,19 +2,41 @@
   <div class="articleBackground">
     <loading v-if="loading"></loading>
     <div class="articleWrp">
+      <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
+        <div @click="openEditWindow" v-if="article.author.loginname === loginName" class="editBtn" title="点击编辑">
+          <span class="fa fa-edit"></span>
+        </div>
+        <div @click="collectController" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
+          {{collect}}
+        </div>
         <router-link v-bind:to='{name: "UserRoute", params: {name: article.author.loginname}}'>
-          <img style='width: 4rem;' v-bind:src='article.author.avatar_url'>
-          <span>作者：</span>
-          <span>{{article.author.loginname}}</span>
-        </router-link>
-        <span>发布于：{{(article.create_at).slice(0, 10)}}</span>
-        <span>浏览量：{{article.visit_count}}</span>
-        <span>来自：{{article.tab}}</span>
+          <img class="authorAvatar" v-bind:src='article.author.avatar_url' :title="article.author.loginname">
+          <span class="authorName">{{article.author.loginname}}</span>
+        </router-link><br v-show="true">
+        <span>发布于：{{(article.create_at).slice(0, 10)}}</span><br>
+        <span class="fa fa-eye"> {{article.visit_count}}</span>
+        <span class="fa fa-tags"> {{article.tab}}</span>
+        <span class="fa fa-commenting"> {{article.reply_count}}</span>
       </div>
+      <!-- 文章详情页文章内容部分 -->
       <div class="articleContent commonBlockWrp" v-html='article.content'></div>
+      <!-- 文章详情页评论部分 -->
       <div class="articleComments commonBlockWrp">
+        <!-- 发表评论 -->
+        <div class="publishCommnetWrp">
+          <div v-if="!loginName" class="unLogin">
+            <span class="tipText">发表评论需先</span>
+            <div @click="openLoginWindow" class="commentBtn" title="点此登录">登录</div>
+          </div>
+          <div v-if="loginName">
+            <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
+            <span class="tipText">Ctr+Enter 发表</span>
+            <div @click="publishComment" class="commentBtn" title="点此发送">发表评论</div>
+          </div>
+        </div>
+        <!-- 已发表的评论 -->
         <h2>{{article.reply_count}} 条评论</h2>
         <div v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
           <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'  class="commentAvatar">
@@ -26,7 +48,9 @@
             </router-link>
             <p class="userComment" v-html='comment.content'></p>
             <span class="commentDate">{{(comment.create_at).slice(0,10) + ' ' + (comment.create_at).slice(11,20)}}</span>
-            <span class="like fa fa-thumbs-o-up"> {{comment.ups.length}}</span>
+            <span @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
+              {{comment.ups.length}}
+            </span>
           </div>
         </div>
       </div>
@@ -36,7 +60,8 @@
 
 <script>
 import loading from './loading.vue'
-import http from '../../assets/apiUtil.js'
+import request from '../../util/apiRequest.js'
+import bus from '../../util/eventBus.js'
 
 export default {
   components: {
@@ -56,21 +81,140 @@ export default {
         create_at: '',
         replies: ''
       },
+      tab: {
+        share: '分享',
+        good: '精华',
+        ask: '问答',
+        job: '招聘',
+        dev: '客户端测试'
+      },
+      collect: '收藏',
+      collectBtnActive: false,
+      commentContent: '',
+      loginName: '',
+      loginId: '',
       loading: true
     }
   },
+  methods: {
+    // 给评论点赞与取消点赞
+    likeController: function (replyIndex) {
+      var replyId = this.article.replies[replyIndex].id
+      if (sessionStorage['loginUsername'] === this.article.replies[replyIndex].author.loginname) {
+        alert('呵呵，不能给自己点赞')
+      } else if (!sessionStorage['loginUsername']) {
+        alert('需要登录')
+      } else {
+        // 点赞&取消点赞请求
+        request.commentLike(replyId, {
+          accesstoken: sessionStorage['accesstoken']
+        }, (res) => {
+          if (res.data.action === 'up') {
+            this.article.replies[replyIndex].ups.push(sessionStorage['loginId'])
+          } else {
+            this.article.replies[replyIndex].ups.pop()
+          }
+        }, (err) => {
+          console.log(err.response.data.error_msg)
+        })
+      }
+    },
+    // 文章添加收藏与取消收藏
+    collectController: function () {
+      var articleId = this.$route.path.split('/')[3]
+      // 判断当前是否登录
+      if (sessionStorage['loginUsername']) {
+        // 判断当前文章收藏状态
+        if (this.collectBtnActive) {
+          // 文章取消收藏
+          request.deCollectTopic({
+            accesstoken: sessionStorage['accesstoken'],
+            topic_id: articleId
+          }, (res) => {
+            console.log(res.data)
+            this.collect = '收藏'
+            this.collectBtnActive = false
+          }, (err) => {
+            console.log(err.response.data.error_msg)
+          })
+        } else {
+          // 文章添加收藏
+          request.collectTopic({
+            accesstoken: sessionStorage['accesstoken'],
+            topic_id: articleId
+          }, (res) => {
+            console.log(res.data)
+            this.collect = '取消收藏'
+            this.collectBtnActive = true
+          }, (err) => {
+            console.log(err.response.data.error_msg)
+          })
+        }
+      } else {
+        alert('要添加收藏请先登录')
+        this.openLoginWindow()
+      }
+    },
+    // 发表评论
+    publishComment: function (e) {
+      // enter+ctrl组合键 或者 点击发表评论按钮
+      if ((e.code === 'Enter' && e.ctrlKey === true) || !e.code) {
+        if (this.commentContent === '') {
+          alert('评论不能为空！')
+        } else {
+          // 提交评论
+          var topicId = this.$route.path.split('/').pop()
+          request.createComment(topicId, {
+            accesstoken: sessionStorage['accesstoken'],
+            content: this.commentContent
+          }, (res) => {
+            alert('评论发布成功')
+            console.log(res.data)
+            // 调用父组件contentWrp的reload方法
+            this.$parent.reload()
+          }, (err) => {
+            console.log(err.response.data.error_msg)
+          })
+        }
+      }
+    },
+    // 点击打开文章编辑弹窗，并做相关内容的回填
+    openEditWindow: function () {
+      alert('准备打开编辑弹窗')
+    },
+    // 打开登录弹窗
+    openLoginWindow: function () {
+      bus.$emit('openLoginCard', true)
+    }
+  },
   created: function () {
+    // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
-    http.ajaxRequest('topic/' + articleId, 'get', {}, (res) => {
+    request.getTopicDetail(articleId, (res) => {
       this.article = res.data.data
       this.loading = false
     }, (err) => {
       console.log('文章被删除了,错误信息是：' + err)
     })
-  },
-  befroeRouteLeave: function (to, from, next) {
-    alert('准备离开了！')
-    next(false)
+    // 获取当前登录者的文章收藏并遍历
+    this.loginName = sessionStorage['loginUsername']
+    if (this.loginName) {
+      this.loginId = sessionStorage['loginId']
+      request.getUserCollectedTopic(this.loginName, (res) => {
+        for (var i = 0; i < res.data.data.length; i++) {
+          var collectedId = res.data.data[i].id
+          if (collectedId === articleId) {
+            // 这里处理已经收藏的初始化逻辑
+            this.collect = '取消收藏'
+            this.collectBtnActive = true
+          }
+        }
+      }, (err) => {
+        console.log(err.response)
+      })
+    } else {
+      console.log('尚未登录，无法获取文章收藏状态')
+    }
   }
 }
 </script>
@@ -122,9 +266,50 @@ h2 {
 /* 文章题头样式 */
 .articleHead {
   padding: 10px;
+  overflow: hidden;
 }
-.articleHead img {
+.articleHead .authorAvatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #999;
+  margin: 10px 10px 10px 5px;
+  float: left;
+}
+.articleHead .authorName {
+  line-height: 3rem;
+  font-size: 1.1rem;
+}
+.articleHead .collectBtn {
+  width: 70px;
+  height: 35px;
+  line-height: 35px;
+  border-radius: 5px;
   margin: 5px;
+  background: green;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  float: right;
+}
+.articleHead .collectBtnActive {
+  background: #ccc;
+  color: #777;
+}
+.articleHead .editBtn {
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  border-radius: 5px;
+  margin: 5px;
+  background: #999;
+  text-align: center;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  user-select: none;
+  float: right;
 }
 
 /* 调整通过v-html引入的html文档的样式 */
@@ -160,6 +345,46 @@ h2 {
   padding: 15px;
   margin: 15px 0px 15px 0px;
 }
+.publishCommnetWrp {
+  width: 100%;
+  padding: 0px 10px 10px 0px;
+  background: #fff;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.publishCommnetWrp .commentArea {
+  width: 100%;
+  height: 100px;
+  box-shadow: 0px 0px 10px #999;
+  resize: none;
+  font-size: 1.2rem;
+  font-family: '微软雅黑';
+  outline: none;
+}
+.publishCommnetWrp .commentBtn {
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+  background: green;
+  color: #fff;
+  text-align: center;
+  float: right;
+  cursor: pointer;
+  user-select: none;
+}
+.publishCommnetWrp .unLogin {
+  width: 150px;
+  height: 60px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+.tipText {
+  padding-top: 10px;
+  margin: 5px 10px 0px 0px;
+  color: #777;
+  float: left;
+  user-select: none;
+}
 .commentCell {
   margin: 20px 0px 30px 0px;
   border-bottom: 1px solid #eee;
@@ -171,6 +396,7 @@ h2 {
   display: block;
   width: 3rem;
   height: 3rem;
+  box-shadow: 0px 0px 10px #666;
 }
 .commentContent {
   width: 100%;
@@ -180,6 +406,7 @@ h2 {
   height: 1rem;
   line-height: 1rem;
   display: block;
+  color: orange;
   font-size: 1.2rem;
   font-weight: normal;
   /* float: left; */
@@ -191,6 +418,9 @@ h2 {
 }
 .like {
   float: right;
-
+  cursor: pointer;
+}
+.likeActive {
+  color: #c60023;
 }
 </style>

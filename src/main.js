@@ -5,19 +5,10 @@ import Vue from 'vue'
 // 这里引入App.vue是因为进行根组件注册的时候要在冒号的右边引用组件的选项对象配置
 import app from './App.vue'
 import router from './router/index.js'
-import axios from 'axios'
 import 'font-awesome/css/font-awesome.css'
 
 // 配置浏览器console里输出生产环境的提示
 Vue.config.productionTip = false
-
-// axios配置
-// 配置请求数据的默认类型
-axios.defaults.headers = {
-  'Content-Type': 'application/x-www-from-urlencoded'
-}
-// 配置默认的基础url
-axios.defaults.baseURL = 'https://cnodejs.org/api/v1'
 
 /* eslint-disable no-new */
 // 创建Vue根实例

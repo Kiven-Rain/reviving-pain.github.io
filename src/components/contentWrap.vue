@@ -6,7 +6,7 @@
       <router-view name="cnodejsTopic"></router-view>
     </keep-alive>
     <router-view name="user"></router-view>
-    <router-view name="article"></router-view>
+    <router-view v-if="isRouterAlive" name="article"></router-view>
     <router-view name="createTopic"></router-view>
     <router-view name="cnodeProfile"></router-view>
     <router-view name="css3Animation"></router-view>
@@ -15,13 +15,14 @@
 </template>
 
 <script>
-import bus from '../assets/eventBus.js'
+import bus from '../util/eventBus.js'
 
 export default {
   data: function () {
     return {
       hideBarOrder: true,
-      displayContentMask: false
+      displayContentMask: false,
+      isRouterAlive: true
     }
   },
   methods: {
@@ -32,14 +33,18 @@ export default {
       bus.$emit('resetMobilsideBtn', this.hideBarOrder)
       // 遮罩层被点击之后隐藏
       this.displayContentMask = false
+    },
+    reload: function () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
     }
   },
   mounted: function () {
-    var self = this
-    // 注意，$on()方法中的function参数中使用this很特别，有点儿箭头函数的意思，但是并没有使用箭头函数，this需要在这个方法外面缓存一一下
     // 接收来自于header侧边栏按钮的命令并决定content遮罩层的显隐
-    bus.$on('displayContentMask', function (msg) {
-      self.displayContentMask = msg
+    bus.$on('displayContentMask', (msg) => {
+      this.displayContentMask = msg
     })
   }
 }
