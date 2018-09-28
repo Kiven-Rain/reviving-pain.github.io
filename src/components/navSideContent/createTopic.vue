@@ -114,21 +114,23 @@ export default {
   background: #fff;
 }
 .topicTitle {
-  padding: 10px;
+  padding: 10px 20px 10px 10px;
 }
 .topicTitle input {
   width: 100%;
   height: 30px;
+  padding-left: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
   font-size: 1.2rem;
   outline: none;
 }
 .topicContent {
-  padding: 10px 15px 10px 10px;
+  padding: 10px 23px 10px 10px;
 }
 .topicContent textarea {
   width: 100%;
+  padding-left: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
   font-size: 1.2rem;
@@ -146,5 +148,7 @@ export default {
   text-align: center;
   color: #fff;
   font-size: 1.3rem;
+  cursor: pointer;
+  user-select: none;
 }
 </style>

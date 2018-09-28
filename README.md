@@ -30,6 +30,13 @@ npm run build
 
 3. 在项目主页的登录弹窗中输入自己的token码，检测认证信息(没有弹窗可以点击页面顶部的头像在弹出菜单中选择进行登录)
 
-4. 然后就可以进行话题发布，收藏话题，发表评论，给评论点赞等等活动啦~
+4. 然后就可以进行话题发布，编辑话题，收藏话题，发表评论，给评论点赞，等等活动啦~
+
+
+## 接下来准备完成的
+
+1、编辑个人已发布的文章
+
+2、查看未读消息、已读消息
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
