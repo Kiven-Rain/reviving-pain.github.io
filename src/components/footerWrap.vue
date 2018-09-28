@@ -1,6 +1,6 @@
 <template>
   <div class="footer">
-    <span>{{footerContent}}</span>
+    <span></span>
   </div>
 </template>
 
@@ -8,7 +8,7 @@
 export default {
   data: function () {
     return {
-      footerContent: '我是footer'
+      // some data here
     }
   }
 }

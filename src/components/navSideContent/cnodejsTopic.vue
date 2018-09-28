@@ -1,43 +1,45 @@
 <template>
-  <div class='cnodeTopicsWrp' ref="cnodeTopics">
+  <div>
     <loading v-if="loading"></loading>
-    <!-- cnode主页文章分类导航 -->
-    <div v-show="showTabbar" class="topicTabWrp">
-      <div @click="selectTab" class="tabBar">
-        <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
-          {{tab.name}}
-        </span>
-      </div>
-    </div>
-    <!-- 返回顶部按钮 -->
-    <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
-    <!-- cnode主页文章列表 -->
-    <div class='cnodeTopicsContent'>
-      <div v-for='item of content' :key='item.id' class="topicItem">
-        <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
-          <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
-        </router-link>
-        <div class='articleTextInfo'>
-          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
-            <div v-if="item.top" class="topTag">置顶</div>
-            {{item.title}}
-          </router-link>
-          <div class='articleSubInfo'>
-            <span>回复：{{item.reply_count}}</span>
-            <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
-            <span></span>
-          </div>
+    <div class='cnodeTopicsWrp' ref="cnodeTopics">
+      <!-- cnode主页文章分类导航 -->
+      <div v-show="showTabbar" class="topicTabWrp">
+        <div @click="selectTab" class="tabBar">
+          <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
+            {{tab.name}}
+          </span>
         </div>
       </div>
-      <div v-show="loadingBlock" class="loadingBlock">
-        <img src="../../assets/loadingBlock.gif">
+      <!-- 返回顶部按钮 -->
+      <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
+      <!-- cnode主页文章列表 -->
+      <div class='cnodeTopicsContent'>
+        <div v-for='item of content' :key='item.id' class="topicItem">
+          <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
+            <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
+          </router-link>
+          <div class='articleTextInfo'>
+            <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
+              <div v-if="item.top" class="topTag">置顶</div>
+              {{item.title}}
+            </router-link>
+            <div class='articleSubInfo'>
+              <span>回复：{{item.reply_count}}</span>
+              <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+        <div v-show="loadingBlock" class="loadingBlock">
+          <img src="../../assets/loadingBlock.gif">
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import loading from './loading.vue'
+import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
 
 var scrollPosition = sessionStorage['scrollPosition']
@@ -198,6 +200,7 @@ a {
     left: 250px;
     right: 0px;
     box-sizing: border-box;
+    z-index: 110;
   }
 }
 @media only screen and (max-width: 900px) {
@@ -212,6 +215,7 @@ a {
     left: 0px;
     right: 0px;
     box-sizing: border-box;
+    z-index: 110;
   }
 }
 .tabBar {

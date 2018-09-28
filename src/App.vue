@@ -3,6 +3,7 @@
 <!-- 我是顶级组件，你们所有组件的爸爸 -->
 <template>
   <div id="app">
+    <loading class="loading" v-if="loading"></loading>
     <div class="header">
       <nav-head></nav-head>
     </div>
@@ -10,12 +11,12 @@
       <nav-side></nav-side>
       <content-wrap></content-wrap>
     </div>
-    <div class="footer-wrap">
+    <div v-show="showFooter" class="footer-wrap">
       <footer-wrap></footer-wrap>
     </div>
     <cnode-login></cnode-login>
     <!-- github的fork标签 -->
-    <a href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank">
+    <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank">
       <img class="fork-on-github" src="./assets/fork_on_github.png" alt="Fork me on GitHub">
     </a>
   </div>
@@ -27,6 +28,9 @@ import navSide from './components/navSide.vue'
 import contentWrap from './components/contentWrap.vue'
 import cnodeLogin from './components/cnodeLogin.vue'
 import footerWrap from './components/footerWrap.vue'
+import loading from './components/common/loading.vue'
+import request from './util/apiRequest.js'
+import bus from './util/eventBus.js'
 
 export default {
   components: {
@@ -34,12 +38,69 @@ export default {
     'nav-side': navSide,
     'content-wrap': contentWrap,
     'cnode-login': cnodeLogin,
-    'footer-wrap': footerWrap
+    'footer-wrap': footerWrap,
+    'loading': loading
   },
   data: function () {
     return {
-      // some data here
+      // 记录原本设备屏幕高度
+      defaultHeight: document.documentElement.clientHeight,
+      // 记录实时屏幕高度
+      currentHeight: document.documentElement.clientHeight,
+      // 控制footer的显隐
+      showFooter: true,
+      loading: false,
+      loginStatus: false
     }
+  },
+  methods: {
+    // 监测到视口尺寸变化，判断当前平台
+    resizeMethod: function () {
+      if (navigator.userAgent.match(
+        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+      )) {
+        // 当前是移动端，开始处理footer伸缩逻辑'
+        this.currentHeight = document.body.clientHeight
+        if (this.defaultHeight - this.currentHeight > 100) {
+          this.showFooter = false
+        } else {
+          this.showFooter = true
+        }
+      } else {
+        // 当前是PC端
+      }
+    }
+  },
+  created: function () {
+    // 验证token(被动),初次加载或者页面刷新时候的token验证
+    if (sessionStorage['accesstoken']) {
+      this.loading = true
+      request.verifyAccesstoken({
+        accesstoken: sessionStorage['accesstoken']
+      }, (res) => {
+        sessionStorage['loginUsername'] = res.data.loginname
+        sessionStorage['loginId'] = res.data.id
+        this.loading = false
+        this.loginStatus = res.data.success
+        bus.$emit('userBasicInfo', res.data)
+        bus.$emit('loginStatus', this.loginStatus)
+      }, (err) => {
+        // token过期
+        console.log(err.response)
+        sessionStorage['accesstoken'] = ''
+        sessionStorage['loginUsername'] = ''
+        sessionStorage['loginId'] = ''
+        this.loginStatus = false
+        console.log('token不正确，可能需要更新token')
+        bus.$emit('loginStatus', this.loginStatus)
+      })
+    } else {
+      console.log('尚未登录，请先登录')
+    }
+  },
+  mounted: function () {
+    // 在vue完成dom渲染以及事件基本挂载完成的时候添加这个窗口resize事件监听器
+    window.addEventListener('resize', this.resizeMethod, true)
   }
 }
 </script>
@@ -101,5 +162,9 @@ html, body {
   position: absolute;
   bottom: 50px;
   right: 0;
+  z-index: 120;
+}
+.loading {
+  z-index: 300 !important;
 }
 </style>

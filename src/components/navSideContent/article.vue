@@ -5,7 +5,7 @@
       <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
-        <div @click="openEditWindow" v-if="article.author.loginname === loginName" class="editBtn" title="点击编辑">
+        <div @click="openEditWindow" v-if="(article.author.loginname === loginName) && loginStatus" class="editBtn" title="点击编辑">
           <span class="fa fa-edit"></span>
         </div>
         <div @click="collectController" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
@@ -26,11 +26,11 @@
       <div class="articleComments commonBlockWrp">
         <!-- 发表评论 -->
         <div class="publishCommnetWrp">
-          <div v-if="!loginName" class="unLogin">
+          <div v-if="!loginStatus" class="unLogin">
             <span class="tipText">发表评论需先</span>
             <div @click="openLoginWindow" class="commentBtn" title="点此登录">登录</div>
           </div>
-          <div v-if="loginName">
+          <div v-if="loginStatus">
             <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
             <span class="tipText">Ctr+Enter 发表</span>
             <div @click="publishComment" class="commentBtn" title="点此发送">发表评论</div>
@@ -59,11 +59,12 @@
 </template>
 
 <script>
-import loading from './loading.vue'
+import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
 import bus from '../../util/eventBus.js'
 
 export default {
+  props: ['loginStatus'],
   components: {
     'loading': loading
   },
@@ -100,10 +101,10 @@ export default {
     // 给评论点赞与取消点赞
     likeController: function (replyIndex) {
       var replyId = this.article.replies[replyIndex].id
-      if (sessionStorage['loginUsername'] === this.article.replies[replyIndex].author.loginname) {
-        alert('呵呵，不能给自己点赞')
-      } else if (!sessionStorage['loginUsername']) {
+      if (!this.loginStatus) {
         alert('需要登录')
+      } else if (sessionStorage['loginUsername'] === this.article.replies[replyIndex].author.loginname) {
+        alert('呵呵，不能给自己点赞')
       } else {
         // 点赞&取消点赞请求
         request.commentLike(replyId, {
@@ -187,6 +188,15 @@ export default {
       bus.$emit('openLoginCard', true)
     }
   },
+  watch: {
+    // 处理loginStatus状态同步延迟的问题，回填收藏与点赞状态
+    loginStatus: function () {
+      if (this.loginStatus) {
+        console.log('已在登录状态，重新获取文章状态')
+        this.$parent.reload()
+      }
+    }
+  },
   created: function () {
     // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
@@ -198,7 +208,7 @@ export default {
     })
     // 获取当前登录者的文章收藏并遍历
     this.loginName = sessionStorage['loginUsername']
-    if (this.loginName) {
+    if (this.loginStatus) {
       this.loginId = sessionStorage['loginId']
       request.getUserCollectedTopic(this.loginName, (res) => {
         for (var i = 0; i < res.data.data.length; i++) {
@@ -213,7 +223,7 @@ export default {
         console.log(err.response)
       })
     } else {
-      console.log('尚未登录，无法获取文章收藏状态')
+      console.log('尚未登录，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
     }
   }
 }
@@ -268,24 +278,41 @@ h2 {
   padding: 10px;
   overflow: hidden;
 }
-.articleHead .authorAvatar {
-  width: 5rem;
-  height: 5rem;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #999;
-  margin: 10px 10px 10px 5px;
-  float: left;
+@media only screen and (max-width: 375px) {
+  .articleHead .authorAvatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #999;
+    margin: 10px 10px 5px 5px;
+    float: left;
+  }
+  .articleHead .authorName {
+    line-height: 4rem;
+    font-size: 0.9rem;
+    display: inline-block;
+  }
 }
-.articleHead .authorName {
-  line-height: 3rem;
-  font-size: 1.1rem;
+@media only screen and (min-width: 375px) {
+  .articleHead .authorAvatar {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #999;
+    margin: 10px 10px 5px 5px;
+    float: left;
+  }
+  .articleHead .authorName {
+    line-height: 3.4rem;
+    font-size: 1.1rem;
+  }
 }
 .articleHead .collectBtn {
   width: 70px;
   height: 35px;
   line-height: 35px;
   border-radius: 5px;
-  margin: 5px;
+  margin: 10px 5px 5px 5px;
   background: green;
   text-align: center;
   color: #fff;
@@ -293,16 +320,12 @@ h2 {
   user-select: none;
   float: right;
 }
-.articleHead .collectBtnActive {
-  background: #ccc;
-  color: #777;
-}
 .articleHead .editBtn {
   width: 35px;
   height: 35px;
   line-height: 35px;
   border-radius: 5px;
-  margin: 5px;
+  margin: 10px 5px 5px 5px;
   background: #999;
   text-align: center;
   color: #fff;
@@ -310,6 +333,10 @@ h2 {
   cursor: pointer;
   user-select: none;
   float: right;
+}
+.articleHead .collectBtnActive {
+  background: #ccc;
+  color: #777;
 }
 
 /* 调整通过v-html引入的html文档的样式 */

@@ -1,7 +1,7 @@
 <template>
   <div class="userBackground">
     <loading v-if="loading"></loading>
-    <div class="userProfile">
+    <div v-show="!loading" class="userProfile">
       <div class="basicProfile commonBlockWrp">
         <img v-bind:src='userInfo.avatar_url' v-bind:title='userInfo.loginname'>
         <div class="basicProfileText">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import loading from './loading.vue'
+import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
 
 export default {
@@ -59,7 +59,6 @@ export default {
       userInfo: {
         create_at: ''
       },
-      // github: '',
       userCollect: {},
       loading: true
     }

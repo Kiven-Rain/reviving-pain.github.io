@@ -1,7 +1,7 @@
 <template>
   <div class="userBackground">
     <loading v-if="loading"></loading>
-    <div class="userProfile">
+    <div v-show="!loading" class="userProfile">
       <div class="basicProfile commonBlockWrp">
         <img v-bind:src='userInfo.avatar_url' v-bind:title='userInfo.loginname'>
         <div class="basicProfileText">
@@ -47,9 +47,8 @@
 </template>
 
 <script>
-import loading from './loading.vue'
+import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
-import bus from '../../util/eventBus.js'
 
 export default {
   components: {
@@ -65,26 +64,20 @@ export default {
     }
   },
   created: function () {
-    // 请求用户基本信息
     var username = sessionStorage['loginUsername']
-    if (!username) {
-      alert('您尚未登录，请先登录')
-      bus.$emit('openLoginCard', true)
-    } else {
-      // 请求用户基本信息
-      request.getUserInfo(username, (res) => {
-        this.userInfo = res.data.data
-        this.loading = false
-      }, (err) => {
-        console.log('请求个人信息出错了，错误信息是：' + err)
-      })
-      // 请求用户收藏的文章
-      request.getUserCollectedTopic(username, (res) => {
-        this.userCollect = res.data.data
-      }, (err) => {
-        console.log('无法获取用户收藏，错误信息是：' + err)
-      })
-    }
+    // 请求用户基本信息
+    request.getUserInfo(username, (res) => {
+      this.userInfo = res.data.data
+      this.loading = false
+    }, (err) => {
+      console.log('请求个人信息出错了，错误信息是：' + err)
+    })
+    // 请求用户收藏的文章
+    request.getUserCollectedTopic(username, (res) => {
+      this.userCollect = res.data.data
+    }, (err) => {
+      console.log('无法获取用户收藏，错误信息是：' + err)
+    })
   }
 }
 </script>
@@ -108,7 +101,7 @@ h2 {
   box-shadow: 0px 0px 10px #ccc;
 }
 .userBackground {
-  background: #f6f6f6;
+  background: linear-gradient(#f6f6f6, #fff);
   min-height: 100%;
 }
 .userProfile {

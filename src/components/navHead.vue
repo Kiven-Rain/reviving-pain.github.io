@@ -22,7 +22,6 @@
 
 <script>
 import bus from '../util/eventBus.js'
-import request from '../util/apiRequest.js'
 
 export default {
   data: function () {
@@ -81,24 +80,15 @@ export default {
     }
   },
   created: function () {
-    var self = this
-    bus.$on('resetMobilsideBtn', function (msg) {
-      self.mobilSidebarOrder = msg
+    // 获取来自于content遮罩层传来的侧边栏按钮复位信息
+    bus.$on('resetMobilsideBtn', (msg) => {
+      this.mobilSidebarOrder = msg
     })
-    if (sessionStorage['accesstoken']) {
-      // token验证，拉取header需要的显示信息
-      request.verifyAccesstoken({
-        accesstoken: sessionStorage['accesstoken']
-      }, (res) => {
-        this.baseUserInfo = res.data
-        this.isLogin = true
-      }, (err) => {
-        console.log('登录凭证已失效，返回值为' + err.response.data.success)
-        bus.$emit('openLoginCard', true)
-      })
-    } else {
-      console.log('尚未登录，navHead无法获取登录者头像信息')
-    }
+    // 获取从根组件传来的登录用户基本信息
+    bus.$on('userBasicInfo', (userBasicInfo) => {
+      this.baseUserInfo = userBasicInfo
+      this.isLogin = this.baseUserInfo.success
+    })
   }
 }
 </script>
@@ -108,7 +98,6 @@ export default {
   height: 100%;
   width: 100%;
   background: #2a303c;
-  /*text-align: left;*/
 }
 
 /* 点击头像后展开的菜单栏的样式 */
@@ -198,7 +187,7 @@ export default {
   right: 0px;
   top: 0px;
   bottom: 0px;
-  z-index: 100;
+  z-index: 160;
 
 }
 

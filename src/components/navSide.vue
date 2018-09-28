@@ -128,18 +128,17 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   box-shadow: 3px 0px 10px #e6e6e6;
+  z-index: 150;
 }
 /*侧边导航的移动端模式样式*/
 .show-mobil-sidebar {
   transition: all 0.4s ease;
   transform: translateX(0px);
-  z-index: 10;
   box-shadow: 3px 0px 10px #e6e6e6;
 }
 .hide-mobil-sidebar {
   transition: all 0.4s ease;
   transform: translateX(-260px);
-  z-index: 10;
 }
 /*响应式侧边导航，自适应浏览器宽度*/
 @media only screen and (max-width: 900px) {

@@ -61,11 +61,10 @@ export default {
         request.verifyAccesstoken({
           accesstoken: this.accesstoken
         }, (res) => {
-          this.showLoginCard = false
+          // 存下来token留给根组件初始化请求用
           sessionStorage['accesstoken'] = this.accesstoken
-          sessionStorage['loginUsername'] = res.data.loginname
-          sessionStorage['loginId'] = res.data.id
-          alert('认证成功，欢迎' + sessionStorage['loginUsername'])
+          this.showLoginCard = false
+          alert('认证成功，欢迎' + res.data.loginname)
           location.reload()
         }, (err) => {
           console.log('返回信息为：' + err.response.data.error_msg)
@@ -75,15 +74,13 @@ export default {
     }
   },
   mounted: function () {
-    var _this = this
     // 组件重新加载的时候判断当前登录状态
-    if (!sessionStorage['loginUsername']) {
-      console.log('尚未登录')
-      _this.showLoginCard = true
+    if (!sessionStorage['accesstoken']) {
+      this.showLoginCard = true
     }
     // 接收来自于其他组件的参数，控制该组件的打开与关闭
-    bus.$on('openLoginCard', function (msg) {
-      _this.showLoginCard = msg
+    bus.$on('openLoginCard', (msg) => {
+      this.showLoginCard = msg
     })
   }
 }
@@ -96,7 +93,7 @@ export default {
   left: 0px;
   right: 0px;
   position: absolute;
-  z-index: 100;
+  z-index: 290;
   user-select: none;
 }
 .loginCardMask {

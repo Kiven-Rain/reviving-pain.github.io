@@ -6,23 +6,38 @@
       <router-view name="cnodejsTopic"></router-view>
     </keep-alive>
     <router-view name="user"></router-view>
-    <router-view v-if="isRouterAlive" name="article"></router-view>
-    <router-view name="createTopic"></router-view>
-    <router-view name="cnodeProfile"></router-view>
+    <router-view name="article" :loginStatus="loginStatus" v-if="isRouterAlive"></router-view>
+    <!-- 需要强制登录的的组件都放在这里 -->
+    <div v-if="loginStatus">
+      <router-view name="createTopic" v-if="isRouterAlive"></router-view>
+      <router-view name="cnodeProfile"></router-view>
+    </div>
     <router-view name="css3Animation"></router-view>
     <router-view name="notFoundComponent"></router-view>
+    <loading v-show="loading"></loading>
   </div>
 </template>
 
 <script>
 import bus from '../util/eventBus.js'
+import loading from './common/loading.vue'
 
 export default {
+  components: {
+    'loading': loading
+  },
   data: function () {
     return {
       hideBarOrder: true,
       displayContentMask: false,
-      isRouterAlive: true
+      isRouterAlive: true,
+      loading: true,
+      // 管理需要登录才能查看的组件
+      pageShouldLogin: [
+        'createTopic',
+        'profile'
+      ],
+      loginStatus: false
     }
   },
   methods: {
@@ -34,11 +49,30 @@ export default {
       // 遮罩层被点击之后隐藏
       this.displayContentMask = false
     },
+    // 重新加载子组件
     reload: function () {
       this.isRouterAlive = false
       this.$nextTick(() => {
         this.isRouterAlive = true
       })
+    },
+    // 判断当前登录状态选择页面加载
+    manageView: function () {
+      if (!this.loginStatus) {
+        var currentPage = this.$route.path.split('/').pop()
+        if (this.pageShouldLogin.indexOf(currentPage) + 1) {
+          this.loading = true
+          alert('您尚未登录，请先登录')
+          bus.$emit('openLoginCard', true)
+        } else {
+          this.loading = false
+        }
+      }
+    }
+  },
+  watch: {
+    $route: function () {
+      this.manageView()
     }
   },
   mounted: function () {
@@ -46,6 +80,16 @@ export default {
     bus.$on('displayContentMask', (msg) => {
       this.displayContentMask = msg
     })
+    // 统一管理需要登录才能够加载的组件
+    bus.$on('loginStatus', (loginStatus) => {
+      this.loginStatus = loginStatus
+      this.loading = !this.loginStatus
+      this.manageView()
+    })
+    // 当离线时，模块初次加载cnode主页组件不需要loading
+    if (this.$route.path.split('/').pop() === 'cnodejsTopic') {
+      this.loading = false
+    }
   }
 }
 </script>
@@ -79,7 +123,7 @@ export default {
     opacity: 0.2;
     background: #ccc;
     position: fixed;
-    z-index: 5;
+    z-index: 140;
   }
 }
 @media only screen and (min-width: 900px) {
