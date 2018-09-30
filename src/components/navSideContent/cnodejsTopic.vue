@@ -64,7 +64,7 @@ export default {
       // tab可选的有 all, good, share, ask, job, dev
       currentTab: 'all',
       // 初次请求的数据条目数量
-      limit: 10,
+      limit: 12,
       loading: false,
       loadingBlock: false,
       backToTopBtn: false,
@@ -306,7 +306,7 @@ a {
   height: 1.0rem;
   line-height: 1.1rem;
   width: 35px;
-  border-radius: 5px;
+  border-radius: 3px;
   margin-right: 5px;
   background: #c60023;
   font-size: .7rem;

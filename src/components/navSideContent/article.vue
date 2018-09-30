@@ -1,23 +1,24 @@
 <template>
   <div class="articleBackground">
     <loading v-if="loading"></loading>
-    <div class="articleWrp">
+    <div v-show="displayArticleContent" class="articleWrp">
       <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
-        <div @click="openEditWindow" v-if="(article.author.loginname === loginName) && loginStatus" class="editBtn" title="点击编辑">
+        <div @click="editController('edit')" v-if="(article.author.loginname === loginName) && loginStatus" class="editBtn" title="点击编辑">
           <span class="fa fa-edit"></span>
         </div>
-        <div @click="collectController" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
-          {{collect}}
-        </div>
+        <button :disabled="subLoading.collectLoading" @click="collectController()" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
+          <span v-if="!subLoading.collectLoading">{{collect}}</span>
+          <span v-if="subLoading.collectLoading" class="fa fa-spinner fa-spin"></span>
+        </button>
         <router-link v-bind:to='{name: "UserRoute", params: {name: article.author.loginname}}'>
           <img class="authorAvatar" v-bind:src='article.author.avatar_url' :title="article.author.loginname">
           <span class="authorName">{{article.author.loginname}}</span>
         </router-link><br v-show="true">
         <span>发布于：{{(article.create_at).slice(0, 10)}}</span><br>
         <span class="fa fa-eye"> {{article.visit_count}}</span>
-        <span class="fa fa-tags"> {{article.tab}}</span>
+        <span class="fa fa-tags"> {{tab[article.tab]}}</span>
         <span class="fa fa-commenting"> {{article.reply_count}}</span>
       </div>
       <!-- 文章详情页文章内容部分 -->
@@ -33,40 +34,53 @@
           <div v-if="loginStatus">
             <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
             <span class="tipText">Ctr+Enter 发表</span>
-            <div @click="publishComment" class="commentBtn" title="点此发送">发表评论</div>
+            <button :disabled="subLoading.commentLoading" @click="publishComment" class="commentBtn" title="点此发送">
+              <span v-if="!subLoading.commentLoading">发表评论</span>
+              <span v-if="subLoading.commentLoading">发送中…</span>
+            </button>
           </div>
         </div>
         <!-- 已发表的评论 -->
         <h2>{{article.reply_count}} 条评论</h2>
         <div v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
           <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'  class="commentAvatar">
-            <img v-bind:src='comment.author.avatar_url'>
+            <img v-bind:src='comment.author.avatar_url' :title="comment.author.loginname">
           </router-link>
           <div class="commentContent">
             <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'>
               <span class="commentUsername">{{comment.author.loginname}}</span>
+              <span v-if="article.author.loginname === comment.author.loginname" class="authorTag">作者</span>
             </router-link>
             <p class="userComment" v-html='comment.content'></p>
             <span class="commentDate">{{(comment.create_at).slice(0,10) + ' ' + (comment.create_at).slice(11,20)}}</span>
-            <span @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
+            <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
               {{comment.ups.length}}
-            </span>
+            </button>
           </div>
         </div>
       </div>
     </div>
+    <create-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
+    ref="createTopic" v-if="eidtWindow" class="createTopic">
+      <div slot="modifyBlockTitle">
+        <span>文章编辑</span>
+        <span @click="editController('cancelEdit')" class="cancelEdit">取消编辑</span>
+      </div>
+    </create-topic>
   </div>
 </template>
 
 <script>
 import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
+import createTopic from './createTopic.vue'
 import bus from '../../util/eventBus.js'
 
 export default {
   props: ['loginStatus'],
   components: {
-    'loading': loading
+    'loading': loading,
+    'create-topic': createTopic
   },
   data: function () {
     return {
@@ -94,7 +108,14 @@ export default {
       commentContent: '',
       loginName: '',
       loginId: '',
-      loading: true
+      loading: true,
+      subLoading: {
+        collectLoading: false,
+        commentLoading: false,
+        likeLoading: false
+      },
+      displayArticleContent: false,
+      eidtWindow: false
     }
   },
   methods: {
@@ -106,6 +127,7 @@ export default {
       } else if (sessionStorage['loginUsername'] === this.article.replies[replyIndex].author.loginname) {
         alert('呵呵，不能给自己点赞')
       } else {
+        this.subLoading.likeLoading = true
         // 点赞&取消点赞请求
         request.commentLike(replyId, {
           accesstoken: sessionStorage['accesstoken']
@@ -115,6 +137,7 @@ export default {
           } else {
             this.article.replies[replyIndex].ups.pop()
           }
+          this.subLoading.likeLoading = false
         }, (err) => {
           console.log(err.response.data.error_msg)
         })
@@ -127,11 +150,13 @@ export default {
       if (sessionStorage['loginUsername']) {
         // 判断当前文章收藏状态
         if (this.collectBtnActive) {
+          this.subLoading.collectLoading = true
           // 文章取消收藏
           request.deCollectTopic({
             accesstoken: sessionStorage['accesstoken'],
             topic_id: articleId
           }, (res) => {
+            this.subLoading.collectLoading = false
             console.log(res.data)
             this.collect = '收藏'
             this.collectBtnActive = false
@@ -139,11 +164,13 @@ export default {
             console.log(err.response.data.error_msg)
           })
         } else {
+          this.subLoading.collectLoading = true
           // 文章添加收藏
           request.collectTopic({
             accesstoken: sessionStorage['accesstoken'],
             topic_id: articleId
           }, (res) => {
+            this.subLoading.collectLoading = false
             console.log(res.data)
             this.collect = '取消收藏'
             this.collectBtnActive = true
@@ -163,12 +190,14 @@ export default {
         if (this.commentContent === '') {
           alert('评论不能为空！')
         } else {
+          this.subLoading.commentLoading = true
           // 提交评论
           var topicId = this.$route.path.split('/').pop()
           request.createComment(topicId, {
             accesstoken: sessionStorage['accesstoken'],
             content: this.commentContent
           }, (res) => {
+            this.subLoading.commentLoading = false
             alert('评论发布成功')
             console.log(res.data)
             // 调用父组件contentWrp的reload方法
@@ -179,9 +208,19 @@ export default {
         }
       }
     },
-    // 点击打开文章编辑弹窗，并做相关内容的回填
-    openEditWindow: function () {
-      alert('准备打开编辑弹窗')
+    // 打开or关闭文章编辑组件
+    editController: function (controlType) {
+      if (controlType === 'edit') {
+        console.log('准备打开编辑组件')
+        // 隐藏文章主体，显示编辑组件
+        this.displayArticleContent = false
+        this.eidtWindow = true
+      } else if (controlType === 'cancelEdit') {
+        this.displayArticleContent = true
+        this.eidtWindow = false
+      } else {
+        console.log('未传入正确参数')
+      }
     },
     // 打开登录弹窗
     openLoginWindow: function () {
@@ -203,6 +242,7 @@ export default {
     request.getTopicDetail(articleId, (res) => {
       this.article = res.data.data
       this.loading = false
+      this.displayArticleContent = true
     }, (err) => {
       console.log('文章被删除了,错误信息是：' + err)
     })
@@ -311,14 +351,21 @@ h2 {
   width: 70px;
   height: 35px;
   line-height: 35px;
+  padding: 0px;
+  border: none;
   border-radius: 5px;
   margin: 10px 5px 5px 5px;
   background: green;
   text-align: center;
   color: #fff;
+  font-size: 1rem;
   cursor: pointer;
   user-select: none;
   float: right;
+}
+.articleHead .collectBtnActive {
+  background: #ccc;
+  color: #777;
 }
 .articleHead .editBtn {
   width: 35px;
@@ -334,9 +381,8 @@ h2 {
   user-select: none;
   float: right;
 }
-.articleHead .collectBtnActive {
-  background: #ccc;
-  color: #777;
+.articleHead > span {
+  margin-right: 10px;
 }
 
 /* 调整通过v-html引入的html文档的样式 */
@@ -390,10 +436,12 @@ h2 {
 }
 .publishCommnetWrp .commentBtn {
   padding: 10px;
+  border: none;
   border-radius: 5px;
   margin-top: 5px;
   background: green;
   color: #fff;
+  font-size: 1rem;
   text-align: center;
   float: right;
   cursor: pointer;
@@ -425,6 +473,10 @@ h2 {
   height: 3rem;
   box-shadow: 0px 0px 10px #666;
 }
+.commentCell >>> a {
+  color: #333;
+  text-decoration: none;
+}
 .commentContent {
   width: 100%;
   padding-left: 10px;
@@ -432,11 +484,22 @@ h2 {
 .commentUsername {
   height: 1rem;
   line-height: 1rem;
-  display: block;
+  display: inline-block;
   color: orange;
   font-size: 1.2rem;
   font-weight: normal;
-  /* float: left; */
+}
+.authorTag {
+  width: 35px;
+  height: 17px;
+  line-height: 17px;
+  border-radius: 3px;
+  background: green;
+  display: inline-block;
+  color: #fff;
+  text-align: center;
+  font-size: .9rem;
+  font-weight: normal;
 }
 .userComment >>> img {
   max-width: 70%;
@@ -444,10 +507,34 @@ h2 {
   display: block;
 }
 .like {
+  border: none;
+  background: none;
   float: right;
   cursor: pointer;
+  outline: none;
+}
+/* 设置按钮的disabled状态样式 */
+.like[disabled] {
+  color: #000;
 }
 .likeActive {
+  color: #c60023;
+}
+
+/* 文章编辑组件css样式 */
+.createTopic {
+  background: #f6f6f6 !important;
+}
+.createTopic .cancelEdit {
+  margin: 3px 10px 0px 0px;
+  float: right;
+  font-size: 1rem;
+  color: #000;
+  font-weight: normal;
+  cursor: pointer;
+  user-select: none;
+}
+.createTopic .cancelEdit:hover {
   color: #c60023;
 }
 </style>

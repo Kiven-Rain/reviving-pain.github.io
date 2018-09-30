@@ -56,7 +56,7 @@ export default {
       this.hidemenu()
       switch (e.target.id) {
         case 'login':
-          console.log('执行登录程序')
+          console.log('打开登录窗口')
           bus.$emit('openLoginCard', true)
           break
         case 'userCenter':

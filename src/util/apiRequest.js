@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-26 12:35:31
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-26 18:05:06
+ * @Last Modified time: 2018-09-30 17:39:58
  */
 
 import http from './apiUtil.js'
@@ -73,7 +73,16 @@ export default {
   },
   // 【操作】发布文章
   createTopic: function (data, resolve, reject) {
-    http.ajaxRequest('topics', 'post',
+    http.ajaxRequest('/topics', 'post',
+      {},
+      data,
+      resolve,
+      reject
+    )
+  },
+  // 【操作】提交修改的文章
+  modifyTopic: function (data, resolve, reject) {
+    http.ajaxRequest('/topics/update', 'post',
       {},
       data,
       resolve,

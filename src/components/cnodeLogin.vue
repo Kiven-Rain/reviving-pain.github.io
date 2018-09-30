@@ -13,7 +13,10 @@
           请输入认证码<br>
           <input @keyup.enter="verifyIdentifyInfo" placeholder="cnode社区token" class="identityInfo" v-model.trim="accesstoken" type="password">
           <div @click="loginTips" class="loginTips">如何获取token？</div>
-          <button @click="verifyIdentifyInfo" class="submitIdentifyInfo">检测认证信息</button>
+          <button :disabled="loading" @click="verifyIdentifyInfo" class="submitIdentifyInfo">
+            <span v-if="!loading">检测认证信息</span>
+            <span v-if="loading"><span class="fa fa-spinner fa-spin"></span> 正在登录，请稍候…</span>
+          </button>
         </div>
         <div v-show="registerTabActive">
           <span>使用第三方CNode社区服务</span><br><br>
@@ -35,7 +38,8 @@ export default {
       showLoginCard: false,
       loginTabActive: true,
       registerTabActive: false,
-      accesstoken: ''
+      accesstoken: '',
+      loading: false
     }
   },
   methods: {
@@ -58,9 +62,12 @@ export default {
         alert('请先填入认证码')
       } else {
         // 验证token
+        console.log('执行登录程序')
+        this.loading = true
         request.verifyAccesstoken({
           accesstoken: this.accesstoken
         }, (res) => {
+          this.loading = false
           // 存下来token留给根组件初始化请求用
           sessionStorage['accesstoken'] = this.accesstoken
           this.showLoginCard = false
