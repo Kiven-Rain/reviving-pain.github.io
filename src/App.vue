@@ -65,15 +65,16 @@ export default {
         if (this.isMobil === true) {
           // 存储本次触发onresize事件时的平台，用于下次判断使用
           this.isMobil = true
-          // 判断设备旋转方向，避开旋转造成的onresize事件触发footer伸缩逻辑
-          if (window.orientation === 90 || window.orientation === -90 || window.orientation === 0 || window.orientation === 180 ) {
-            // 开始处理footer伸缩逻辑'
-            this.currentHeight = document.body.clientHeight
-            if (this.defaultHeight - this.currentHeight > 100) {
-              this.showFooter = false
-            } else {
-              this.showFooter = true
-            }
+          // 判断设备旋转方向，初始化difaultHeight,避免旋转因其改变而触发footer伸缩逻辑
+          if (window.orientation === 90 || window.orientation === -90 || window.orientation === 0) {
+            this.defaultHeight = document.body.clientHeight
+          }
+          // 开始处理footer伸缩逻辑
+          this.currentHeight = document.body.clientHeight
+          if (this.defaultHeight - this.currentHeight > 100) {
+            this.showFooter = false
+          } else {
+            this.showFooter = true
           }
         } else {
           // do nothing, pc突然转mobil, footer不做任何响应
