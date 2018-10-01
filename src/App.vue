@@ -50,24 +50,39 @@ export default {
       // 控制footer的显隐
       showFooter: true,
       loading: false,
-      loginStatus: false
+      loginStatus: false,
+      isMobil: true
     }
   },
   methods: {
-    // 监测到视口尺寸变化，判断当前平台
+    // 处理软键盘弹出footer被顶起，占用狭小显示空间的问题
     resizeMethod: function () {
+      // 监测到视口尺寸变化，判断当前平台
       if (navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       )) {
-        // 当前是移动端，开始处理footer伸缩逻辑'
-        this.currentHeight = document.body.clientHeight
-        if (this.defaultHeight - this.currentHeight > 100) {
-          this.showFooter = false
+        // 开发模式下pc端直接切移动端不触发footer相关判断逻辑
+        if (this.isMobil === true) {
+          // 存储本次触发onresize事件时的平台，用于下次判断使用
+          this.isMobil = true
+          // 当前是移动端，判断当前是否是90度横屏
+          if (window.orientation === 90 || window.orientation === -90) {
+            console.log('当前是横屏')
+          } else {
+            // 开始处理footer伸缩逻辑'
+            this.currentHeight = document.body.clientHeight
+            if (this.defaultHeight - this.currentHeight > 100) {
+              this.showFooter = false
+            } else {
+              this.showFooter = true
+            }
+          }
         } else {
-          this.showFooter = true
+          // do nothing, pc突然转mobil, footer不做任何响应
         }
       } else {
         // 当前是PC端
+        this.isMobil = false
       }
     }
   },
@@ -101,6 +116,7 @@ export default {
   mounted: function () {
     // 在vue完成dom渲染以及事件基本挂载完成的时候添加这个窗口resize事件监听器
     window.addEventListener('resize', this.resizeMethod, true)
+    this.resizeMethod()
   }
 }
 </script>
