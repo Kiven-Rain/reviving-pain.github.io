@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-26 12:35:31
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-30 17:39:58
+ * @Last Modified time: 2018-10-01 14:42:35
  */
 
 import http from './apiUtil.js'
@@ -90,9 +90,9 @@ export default {
     )
   },
   // 【文章】获取文章详情
-  getTopicDetail: function (articleId, resolve, reject) {
+  getTopicDetail: function (articleId, params, resolve, reject) {
     http.ajaxRequest('topic/' + articleId, 'get',
-      {},
+      params,
       {},
       resolve,
       reject

@@ -4,11 +4,11 @@
     <div class='cnodeTopicsWrp' ref="cnodeTopics">
       <!-- cnode主页文章分类导航 -->
       <div v-show="showTabbar" class="topicTabWrp">
-        <div @click="selectTab" class="tabBar">
+        <button @click="selectTab" class="tabBar">
           <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
             {{tab.name}}
           </span>
-        </div>
+        </button>
       </div>
       <!-- 返回顶部按钮 -->
       <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
@@ -111,7 +111,6 @@ export default {
       request.getCnodeTopics({
         page: 1,
         limit: this.limit,
-        mdrender: 'false',
         tab: currentTab
       }, (res) => {
         this.content = res.data.data
@@ -219,10 +218,12 @@ a {
   }
 }
 .tabBar {
+  width: 100%;
   border: 1px solid #bbb;
   margin: 0 auto;
   box-shadow: 0px 0px 10px #ccc;
   background: #fff;
+  display: block;
   position: relative;
   overflow: hidden;
 }

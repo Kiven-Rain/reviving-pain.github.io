@@ -22,7 +22,7 @@
         <span class="fa fa-commenting"> {{article.reply_count}}</span>
       </div>
       <!-- 文章详情页文章内容部分 -->
-      <div class="articleContent commonBlockWrp" v-html='article.content'></div>
+      <vue-markdown class="articleContent commonBlockWrp" :source="article.content"></vue-markdown>
       <!-- 文章详情页评论部分 -->
       <div class="articleComments commonBlockWrp">
         <!-- 发表评论 -->
@@ -32,7 +32,7 @@
             <div @click="openLoginWindow" class="commentBtn" title="点此登录">登录</div>
           </div>
           <div v-if="loginStatus">
-            <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
+            <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(支持markdown语法，请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
             <span class="tipText">Ctr+Enter 发表</span>
             <button :disabled="subLoading.commentLoading" @click="publishComment" class="commentBtn" title="点此发送">
               <span v-if="!subLoading.commentLoading">发表评论</span>
@@ -51,7 +51,7 @@
               <span class="commentUsername">{{comment.author.loginname}}</span>
               <span v-if="article.author.loginname === comment.author.loginname" class="authorTag">作者</span>
             </router-link>
-            <p class="userComment" v-html='comment.content'></p>
+            <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(http://localhost:8080/#/cnodeCommunity/user/')" class="userComment"></vue-markdown>
             <span class="commentDate">{{(comment.create_at).slice(0,10) + ' ' + (comment.create_at).slice(11,20)}}</span>
             <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
               {{comment.ups.length}}
@@ -75,12 +75,14 @@ import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
 import createTopic from './createTopic.vue'
 import bus from '../../util/eventBus.js'
+import vueMarkdown from 'vue-markdown'
 
 export default {
   props: ['loginStatus'],
   components: {
     'loading': loading,
-    'create-topic': createTopic
+    'create-topic': createTopic,
+    'vue-markdown': vueMarkdown
   },
   data: function () {
     return {
@@ -239,7 +241,9 @@ export default {
   created: function () {
     // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
-    request.getTopicDetail(articleId, (res) => {
+    request.getTopicDetail(articleId, {
+      mdrender: 'false'
+    }, (res) => {
       this.article = res.data.data
       this.loading = false
       this.displayArticleContent = true
@@ -385,27 +389,24 @@ h2 {
   margin-right: 10px;
 }
 
-/* 调整通过v-html引入的html文档的样式 */
+/* 调整通过markdown渲染出的html的样式 */
 .articleContent {
   margin-top: 15px;
   padding: 1px 15px 15px 15px;
 }
-.articleContent >>> div {
-  font-size: 1.1rem;
-}
-.articleContent >>> ul,li {
+.articleContent >>> ul {
   list-style: none;
+  padding-left: 1.5rem;
 }
-.articleContent >>> ul:first-child {
-  list-style: none;
-  padding-left: 1rem;
+.articleContent >>> ul:first-child li {
   margin-left: 0.5rem;
-  border-left: .2rem solid #000;
+  border-left: .2rem solid #0099cc;
 }
 .articleContent >>> a {
-  /* text-decoration: none; */
-  color: orange;
-  font-size: 1.2rem;
+  text-decoration: none;
+  color: #0099cc;
+  font-size: 1.1rem;
+  margin-left: 5px;
 }
 .articleContent >>> img {
   max-width:  80%;
@@ -430,7 +431,7 @@ h2 {
   height: 100px;
   box-shadow: 0px 0px 10px #999;
   resize: none;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-family: '微软雅黑';
   outline: none;
 }
@@ -473,10 +474,6 @@ h2 {
   height: 3rem;
   box-shadow: 0px 0px 10px #666;
 }
-.commentCell >>> a {
-  color: #333;
-  text-decoration: none;
-}
 .commentContent {
   width: 100%;
   padding-left: 10px;
@@ -501,11 +498,20 @@ h2 {
   font-size: .9rem;
   font-weight: normal;
 }
+/* 强制调整评论内容的css样式 */
 .userComment >>> img {
   max-width: 70%;
   margin: 0 auto;
   display: block;
 }
+.userComment >>> a {
+  color: #0099cc;
+  text-decoration: none;
+}
+.userComment >>> ul {
+  list-style: square;
+}
+
 .like {
   border: none;
   background: none;

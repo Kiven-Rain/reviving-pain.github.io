@@ -21,8 +21,9 @@
         <input type="text" v-model.trim="publishData.topicTitle" placeholder="标题字数10字以上">
       </div>
       <div class="topicContent">
-        <textarea v-model.trim="publishData.topicContent" placeholder="测试帖请选择“客户端测试”板块！"></textarea>
-        <!-- <vue-markdown :source="publishData.topicContent"></vue-markdown> -->
+        <textarea v-model.trim="publishData.topicContent" placeholder="(支持markdown语法) 测试帖请选择“客户端测试”板块！"></textarea>
+        <span>发布内容预览：</span>
+        <vue-markdown :source="publishData.topicContent" class="markdownDisplay"></vue-markdown>
       </div>
       <!-- newPublish按钮 -->
       <button v-if="!isModify" :disabled="subLoading" @click="publishTopic('newPublish')" class="publishBtn">
@@ -210,10 +211,20 @@ export default {
   padding-left: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-family: '微软雅黑';
   outline: none;
   resize: none;
+}
+.topicContent .markdownDisplay {
+  width: 100%;
+  height: 260px;
+  padding-left: 10px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-family: '微软雅黑';
+  overflow-y: auto;
 }
 .publishBtn {
   width: 100%;
