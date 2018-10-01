@@ -35,8 +35,6 @@ npm run build
 
 ## 接下来准备完成的
 
-1、编辑个人已发布的文章
+1、查看未读消息、已读消息
 
-2、查看未读消息、已读消息
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+2、文章以及评论日期显示的优化，从详细日期改为刚刚，xx分钟前，xx小时前，xx天，周，月，年等等
