@@ -51,7 +51,8 @@ export default {
       showFooter: true,
       loading: false,
       loginStatus: false,
-      isMobil: true
+      isMobil: true,
+      mobilDirection: 0
     }
   },
   methods: {
@@ -65,11 +66,13 @@ export default {
         if (this.isMobil === true) {
           // 存储本次触发onresize事件时的平台，用于下次判断使用
           this.isMobil = true
-          // 判断设备旋转方向，初始化difaultHeight,避免旋转因其改变而触发footer伸缩逻辑
-          if (window.orientation === 90 || window.orientation === -90 || window.orientation === 0) {
+          // 监测到旋转，初始化屏幕默认方向，同时初始化defaultHeight(对比屏幕高度)与currentHeight(当前屏幕高度)
+          if (window.orientation !== this.mobilDirection) {
+            this.mobilDirection = window.orientation
             this.defaultHeight = document.body.clientHeight
+            this.currentHeight = document.body.clientHeight
           }
-          // 开始处理footer伸缩逻辑
+          // 开始处理footer伸缩逻辑,首先记录当前实时显示区域高度
           this.currentHeight = document.body.clientHeight
           if (this.defaultHeight - this.currentHeight > 100) {
             this.showFooter = false
