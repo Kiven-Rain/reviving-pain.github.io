@@ -51,7 +51,7 @@
               <span class="commentUsername">{{comment.author.loginname}}</span>
               <span v-if="article.author.loginname === comment.author.loginname" class="authorTag">作者</span>
             </router-link>
-            <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(http://localhost:8080/#/cnodeCommunity/user/')" class="userComment"></vue-markdown>
+            <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(' + currentUrlPrefix + 'cnodeCommunity/user/')" class="userComment"></vue-markdown>
             <span class="commentDate">{{(comment.create_at).slice(0,10) + ' ' + (comment.create_at).slice(11,20)}}</span>
             <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
               {{comment.ups.length}}
@@ -117,7 +117,9 @@ export default {
         likeLoading: false
       },
       displayArticleContent: false,
-      eidtWindow: false
+      eidtWindow: false,
+      // 处理文章和评论中@用户对应的a标签跳转的字段
+      currentUrlPrefix: ''
     }
   },
   methods: {
@@ -268,6 +270,18 @@ export default {
       })
     } else {
       console.log('尚未登录，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
+    }
+    // 解析当前url，替换文章与评论中出现的@用户链接
+    var tempUrlPart = window.location.href
+    if (RegExp(/localhost:/).test(tempUrlPart)) {
+      // 当域名是localhost:8080时
+      this.currentUrlPrefix = 'http://localhost:8080/#/'
+    } else if (RegExp(/localhost\//).test(tempUrlPart)) {
+      // 当域名是localhost时
+      this.currentUrlPrefix = '#/'
+    } else if (RegExp(/reviving-pain/).test(tempUrlPart)) {
+      // 当域名是https://reviving-pain.github.io时
+      this.currentUrlPrefix = 'https://reviving-pain.github.io/dist/#/'
     }
   }
 }
