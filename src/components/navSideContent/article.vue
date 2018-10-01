@@ -33,7 +33,7 @@
           </div>
           <div v-if="loginStatus">
             <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(支持markdown语法，请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
-            <span class="tipText">Ctr+Enter 发表</span>
+            <span class="tipText">Ctrl+Enter 发表</span>
             <button :disabled="subLoading.commentLoading" @click="publishComment" class="commentBtn" title="点此发送">
               <span v-if="!subLoading.commentLoading">发表评论</span>
               <span v-if="subLoading.commentLoading">发送中…</span>

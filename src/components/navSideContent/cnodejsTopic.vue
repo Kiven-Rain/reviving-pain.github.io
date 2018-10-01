@@ -4,7 +4,7 @@
     <div class='cnodeTopicsWrp' ref="cnodeTopics">
       <!-- cnode主页文章分类导航 -->
       <div v-show="showTabbar" class="topicTabWrp">
-        <button @click="selectTab" class="tabBar">
+        <button :disabled="!isTabBarActive" @click="selectTab" class="tabBar">
           <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
             {{tab.name}}
           </span>
@@ -69,7 +69,9 @@ export default {
       loadingBlock: false,
       backToTopBtn: false,
       showTabbar: true,
-      scrollTopBefore: 0
+      scrollTopBefore: 0,
+      // 阻止连续快速切换tabbar选项卡操作
+      isTabBarActive: true
     }
   },
   methods: {
@@ -116,6 +118,7 @@ export default {
         this.content = res.data.data
         this.loading = false
         this.loadingBlock = false
+        this.isTabBarActive = true
       }, (err) => {
         console.log(err.response.data.success)
       })
@@ -127,14 +130,15 @@ export default {
     // 点击cnode主页头部的浮动tab标签触发的事件
     selectTab: function (e) {
       if (this.currentTab !== e.target.id) {
-        // 在请求之前做一些初始化工作
+        // 在请求之前做一些初始化工作，初始化limit防止反复点击叠加
         // 如果要记忆上次滚动位置和请求数量的话每个选项卡需要单独的字段来存储,还有刷新时是否要记忆tab选中状态和请求状态
         this.$refs.cnodeTopics.scrollTop = 0
         this.loading = true
-        this.limit = 10
+        this.limit = 12
         this.currentTab = e.target.id
         // 存储目标标签的id，用于刷新回填
         sessionStorage['currentTab'] = this.currentTab
+        this.isTabBarActive = false
         // 开始请求
         this.getData(this.currentTab)
       } else {
@@ -226,6 +230,7 @@ a {
   display: block;
   position: relative;
   overflow: hidden;
+  outline: none;
 }
  .tabBar > span {
   width: 14.66%;

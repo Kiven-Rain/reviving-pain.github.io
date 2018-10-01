@@ -86,9 +86,11 @@ export default {
       this.loading = !this.loginStatus
       this.manageView()
     })
-    // 当离线时，模块初次加载cnode主页组件不需要loading
-    if (this.$route.path.split('/').pop() === 'cnodejsTopic') {
-      this.loading = false
+    // 当离线时，模块初次加载通过解析url只要不是pageShouldLogin里的成员就不需要loading
+    for (var i = 0; i < this.pageShouldLogin.length; i++) {
+      if (this.pageShouldLogin[i] !== this.$route.path.split('/')[2]) {
+        this.loading = false
+      }
     }
   }
 }

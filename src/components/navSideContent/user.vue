@@ -10,7 +10,7 @@
           <span>积分：{{userInfo.score}}</span><br>
           <span class="fa fa-github"></span>
           <span>GitHub：</span>
-          <a :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入ta的github">{{userInfo.githubUsername}}</a><br>
+          <a :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入github">{{userInfo.githubUsername}}</a><br>
           <span class="fa fa-clock-o"></span>
           <span>注册时间：{{(userInfo.create_at).slice(0,10) + ' ' + (userInfo.create_at).slice(11,20)}}</span>
         </div>
@@ -51,6 +51,9 @@ import loading from '../common/loading.vue'
 import request from '../../util/apiRequest.js'
 
 export default {
+  props: {
+    'userName': String
+  },
   components: {
     'loading': loading
   },
@@ -64,7 +67,12 @@ export default {
     }
   },
   created: function () {
-    var userName = (this.$route.path).split('/')[3]
+    var userName = ''
+    if (!this.userName) {
+      userName = (this.$route.path).split('/').pop()
+    } else {
+      userName = this.userName
+    }
     // 请求用户基本信息
     request.getUserInfo(userName, (res) => {
       this.userInfo = res.data.data
@@ -101,7 +109,7 @@ h2 {
   box-shadow: 0px 0px 10px #ccc;
 }
 .userBackground {
-  background: #f6f6f6;
+  background: linear-gradient(#f6f6f6, #fff);
   min-height: 100%;
 }
 .userProfile {
