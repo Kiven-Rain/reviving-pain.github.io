@@ -226,6 +226,11 @@ export default {
   font-family: '微软雅黑';
   overflow-y: auto;
 }
+.topicContent .markdownDisplay >>> img {
+  max-width: 85%;
+  display: block;
+  margin: 0 auto;
+}
 .publishBtn {
   width: 100%;
   max-width: 600px;
