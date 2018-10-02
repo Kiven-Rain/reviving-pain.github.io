@@ -31,7 +31,7 @@
           </div>
         </div>
         <div v-show="loadingBlock" class="loadingBlock">
-          <img src="../../assets/loadingBlock.gif">
+          <img src="../../../assets/loadingBlock.gif">
         </div>
       </div>
     </div>
@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import loading from '../common/loading.vue'
-import request from '../../util/apiRequest.js'
+import loading from '../../common/loading.vue'
+import request from '../../../util/apiRequest.js'
 
 var scrollPosition = sessionStorage['scrollPosition']
 
@@ -205,6 +205,10 @@ a {
     box-sizing: border-box;
     z-index: 110;
   }
+  .tabBar > span:hover {
+    background: #c60023;
+    color: #fff;
+  }
 }
 @media only screen and (max-width: 900px) {
   .topicTabWrp{
@@ -245,10 +249,6 @@ a {
   float: left;
   cursor: pointer;
   user-select: none;
- }
- .tabBar > span:hover {
-  background: #c60023;
-  color: #fff;
  }
  .tabBarActive {
   background: #c60023;

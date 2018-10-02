@@ -1,7 +1,6 @@
 <template>
   <div class="father">
-    <span>CSS3动画</span>
-    <img class="persona" src="@/assets/persona.png" alt="女神异闻录" />
+    <img class="persona" src="@/assets/persona.png" alt="persona" title="take your heart" />
   </div>
 </template>
 
@@ -15,10 +14,11 @@
 .persona {
   width: 280px;
   height: 250px;
-  position: relative;
+  display: block;
+  margin-right: 50px;
+  margin: 0 auto;
   transition: all 1s ease;
   transform: rotateY(0deg);
-  /* top: 30px; */
   cursor: pointer;
 }
 .persona:hover {

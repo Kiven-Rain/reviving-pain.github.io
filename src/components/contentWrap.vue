@@ -11,8 +11,9 @@
     <div v-if="loginStatus">
       <router-view name="createTopic" v-if="isRouterAlive"></router-view>
       <router-view name="cnodeProfile"></router-view>
+      <router-view name="messages"></router-view>
     </div>
-    <router-view name="css3Animation"></router-view>
+    <router-view name="getMockdata"></router-view>
     <router-view name="notFoundComponent"></router-view>
     <loading v-show="loading"></loading>
   </div>
@@ -35,7 +36,8 @@ export default {
       // 管理需要登录才能查看的组件
       pageShouldLogin: [
         'createTopic',
-        'profile'
+        'profile',
+        'messages'
       ],
       loginStatus: false
     }
@@ -86,10 +88,14 @@ export default {
       this.loading = !this.loginStatus
       this.manageView()
     })
-    // 当离线时，模块初次加载通过解析url只要不是pageShouldLogin里的成员就不需要loading
+    // 当未登录时，模块初次加载通过解析url只要不是pageShouldLogin里的成员就不需要loading
     for (var i = 0; i < this.pageShouldLogin.length; i++) {
       if (this.pageShouldLogin[i] !== this.$route.path.split('/')[2]) {
         this.loading = false
+      } else {
+        // 未登录状态,且确认是需要登录的页面,匹配一次即跳出循环,否则loading状态会被接下来的循环覆盖
+        this.loading = true
+        break
       }
     }
   }

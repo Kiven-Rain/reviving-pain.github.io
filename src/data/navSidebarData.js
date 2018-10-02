@@ -2,7 +2,7 @@
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-24 19:19:49
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-26 00:26:41
+ * @Last Modified time: 2018-10-02 16:39:01
 */
 
 export var navSidebarData = [
@@ -17,26 +17,10 @@ export var navSidebarData = [
   },
   {
     menu: 'Mock数据测试',
-    path: '/animation',
+    path: '/mockDataTest',
     subTabs: [
-      { subMenu: 'css3动画', path: '/css3Animation' }
+      { subMenu: '获取数据', path: '/getMockdata' }
     ]
   },
-  {
-    menu: '数据验证',
-    path: '/dataVerify',
-    subTabs: [
-      { subMenu: '一般输入验证 ', path: '/inputVerify' },
-      { subMenu: '表单验证 ', path: '/formVerify' }
-    ]
-  },
-  {
-    menu: '添加与移除标签',
-    path: '/modifyTags',
-    subTabs: [
-      { subMenu: '添加标签', path: '/addTag' },
-      { subMenu: '移除标签', path: '/delTag' }
-    ]
-  },
-  { menu: '轮播图', path: '/silder' }
+  { menu: '一级选项卡', path: '/tabMenu' }
 ]

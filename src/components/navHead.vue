@@ -1,8 +1,9 @@
 <template>
   <div class="header">
-    <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
+    <!-- 移动显示模式下侧边导航控制按钮 -->
     <span @click="mobilSidebarBtn" class="fa fa-th-list"></span>
-    <!-- <a href="https://cn.vuejs.org/v2/guide/" target="_blank" title="VUE doc"><img class="vue-logo" src="../assets/logo.png"></a> -->
+    <!-- 头像相关内容 -->
+    <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
     <div @click="showMenu" class="userAvatar">
       <img v-if="!isLogin" src="../assets/default_avatar.png" title="点击登录">
       <img v-if="isLogin" :src="this.baseUserInfo.avatar_url" :title="this.baseUserInfo.loginname">
@@ -17,11 +18,19 @@
         </ul>
       </div>
     </div>
+    <!-- 消息提醒 -->
+    <router-link :to="{path: '/cnodeCommunity/messages'}" class="messageTipsWrp">
+      <span v-if="hasMsg" class="tipsNum">{{msgNum}}</span>
+      <span v-if="hasMsg" class="fa fa-envelope"></span>
+      <span v-if="!isLogin" class="fa fa-envelope"></span>
+      <span v-if="!hasMsg & isLogin" class="fa fa-envelope-open"></span>
+    </router-link>
   </div>
 </template>
 
 <script>
 import bus from '../util/eventBus.js'
+import request from '../util/apiRequest.js'
 
 export default {
   data: function () {
@@ -30,7 +39,9 @@ export default {
       mobilSidebarOrder: true,
       showAvatarMenu: false,
       showMenuMask: false,
-      isLogin: false
+      isLogin: false,
+      hasMsg: false,
+      msgNum: 0
     }
   },
   methods: {
@@ -88,6 +99,19 @@ export default {
     bus.$on('userBasicInfo', (userBasicInfo) => {
       this.baseUserInfo = userBasicInfo
       this.isLogin = this.baseUserInfo.success
+      // 获取用户未读消息数量
+      request.getUserMsgNum({
+        accesstoken: sessionStorage['accesstoken']
+      }, (res) => {
+        this.msgNum = res.data.data
+        if (this.msgNum) {
+          this.hasMsg = true
+        } else {
+          this.hasMsg = false
+        }
+      }, (err) => {
+        console.log(err)
+      })
     })
   }
 }
@@ -217,5 +241,37 @@ export default {
     transform: rotate(0deg);
     left: 0px;
   }
+}
+
+/* 消息提醒提示区域样式 */
+.messageTipsWrp {
+  width: 40px;
+  height: 40px;
+  margin: 10px 20px 10px 10px;
+  position: relative;
+  float: right;
+  cursor: pointer;
+}
+.messageTipsWrp .tipsNum {
+  width: 18px;
+  height: 16px;
+  border-radius: 9px;
+  padding-top: 2px;
+  display: block;
+  position: absolute;
+  right: 0px;
+  top: 2px;
+  background: red;
+  font-size: 0.9rem;
+  color: #fff;
+  user-select: none;
+  z-index: 1;
+}
+.messageTipsWrp .fa {
+  font-size: 1.5rem;
+  color: #fff;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 </style>

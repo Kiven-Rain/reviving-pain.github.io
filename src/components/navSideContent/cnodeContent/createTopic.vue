@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import request from '../../util/apiRequest.js'
+import request from '../../../util/apiRequest.js'
 import vueMarkdown from 'vue-markdown'
 
 export default {
@@ -211,6 +211,7 @@ export default {
   padding-left: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
+  margin-bottom: 10px;
   font-size: 1.1rem;
   font-family: '微软雅黑';
   outline: none;
@@ -221,7 +222,9 @@ export default {
   height: 260px;
   padding-left: 10px;
   border: 1px solid #aaa;
+  box-shadow: 0px 0px 10px #ccc;
   border-radius: 5px;
+  margin: 5px 0px 10px 0px;
   font-size: 0.8rem;
   font-family: '微软雅黑';
   overflow-y: auto;

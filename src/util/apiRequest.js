@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-26 12:35:31
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-01 14:42:35
+ * @Last Modified time: 2018-10-02 17:27:34
  */
 
 import http from './apiUtil.js'
@@ -26,10 +26,28 @@ export default {
       reject
     )
   },
-  // 【用户】获取指定用户所收藏的文章
+  // 【用户】获取用户所收藏的文章
   getUserCollectedTopic: function (userName, resolve, reject) {
     http.ajaxRequest('/topic_collect/' + userName, 'get',
       {},
+      {},
+      resolve,
+      reject
+    )
+  },
+  // 【用户】获取用户的新消息数量
+  getUserMsgNum: function (params, resolve, reject) {
+    http.ajaxRequest('/message/count', 'get',
+      params,
+      {},
+      resolve,
+      reject
+    )
+  },
+  // 【用户】获取用户的已读与未读消息
+  getUserMsg: function (params, resolve, reject) {
+    http.ajaxRequest('/messages', 'get',
+      params,
       {},
       resolve,
       reject

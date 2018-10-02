@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <h1>页面走丢了</h1>
+  <div class="notFoundWrp">
+    <img src="../../assets/pageNotFound.png">
+    <h1>页面不见了...</h1>
   </div>
 </template>
 
@@ -13,16 +14,33 @@ export default {
   },
   methods: {
     // put some function here
-  },
-  created: function () {
-    // 处理cnode文章详情中出现的@用户的链接(v-html渲染的)，在这里做一个拼接和重定向
-    if ((this.$route.path).split('/')[1] === 'user') {
-      this.$router.push({path: '/cnodeCommunity' + this.$route.path})
-    }
   }
 }
 </script>
 
 <style scoped>
-/* some css here */
+.notFoundWrp {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.notFoundWrp img {
+  width: 240px;
+  height: 260px;
+  margin-left: -120px;
+  margin-top: -150px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  user-select: none;
+}
+.notFoundWrp h1 {
+  margin-top: 120px;
+  margin-left: -80px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+}
 </style>

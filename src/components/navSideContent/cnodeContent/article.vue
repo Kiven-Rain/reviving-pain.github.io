@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import loading from '../common/loading.vue'
-import request from '../../util/apiRequest.js'
+import loading from '../../common/loading.vue'
+import request from '../../../util/apiRequest.js'
 import createTopic from './createTopic.vue'
-import bus from '../../util/eventBus.js'
+import bus from '../../../util/eventBus.js'
 import vueMarkdown from 'vue-markdown'
 
 export default {

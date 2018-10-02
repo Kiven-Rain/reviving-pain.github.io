@@ -1,12 +1,13 @@
 // 我是路由配置中心，页面显示不同的内容对应不同的url是由我来配置的
 import Vue from 'vue'
 import Router from 'vue-router'
-import cnodejsTopic from '../components/navSideContent/cnodejsTopic.vue'
-import user from '../components/navSideContent/user.vue'
-import article from '../components/navSideContent/article.vue'
-import createTopic from '../components/navSideContent/createTopic.vue'
-import cnodeProfile from '../components/navSideContent/cnodeProfile.vue'
-import css3Animation from '../components/navSideContent/css3Animation.vue'
+import cnodejsTopic from '../components/navSideContent/cnodeContent/cnodejsTopic.vue'
+import user from '../components/navSideContent/cnodeContent/user.vue'
+import article from '../components/navSideContent/cnodeContent/article.vue'
+import createTopic from '../components/navSideContent/cnodeContent/createTopic.vue'
+import cnodeProfile from '../components/navSideContent/cnodeContent/cnodeProfile.vue'
+import messages from '../components/navSideContent/cnodeContent/messages.vue'
+import getMockdata from '../components/navSideContent/mockTestContent/getMockdata.vue'
 import defaultContent from '../components/navSideContent/defaultContent.vue'
 import notFoundComponent from '../components/navSideContent/notFoundComponent.vue'
 
@@ -65,9 +66,15 @@ export default new Router({
       }
     },
     {
-      path: '/animation/css3Animation',
+      path: '/cnodeCommunity/messages',
       components: {
-        css3Animation: css3Animation
+        messages: messages
+      }
+    },
+    {
+      path: '/mockDataTest/getMockdata',
+      components: {
+        getMockdata: getMockdata
       }
     }
   ]

@@ -56,7 +56,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: 'index.html',
       template: 'index.html',
       inject: true,
-      favicon: './static/reviving-pain.ico'
+      favicon: './static/vue_cnode_community.ico'
     }),
     // copy custom static assets
     new CopyWebpackPlugin([

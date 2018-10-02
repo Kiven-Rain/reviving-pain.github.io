@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import loading from '../common/loading.vue'
-import request from '../../util/apiRequest.js'
+import loading from '../../common/loading.vue'
+import request from '../../../util/apiRequest.js'
 
 export default {
   props: {
