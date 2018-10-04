@@ -11,7 +11,7 @@
     <div v-if="loginStatus">
       <router-view name="createTopic" v-if="isRouterAlive"></router-view>
       <router-view name="cnodeProfile"></router-view>
-      <router-view name="messages"></router-view>
+      <router-view name="messages" v-if="isRouterAlive"></router-view>
     </div>
     <router-view name="getMockdata"></router-view>
     <router-view name="notFoundComponent"></router-view>

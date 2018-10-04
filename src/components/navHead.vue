@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="header" ref="navHead">
     <!-- 移动显示模式下侧边导航控制按钮 -->
     <span @click="mobilSidebarBtn" class="fa fa-th-list"></span>
     <!-- 头像相关内容 -->
@@ -88,6 +88,25 @@ export default {
           }
           break
       }
+    },
+    // 获取用户未读消息数量
+    getUserMsgNum: function () {
+      request.getUserMsgNum({
+        accesstoken: sessionStorage['accesstoken']
+      }, (res) => {
+        if (res.data.data > 9) {
+          this.msgNum = '9+'
+        } else {
+          this.msgNum = res.data.data
+        }
+        if (this.msgNum) {
+          this.hasMsg = true
+        } else {
+          this.hasMsg = false
+        }
+      }, (err) => {
+        console.log(err)
+      })
     }
   },
   created: function () {
@@ -99,20 +118,17 @@ export default {
     bus.$on('userBasicInfo', (userBasicInfo) => {
       this.baseUserInfo = userBasicInfo
       this.isLogin = this.baseUserInfo.success
-      // 获取用户未读消息数量
-      request.getUserMsgNum({
-        accesstoken: sessionStorage['accesstoken']
-      }, (res) => {
-        this.msgNum = res.data.data
-        if (this.msgNum) {
-          this.hasMsg = true
-        } else {
-          this.hasMsg = false
-        }
-      }, (err) => {
-        console.log(err)
-      })
+      this.getUserMsgNum()
     })
+    // 挂载定时请求方法,定时接收消息
+    this.timer = setInterval(() => {
+      // 每1分钟请求一次
+      this.getUserMsgNum()
+    }, 60000)
+  },
+  destroyed: function () {
+    // 在实例销毁的时候清除计时器请求
+    clearInterval(this.timer)
   }
 }
 </script>

@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-26 12:35:31
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-02 17:27:34
+ * @Last Modified time: 2018-10-04 18:33:14
  */
 
 import http from './apiUtil.js'
@@ -101,6 +101,24 @@ export default {
   // 【操作】提交修改的文章
   modifyTopic: function (data, resolve, reject) {
     http.ajaxRequest('/topics/update', 'post',
+      {},
+      data,
+      resolve,
+      reject
+    )
+  },
+  // 【操作】将所有消息标记为已读
+  markAllMsgToRead: function (data, resolve, reject) {
+    http.ajaxRequest('/message/mark_all', 'post',
+      {},
+      data,
+      resolve,
+      reject
+    )
+  },
+  // 【操作】将单条消息标记为已读
+  markOneMsgToRead: function (msgId, data, resolve, reject) {
+    http.ajaxRequest('/message/mark_one/' + msgId, 'post',
       {},
       data,
       resolve,

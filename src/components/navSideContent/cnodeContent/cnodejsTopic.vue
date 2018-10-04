@@ -1,21 +1,21 @@
 <template>
   <div>
-    <loading v-if="loading"></loading>
+    <loading class="loading" v-if="loading"></loading>
     <div class='cnodeTopicsWrp' ref="cnodeTopics">
       <!-- cnode主页文章分类导航 -->
       <div v-show="showTabbar" class="topicTabWrp">
-        <button :disabled="!isTabBarActive" @click="selectTab" class="tabBar">
-          <span v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
+        <div class="tabBar">
+          <button :disabled="!isTabBarActive" @click="selectTab" v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
             {{tab.name}}
-          </span>
-        </button>
+          </button>
+        </div>
       </div>
       <!-- 返回顶部按钮 -->
       <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
       <!-- cnode主页文章列表 -->
       <div class='cnodeTopicsContent'>
         <div v-for='item of content' :key='item.id' class="topicItem">
-          <router-link v-bind:to='{name: "UserRoute", params:{name: item.author.loginname}}'>
+          <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}'>
             <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
           </router-link>
           <div class='articleTextInfo'>
@@ -180,6 +180,10 @@ export default {
 a {
   text-decoration: none;
 }
+.loading {
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 99!important;
+}
 .cnodeTopicsWrp {
   padding: 10px;
   background: #f6f6f6;
@@ -205,7 +209,7 @@ a {
     box-sizing: border-box;
     z-index: 110;
   }
-  .tabBar > span:hover {
+  .tabBar > button:hover {
     background: #c60023;
     color: #fff;
   }
@@ -234,24 +238,26 @@ a {
   display: block;
   position: relative;
   overflow: hidden;
-  outline: none;
 }
- .tabBar > span {
+ .tabBar > button {
   width: 14.66%;
   height: 40px;
   line-height: 40px;
+  border: none;
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: 1%;
   margin-right: 1%;
+  background: #fff;
   text-align: center;
   display: block;
   float: left;
   cursor: pointer;
   user-select: none;
+  outline: none;
  }
  .tabBarActive {
-  background: #c60023;
+  background: #c60023!important;
   color: #fff;
  }
 
