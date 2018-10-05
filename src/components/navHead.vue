@@ -109,6 +109,20 @@ export default {
       })
     }
   },
+  watch: {
+    baseUserInfo: function (after, before) {
+      if (after.success) {
+        // 当接收到来自于根组件的用户信息时，挂载定时请求方法,定时接收消息
+        this.timer = setInterval(() => {
+          // 每1分钟请求一次
+          this.getUserMsgNum()
+        }, 60000)
+      } else {
+        // 在失去登录状态时清除请求计时器
+        clearInterval(this.timer)
+      }
+    }
+  },
   created: function () {
     // 获取来自于content遮罩层传来的侧边栏按钮复位信息
     bus.$on('resetMobilsideBtn', (msg) => {
@@ -120,14 +134,9 @@ export default {
       this.isLogin = this.baseUserInfo.success
       this.getUserMsgNum()
     })
-    // 挂载定时请求方法,定时接收消息
-    this.timer = setInterval(() => {
-      // 每1分钟请求一次
-      this.getUserMsgNum()
-    }, 60000)
   },
   destroyed: function () {
-    // 在实例销毁的时候清除计时器请求
+    // 在实例销毁的时候清除请求计时器
     clearInterval(this.timer)
   }
 }
