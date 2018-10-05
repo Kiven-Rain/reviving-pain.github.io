@@ -13,6 +13,19 @@
 
 [在线预览](https://reviving-pain.github.io/dist/#/)
 
+## 技术栈
+
+[Vue.js](https://cn.vuejs.org/)  
+
+[Vue-router](https://router.vuejs.org/zh/)  
+
+[Vue-markdown](https://www.npmjs.com/package/vue-markdown)  
+
+[Axios](https://www.jianshu.com/p/7a9fbcbb1114)  
+
+[CnodeJS API](https://cnodejs.org/api)  
+
+
 ## Build Setup
 
 ```
@@ -41,8 +54,6 @@ npm run build
 
 ## 接下来准备完成的
 
-1、文章以及评论日期显示的优化，从详细日期改为刚刚，xx分钟前，xx小时前，xx天，周，月，年等等
+1、融合vuex进行重构(包括数据存储模式)
 
-2、融合vuex进行重构(包括数据存储模式)
-
-3、加入UI插件进行界面重构
+2、加入UI插件进行界面重构

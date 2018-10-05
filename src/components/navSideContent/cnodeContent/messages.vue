@@ -117,14 +117,18 @@ export default {
           // console.log(this.checkedMsg)
           for (let i = 0; i < this.checkedMsg.length; i++) {
             if (this.checkedMsg[i] === true) {
-              this.markOneMsgToRead(i)
+              setTimeout(() => {
+                this.markOneMsgToRead(i)
+              }, 0)
             }
             // 将重新加载的方法加到所有请求事件队列的最后，请求完毕，重新加载子组件
+            console.log(i)
             setTimeout(() => {
               if (i === (this.checkedMsg.length - 1)) {
+                console.log('已将当前点击的消息标记为已读')
                 this.$parent.reload()
               }
-            })
+            }, 0)
           }
         }
       } else {
@@ -136,7 +140,7 @@ export default {
       request.markOneMsgToRead(this.msgData.hasnotReadMsgs[msgIndex].id, {
         accesstoken: sessionStorage['accesstoken']
       }, (res) => {
-        console.log('已将当前点击的消息标记为已读')
+        // 调用header的消息数量请求，刷新数量显示
         this.$parent.$parent.$children[0].getUserMsgNum()
       }, (err) => {
         console.log(err)

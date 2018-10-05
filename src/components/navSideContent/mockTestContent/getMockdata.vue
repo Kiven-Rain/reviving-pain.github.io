@@ -4,6 +4,22 @@
   </div>
 </template>
 
+<script>
+import {data} from '../../../mock/mock.js'
+
+export default {
+  data: function () {
+    return {
+      mock: data
+    }
+  },
+  created: function () {
+    // 打印测试mock数据
+    console.log(JSON.stringify(this.mock, null, 2))
+  }
+}
+</script>
+
 <style scoped>
 .father {
   position: relative;

@@ -52,8 +52,8 @@
               <span v-if="article.author.loginname === comment.author.loginname" class="authorTag">作者</span>
             </router-link>
             <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(' + currentUrlPrefix + 'cnodeCommunity/user/')" class="userComment"></vue-markdown>
-            <span class="commentDate">{{(comment.create_at).slice(0,10) + ' ' + (comment.create_at).slice(11,20)}}</span>
-            <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'fa-thumbs-o-up', 'like', {'likeActive': comment.ups.indexOf(loginId) + 1, 'fa-thumbs-up': comment.ups.indexOf(loginId) + 1}]">
+            <span class="commentDate">{{comment.create_at}}</span>
+            <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'like', {'likeActive': comment.is_uped, 'fa-thumbs-o-up': !comment.is_uped, 'fa-thumbs-up': comment.is_uped}]">
               {{comment.ups.length}}
             </button>
           </div>
@@ -76,6 +76,7 @@ import request from '../../../util/apiRequest.js'
 import createTopic from './createTopic.vue'
 import bus from '../../../util/eventBus.js'
 import vueMarkdown from 'vue-markdown'
+import commonUtil from '../../../util/common.js'
 
 export default {
   props: ['loginStatus'],
@@ -109,7 +110,6 @@ export default {
       collectBtnActive: false,
       commentContent: '',
       loginName: '',
-      loginId: '',
       loading: true,
       subLoading: {
         collectLoading: false,
@@ -137,9 +137,11 @@ export default {
           accesstoken: sessionStorage['accesstoken']
         }, (res) => {
           if (res.data.action === 'up') {
-            this.article.replies[replyIndex].ups.push(sessionStorage['loginId'])
+            this.article.replies[replyIndex].is_uped = true
+            this.article.replies[replyIndex].ups.length += 1
           } else {
-            this.article.replies[replyIndex].ups.pop()
+            this.article.replies[replyIndex].is_uped = false
+            this.article.replies[replyIndex].ups.length -= 1
           }
           this.subLoading.likeLoading = false
         }, (err) => {
@@ -151,7 +153,7 @@ export default {
     collectController: function () {
       var articleId = this.$route.path.split('/')[3]
       // 判断当前是否登录
-      if (sessionStorage['loginUsername']) {
+      if (this.loginStatus) {
         // 判断当前文章收藏状态
         if (this.collectBtnActive) {
           this.subLoading.collectLoading = true
@@ -231,46 +233,32 @@ export default {
       bus.$emit('openLoginCard', true)
     }
   },
-  watch: {
-    // 处理loginStatus状态同步延迟的问题，回填收藏与点赞状态
-    loginStatus: function () {
-      if (this.loginStatus) {
-        console.log('已在登录状态，重新获取文章状态')
-        this.$parent.reload()
-      }
-    }
-  },
   created: function () {
+    // 初始化loginName字段
+    this.loginName = sessionStorage['loginUsername']
     // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
     request.getTopicDetail(articleId, {
-      mdrender: 'false'
+      mdrender: 'false',
+      accesstoken: sessionStorage['accesstoken']
     }, (res) => {
+      for (let i = 0; i < res.data.data.replies.length; i++) {
+        res.data.data.replies[i].create_at = commonUtil.transformTimeInterval(res.data.data.replies[i].create_at)
+      }
       this.article = res.data.data
       this.loading = false
       this.displayArticleContent = true
+      if (this.loginStatus) {
+        if (res.data.data.is_collect) {
+          this.collect = '取消收藏'
+          this.collectBtnActive = true
+        }
+      } else {
+        console.log('尚未登录，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
+      }
     }, (err) => {
       console.log('文章被删除了,错误信息是：' + err)
     })
-    // 获取当前登录者的文章收藏并遍历
-    this.loginName = sessionStorage['loginUsername']
-    if (this.loginStatus) {
-      this.loginId = sessionStorage['loginId']
-      request.getUserCollectedTopic(this.loginName, (res) => {
-        for (var i = 0; i < res.data.data.length; i++) {
-          var collectedId = res.data.data[i].id
-          if (collectedId === articleId) {
-            // 这里处理已经收藏的初始化逻辑
-            this.collect = '取消收藏'
-            this.collectBtnActive = true
-          }
-        }
-      }, (err) => {
-        console.log(err.response)
-      })
-    } else {
-      console.log('尚未登录，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
-    }
     // 解析当前url，替换文章与评论中出现的@用户链接
     var tempUrlPart = window.location.href
     if (RegExp(/localhost:/).test(tempUrlPart)) {
@@ -413,8 +401,9 @@ h2 {
   padding-left: 1.5rem;
 }
 .articleContent >>> ul:first-child li {
-  margin-left: 0.5rem;
+  padding-left: 0.5rem;
   border-left: .2rem solid #0099cc;
+  margin-left: 0.5rem;
 }
 .articleContent >>> a {
   text-decoration: none;
@@ -525,19 +514,23 @@ h2 {
 .userComment >>> ul {
   list-style: square;
 }
-
+/* 点赞样式 */
 .like {
   border: none;
   background: none;
+  font-size: 1.1rem;
   float: right;
   cursor: pointer;
   outline: none;
+}
+.likeActive {
+  color: #c60023;
 }
 /* 设置按钮的disabled状态样式 */
 .like[disabled] {
   color: #000;
 }
-.likeActive {
+.likeActive[disabled] {
   color: #c60023;
 }
 

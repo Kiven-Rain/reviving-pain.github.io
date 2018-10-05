@@ -17,7 +17,8 @@
       </div>
       <div class="relatedTopics commonBlockWrp">
         <h2>最近发布的话题</h2>
-        <div v-for='(item, index) in userInfo.recent_topics' v-bind:key='index' class="topicItem">
+        <span v-if="!userInfo.recent_topics.length">最近没有发布话题</span>
+        <div v-if="userInfo.recent_topics.length" v-for='(item, index) in userInfo.recent_topics' v-bind:key='index' class="topicItem">
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname'>
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
             <span>{{item.title}}</span>
@@ -26,7 +27,8 @@
       </div>
       <div class="relatedTopics commonBlockWrp">
         <h2>最近参与的话题</h2>
-        <div v-for='(item, index) in userInfo.recent_replies' v-bind:key='index' class="topicItem">
+        <span v-if="!userInfo.recent_replies.length">快去CNode社区主页点开话题参与讨论吧</span>
+        <div v-if="userInfo.recent_replies.length" v-for='(item, index) in userInfo.recent_replies' v-bind:key='index' class="topicItem">
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname'>
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
             <span>{{item.title}}</span>
@@ -35,7 +37,8 @@
       </div>
       <div class="relatedTopics commonBlockWrp">
         <h2>收藏的话题</h2>
-        <div v-for='(item, index) in userCollect' v-bind:key='index' class="topicItem">
+        <span v-if="!userCollect.length">收藏是不可能的，这辈子都不可能的</span>
+        <div v-if="userCollect.length" v-for='(item, index) in userCollect' v-bind:key='index' class="topicItem">
           <img v-bind:src='item.author.avatar_url' >
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
             <span>{{item.title}}</span>
@@ -60,7 +63,10 @@ export default {
   data: function () {
     return {
       userInfo: {
-        create_at: ''
+        create_at: '',
+        recent_topics: [],
+        recent_replies: [],
+        userCollect: []
       },
       userCollect: {},
       loading: true

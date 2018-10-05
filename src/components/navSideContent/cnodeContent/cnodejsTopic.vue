@@ -25,8 +25,8 @@
             </router-link>
             <div class='articleSubInfo'>
               <span>回复：{{item.reply_count}}</span>
-              <span>创建于：{{String(item.create_at).slice(0, 10)}}</span>
-              <span></span>
+              <!-- <span>创建于：{{String(item.create_at).slice(0, 10)}}</span> -->
+              <span>创建于：{{item.create_at}}</span>
             </div>
           </div>
         </div>
@@ -41,6 +41,7 @@
 <script>
 import loading from '../../common/loading.vue'
 import request from '../../../util/apiRequest.js'
+import commonUtil from '../../../util/common.js'
 
 var scrollPosition = sessionStorage['scrollPosition']
 
@@ -96,7 +97,10 @@ export default {
       // 瀑布流底部请求
       this.scrollTopBefore = scrollTop
       if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
-        this.loadingBlock = true
+        // 半透明loading出现时阻止瀑布流loading加载
+        if (!this.loading) {
+          this.loadingBlock = true
+        }
         this.getData(this.currentTab)
       }
       // 向下滚动距离大于1000显示回到顶部按钮
@@ -115,6 +119,9 @@ export default {
         limit: this.limit,
         tab: currentTab
       }, (res) => {
+        for (let i = 0; i < res.data.data.length; i++) {
+          res.data.data[i].create_at = commonUtil.transformTimeInterval(res.data.data[i].create_at)
+        }
         this.content = res.data.data
         this.loading = false
         this.loadingBlock = false
