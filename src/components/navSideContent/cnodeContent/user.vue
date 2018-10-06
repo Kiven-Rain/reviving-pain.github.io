@@ -10,7 +10,7 @@
           <span>积分：{{userInfo.score}}</span><br>
           <span class="fa fa-github"></span>
           <span>GitHub：</span>
-          <a :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入github">{{userInfo.githubUsername}}</a><br>
+          <a class="user-github" :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入github">{{userInfo.githubUsername}}</a><br>
           <span class="fa fa-clock-o"></span>
           <span>注册时间：{{(userInfo.create_at).slice(0,10)}}</span>
         </div>
@@ -142,8 +142,11 @@ h2 {
   .basicProfile .basicProfileText {
     width: 180px;
     line-height: 30px;
-    padding-left: 40px;
+    padding-left: 20px;
     margin: 0 auto;
+  }
+  .user-github {
+    font-size: 0.9rem!important;
   }
 }
 @media only screen and (min-width: 900px) {
@@ -184,6 +187,7 @@ h2 {
   height: 3rem;
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px #ccc;
+  flex-shrink: 0;
 }
 .relatedTopics .topicItem a {
   line-height: 3rem;
