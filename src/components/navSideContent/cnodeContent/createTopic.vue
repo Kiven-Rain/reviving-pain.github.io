@@ -23,7 +23,7 @@
       <div class="topicContent">
         <textarea v-model.trim="publishData.topicContent" placeholder="(支持markdown语法) 测试帖请选择“客户端测试”板块！"></textarea>
         <span>发布内容预览：</span>
-        <vue-markdown :source="publishData.topicContent" class="markdownDisplay"></vue-markdown>
+        <vue-markdown :source="publishData.topicContent.replace('](www', '](https://www')" class="markdownDisplay"></vue-markdown>
       </div>
       <!-- newPublish按钮 -->
       <button v-if="!isModify" :disabled="subLoading" @click="publishTopic('newPublish')" class="publishBtn">
@@ -61,7 +61,9 @@ export default {
         topicContent: ''
       },
       // 选择显示哪一种提交按钮
-      isModify: false
+      isModify: false,
+      // url输入https补全
+      inputUrlPrefix: ''
     }
   },
   methods: {

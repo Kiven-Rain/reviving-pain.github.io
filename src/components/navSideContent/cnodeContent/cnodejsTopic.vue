@@ -354,6 +354,7 @@ a {
   background: rgba(85, 85, 85, 0.5);
   position: fixed;
   right: 2rem;
+  top: 50%;
   bottom: 12rem;
   outline: none;
   color: #fff;

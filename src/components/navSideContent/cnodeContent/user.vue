@@ -12,7 +12,7 @@
           <span>GitHub：</span>
           <a :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入github">{{userInfo.githubUsername}}</a><br>
           <span class="fa fa-clock-o"></span>
-          <span>注册时间：{{(userInfo.create_at).slice(0,10) + ' ' + (userInfo.create_at).slice(11,20)}}</span>
+          <span>注册时间：{{(userInfo.create_at).slice(0,10)}}</span>
         </div>
       </div>
       <div class="relatedTopics commonBlockWrp">
@@ -140,7 +140,7 @@ h2 {
     display: block;
   }
   .basicProfile .basicProfileText {
-    width: 240px;
+    width: 180px;
     line-height: 30px;
     padding-left: 40px;
     margin: 0 auto;

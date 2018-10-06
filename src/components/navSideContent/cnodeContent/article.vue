@@ -204,7 +204,8 @@ export default {
           alert('评论不能为空！')
         } else {
           this.subLoading.commentLoading = true
-          // 提交评论
+          // 提交评论，预处理提交内容中的链接
+          this.commentContent = this.commentContent.replace('](www', '](https://www')
           var topicId = this.$route.path.split('/').pop()
           request.createComment(topicId, {
             accesstoken: sessionStorage['accesstoken'],
