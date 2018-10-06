@@ -80,15 +80,16 @@ export default {
       var viewHeight = this.$refs.cnodeTopics.offsetHeight
       var scrollTop = this.$refs.cnodeTopics.scrollTop
       var scrollHeight = this.$refs.cnodeTopics.scrollHeight
-      // 使用sessionStorage对象存储 “滚动距离” 和 “请求文章简讯数量”
       sessionStorage['scrollPosition'] = this.$refs.cnodeTopics.scrollTop
-      sessionStorage['refreshApplyCount'] = this.limit
       // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
       // 判断向上或者向下的滚动事件
       if (this.scrollTopBefore < scrollTop) {
+        // 向下滚动时
         this.showTabbar = true
       } else {
-        if (scrollTop === 0) {
+        // 向上滚动时
+        if (scrollTop < 100) {
+          // 快接近顶部时显示(如果判断scrollTop=0则出现的很突兀，体验不好)
           this.showTabbar = true
         } else {
           this.showTabbar = false
@@ -104,7 +105,7 @@ export default {
         this.getData(this.currentTab)
       }
       // 向下滚动距离大于1000显示回到顶部按钮
-      if (scrollTop > 1000) {
+      if (scrollTop > 500) {
         this.backToTopBtn = true
       } else {
         this.backToTopBtn = false
@@ -132,7 +133,8 @@ export default {
     },
     // 将滚动条拉到顶部
     backToTop: function () {
-      this.$refs.cnodeTopics.scrollTop = 0
+      commonUtil.smoothScroll(0, this.$refs.cnodeTopics)
+      // this.$refs.cnodeTopics.scrollTop = 0
     },
     // 点击cnode主页头部的浮动tab标签触发的事件
     selectTab: function (e) {

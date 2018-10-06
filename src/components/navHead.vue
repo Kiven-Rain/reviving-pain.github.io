@@ -135,8 +135,8 @@ export default {
       this.getUserMsgNum()
     })
   },
-  destroyed: function () {
-    // 在实例销毁的时候清除请求计时器
+  beforeDestroy: function () {
+    // 在实例销毁之前清除请求计时器
     clearInterval(this.timer)
   }
 }

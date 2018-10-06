@@ -1,6 +1,10 @@
 <template>
-  <div class="articleBackground">
+  <div ref="article" class="articleBackground">
     <loading v-if="loading"></loading>
+    <div class="anchorPosition">
+      <span @click="scrollMethod('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
+      <span @click="scrollMethod('comments')" class="fa fa-commenting" title="查看评论"></span>
+    </div>
     <div v-show="displayArticleContent" class="articleWrp">
       <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
@@ -24,7 +28,7 @@
       <!-- 文章详情页文章内容部分 -->
       <vue-markdown class="articleContent commonBlockWrp" :source="article.content"></vue-markdown>
       <!-- 文章详情页评论部分 -->
-      <div class="articleComments commonBlockWrp">
+      <div ref="comments" class="articleComments commonBlockWrp">
         <!-- 发表评论 -->
         <div class="publishCommnetWrp">
           <div v-if="!loginStatus" class="unLogin">
@@ -231,6 +235,15 @@ export default {
     // 打开登录弹窗
     openLoginWindow: function () {
       bus.$emit('openLoginCard', true)
+    },
+    scrollMethod: function (position) {
+      if (position === 'comments') {
+        // this.$refs.comments.scrollIntoView()
+        commonUtil.smoothScroll(this.$refs.comments.offsetTop, this.$refs.article)
+      } else if (position === 'top') {
+        // this.$refs.article.scrollTop = 0
+        commonUtil.smoothScroll(0, this.$refs.article)
+      }
     }
   },
   created: function () {
@@ -303,8 +316,13 @@ h2 {
   box-shadow: 0px 0px 10px #ccc;
 }
 .articleBackground {
-  min-height: 100%;
   background: #f6f6f6;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  position: absolute;
+  overflow-y: auto;
 }
 .articleWrp {
   max-width: 800px;
@@ -549,5 +567,28 @@ h2 {
 }
 .createTopic .cancelEdit:hover {
   color: #c60023;
+}
+
+/* 锚点定位按钮 */
+.anchorPosition {
+  margin-top: -40px;
+  position: fixed;
+  top: 50%;
+  right: 20px;
+}
+.anchorPosition span {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px #ccc;
+  margin-top: 10px;
+  background: #c60023;
+  text-align: center;
+  font-size: 1.5rem;
+  color: #fff;
+  display: block;
+  user-select: none;
+  cursor: pointer;
 }
 </style>

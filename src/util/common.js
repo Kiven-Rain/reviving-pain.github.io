@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-05 20:00:41
+ * @Last Modified time: 2018-10-06 17:32:06
  */
 
 export default {
@@ -49,6 +49,37 @@ export default {
     } else {
       let yearInterval = calculateTime.getUTCFullYear() - 1970
       return yearInterval + '年前'
+    }
+  },
+  // 平滑滚动方法,传入"目标位置"和"需要滚动的DOM对象"
+  smoothScroll: function (aimPosition, passenger) {
+    let currentPosition = passenger.scrollTop
+    if (aimPosition !== currentPosition) {
+      if (aimPosition > currentPosition) {
+        smoothDown()
+      } else {
+        smoothUp()
+      }
+    }
+    function smoothDown () {
+      if (currentPosition < aimPosition) {
+        // currentPosition每次朝着aimPosition前进100像素
+        currentPosition += 100
+        passenger.scrollTop = currentPosition
+        // 将每一次回调在间隔时间结束后都依次推入事件队列一个接一个执行
+        setTimeout(smoothDown, 10)
+      } else {
+        passenger.scrollTop = aimPosition
+      }
+    }
+    function smoothUp () {
+      if (currentPosition > aimPosition) {
+        currentPosition -= 100
+        passenger.scrollTop = currentPosition
+        setTimeout(smoothUp, 10)
+      } else {
+        passenger.scrollTop = aimPosition
+      }
     }
   }
 }
