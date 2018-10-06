@@ -76,6 +76,8 @@ export default {
           if (re.test(this.publishData.topicTitle)) {
             console.log('正则验证通过')
             if (this.publishData.topicContent) {
+              // 预处理发布文本，将url中的'www'改为'https://www'
+              this.publishData.topicContent = this.publishData.topicContent.replace('](www', '](https://www')
               if (publishType === 'newPublish') {
                 if (confirm('确认发布？')) {
                   this.subLoading = true
