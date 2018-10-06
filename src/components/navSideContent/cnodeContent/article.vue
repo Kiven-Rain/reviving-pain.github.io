@@ -2,8 +2,8 @@
   <div ref="article" class="articleBackground">
     <loading v-if="loading"></loading>
     <div class="anchorPosition">
-      <span @click="scrollMethod('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
-      <span @click="scrollMethod('comments')" class="fa fa-commenting" title="查看评论"></span>
+      <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
+      <span @click="anchorPosition('comments')" class="fa fa-commenting" title="查看评论"></span>
     </div>
     <div v-show="displayArticleContent" class="articleWrp">
       <!-- 文章详情页版头 -->
@@ -46,7 +46,10 @@
         </div>
         <!-- 已发表的评论 -->
         <h2>{{article.reply_count}} 条评论</h2>
-        <div v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
+        <span v-if="!article.replies.length">
+          <img class="sofa" src="../../../assets/sofa.png" alt="抢沙发" title="抢沙发">
+        </span>
+        <div v-if="article.replies.length" v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
           <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'  class="commentAvatar">
             <img v-bind:src='comment.author.avatar_url' :title="comment.author.loginname">
           </router-link>
@@ -236,7 +239,8 @@ export default {
     openLoginWindow: function () {
       bus.$emit('openLoginCard', true)
     },
-    scrollMethod: function (position) {
+    // 锚点定位
+    anchorPosition: function (position) {
       if (position === 'comments') {
         // this.$refs.comments.scrollIntoView()
         commonUtil.smoothScroll(this.$refs.comments.offsetTop, this.$refs.article)
@@ -259,6 +263,7 @@ export default {
         res.data.data.replies[i].create_at = commonUtil.transformTimeInterval(res.data.data.replies[i].create_at)
       }
       this.article = res.data.data
+      commonUtil.exchangePageTitle(this.article.title, 'article')
       this.loading = false
       this.displayArticleContent = true
       if (this.loginStatus) {
@@ -519,6 +524,14 @@ h2 {
   font-size: .9rem;
   font-weight: normal;
 }
+.sofa {
+  height: 100px;
+  width: 100px;
+  display: block;
+  margin: 0 auto;
+  user-select: none;
+}
+
 /* 强制调整评论内容的css样式 */
 .userComment >>> img {
   max-width: 70%;

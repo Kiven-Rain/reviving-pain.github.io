@@ -52,6 +52,7 @@
 <script>
 import loading from '../../common/loading.vue'
 import request from '../../../util/apiRequest.js'
+import commonUtil from '../../../util/common.js'
 
 export default {
   props: {
@@ -92,6 +93,8 @@ export default {
     }, (err) => {
       console.log('无法获取用户收藏，错误信息是：' + err)
     })
+    // 更改页面标题
+    commonUtil.exchangePageTitle(userName, 'userCenter')
   }
 }
 </script>

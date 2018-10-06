@@ -20,6 +20,8 @@
 <script>
 import bus from '../util/eventBus.js'
 import {navSidebarData} from '../data/navSidebarData.js'
+import commonUtil from '../util/common.js'
+
 export default {
   data: function () {
     return {
@@ -32,9 +34,7 @@ export default {
       // 记录当前选中的侧边栏一级菜单的序号
       selectedTabNum: 0,
       // 侧边导航菜单的数据
-      tabs: navSidebarData,
-      // 页面标题数据
-      selectedSubTabName: 'vue-reviving'
+      tabs: navSidebarData
     }
   },
   methods: {
@@ -50,14 +50,13 @@ export default {
       }
       // 处理无二级菜单的一级菜单选中时，修改对应的页面标题
       if (!tab.subTabs) {
-        document.title = tab.menu
+        commonUtil.exchangePageTitle(tab.menu)
       }
     },
     // 选中二级菜单时触发的事件，同时防止二级菜单的点击事件冒泡
     selectSubtabItem: function (tab, subtab) {
       // 选中二级菜单更改页面标题
-      this.selectedSubTabName = subtab.subMenu
-      document.title = subtab.subMenu
+      commonUtil.exchangePageTitle(subtab.subMenu)
     },
     // 当组件第一次or重新加载的时候，或者当前路由发生变化的时候，回填侧边栏展开样式，更改页面标题
     urlVerify: function (self) {
@@ -76,11 +75,11 @@ export default {
             self.selectedTabNum = i + 1
             // 刷新页面时更改标题
             if (self.tabs[i].path.substr(1) === currentPath.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
-              document.title = self.tabs[i].menu
+              commonUtil.exchangePageTitle(self.tabs[i].menu)
             } else { // 如果选中的是有下拉菜单的二级选项卡
               for (var j = 0; j < self.tabs[i].subTabs.length; j++) {
                 if (self.tabs[i].subTabs[j].path.substr(1) === currentPath.split('/').pop()) {
-                  document.title = self.tabs[i].subTabs[j].subMenu
+                  commonUtil.exchangePageTitle(self.tabs[i].subTabs[j].subMenu)
                 }
               }
             }

@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-06 17:32:06
+ * @Last Modified time: 2018-10-06 19:25:50
  */
 
 export default {
@@ -66,8 +66,10 @@ export default {
         // currentPosition每次朝着aimPosition前进100像素
         currentPosition += 100
         passenger.scrollTop = currentPosition
-        // 将每一次回调在间隔时间结束后都依次推入事件队列一个接一个执行
+        // (异步回调)将每一次回调在间隔时间结束后都依次推入事件队列一个接一个执行
         setTimeout(smoothDown, 10)
+        // 普通的回调
+        // smoothDown()
       } else {
         passenger.scrollTop = aimPosition
       }
@@ -80,6 +82,18 @@ export default {
       } else {
         passenger.scrollTop = aimPosition
       }
+    }
+  },
+  // 更改页面标题
+  exchangePageTitle: function (pageName, pageType) {
+    if (pageType === 'article') {
+      document.title = '文章 - ' + pageName
+    } else if (pageType === 'userCenter') {
+      if (sessionStorage['loginUsername'] !== pageName) {
+        document.title = pageName + ' 的主页'
+      }
+    } else {
+      document.title = pageName
     }
   }
 }

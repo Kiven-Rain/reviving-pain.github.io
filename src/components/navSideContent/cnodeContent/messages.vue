@@ -47,6 +47,7 @@
 <script>
 import request from '../../../util/apiRequest.js'
 import loading from '../../common/loading.vue'
+import commonUtil from '../../../util/common.js'
 
 export default {
   components: {
@@ -162,6 +163,7 @@ export default {
     }, (err) => {
       console.log(err)
     })
+    commonUtil.exchangePageTitle('社区消息')
   }
 }
 </script>
