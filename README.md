@@ -11,7 +11,7 @@
 
 [源码github](https://github.com/Reviving-Pain/reviving-pain.github.io)
 
-[在线预览](https://reviving-pain.github.io/dist/#/)
+[在线预览](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopic)
 
 ## 技术栈
 
