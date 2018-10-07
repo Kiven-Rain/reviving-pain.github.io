@@ -281,14 +281,18 @@ export default {
     // 解析当前url，替换文章与评论中出现的@用户链接
     var tempUrlPart = window.location.href
     if (RegExp(/localhost:/).test(tempUrlPart)) {
-      // 当域名是localhost:8080时
-      this.currentUrlPrefix = 'http://localhost:8080/#/'
+      // 当域名是localhost:xxxx时,先取出端口号
+      let port = tempUrlPart.split('/')[2].split(':')[1]
+      this.currentUrlPrefix = 'http://localhost:' + port + '/#/'
     } else if (RegExp(/localhost\//).test(tempUrlPart)) {
       // 当域名是localhost时
       this.currentUrlPrefix = '#/'
-    } else if (RegExp(/reviving-pain/).test(tempUrlPart)) {
+    } else if (RegExp(/reviving-pain\.github/).test(tempUrlPart)) {
       // 当域名是https://reviving-pain.github.io时
       this.currentUrlPrefix = 'https://reviving-pain.github.io/dist/#/'
+    } else if (RegExp(/reviving-pain\.gitee/).test(tempUrlPart)) {
+      // 当前域名是https://reviving-pain.gitee.io时
+      this.currentUrlPrefix = 'https://reviving-pain.gitee.io/cnodejs-community/#/'
     }
   }
 }
