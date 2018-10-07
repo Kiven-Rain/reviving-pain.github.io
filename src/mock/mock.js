@@ -1,8 +1,8 @@
 /*
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-25 19:37:54
-* @Last Modified by:   Reviving-Pain-Laptop
-* @Last Modified time: 2018-07-25 21:57:43
+ * @Last Modified by: Reviving-Pain-Laptop
+ * @Last Modified time: 2018-10-07 21:30:18
 */
 
 // 引入mockjs插件
@@ -13,9 +13,9 @@ Mock.setup({
 })
 // 配置相关模拟数据
 export var data = Mock.mock({
-  // 'list|1-10': [{
-  //   'id|+1': 1
-  // }],
+  'list|1-10': [{
+    'id|+1': 1
+  }],
   'name|3': [{
     first: '@FIRST',
     middle: '@FIRST',

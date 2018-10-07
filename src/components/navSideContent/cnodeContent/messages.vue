@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import request from '../../../util/apiRequest.js'
 import loading from '../../common/loading.vue'
+import request from '../../../util/apiRequest.js'
 import commonUtil from '../../../util/common.js'
 
 export default {

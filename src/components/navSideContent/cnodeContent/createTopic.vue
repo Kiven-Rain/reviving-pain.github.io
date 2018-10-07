@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import request from '../../../util/apiRequest.js'
 import vueMarkdown from 'vue-markdown'
+import request from '../../../util/apiRequest.js'
 
 export default {
   props: {

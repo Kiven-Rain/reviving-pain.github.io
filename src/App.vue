@@ -1,6 +1,3 @@
-<!-- 我叫App.vue，我是这个项目的根组件 -->
-<!-- 所有页面都是以我为中心，在我的片区下进行切换的 -->
-<!-- 我是顶级组件，你们所有组件的爸爸 -->
 <template>
   <div id="app">
     <loading class="loading" v-if="loading"></loading>

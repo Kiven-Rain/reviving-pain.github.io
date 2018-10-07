@@ -19,8 +19,8 @@
 
 <script>
 import bus from '../util/eventBus.js'
-import {navSidebarData} from '../data/navSidebarData.js'
 import commonUtil from '../util/common.js'
+import {navSidebarData} from '../data/navSidebarData.js'
 
 export default {
   data: function () {

@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import bus from '../util/eventBus.js'
 import loading from './common/loading.vue'
+import bus from '../util/eventBus.js'
 
 export default {
   components: {

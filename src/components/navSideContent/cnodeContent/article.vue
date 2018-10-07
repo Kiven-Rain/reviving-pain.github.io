@@ -67,29 +67,30 @@
         </div>
       </div>
     </div>
-    <create-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
-    ref="createTopic" v-if="eidtWindow" class="createTopic">
+    <!-- 文章编辑部分 -->
+    <edit-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
+    v-if="eidtWindow" class="editTopic">
       <div slot="modifyBlockTitle">
         <span>文章编辑</span>
         <span @click="editController('cancelEdit')" class="cancelEdit">取消编辑</span>
       </div>
-    </create-topic>
+    </edit-topic>
   </div>
 </template>
 
 <script>
-import loading from '../../common/loading.vue'
-import request from '../../../util/apiRequest.js'
-import createTopic from './createTopic.vue'
-import bus from '../../../util/eventBus.js'
 import vueMarkdown from 'vue-markdown'
+import loading from '../../common/loading.vue'
+import editTopic from './createTopic.vue'
+import request from '../../../util/apiRequest.js'
+import bus from '../../../util/eventBus.js'
 import commonUtil from '../../../util/common.js'
 
 export default {
   props: ['loginStatus'],
   components: {
     'loading': loading,
-    'create-topic': createTopic,
+    'edit-topic': editTopic,
     'vue-markdown': vueMarkdown
   },
   data: function () {
@@ -571,10 +572,10 @@ h2 {
 }
 
 /* 文章编辑组件css样式 */
-.createTopic {
+.editTopic {
   background: #f6f6f6 !important;
 }
-.createTopic .cancelEdit {
+.editTopic .cancelEdit {
   margin: 3px 10px 0px 0px;
   float: right;
   font-size: 1rem;
@@ -583,7 +584,7 @@ h2 {
   cursor: pointer;
   user-select: none;
 }
-.createTopic .cancelEdit:hover {
+.editTopic .cancelEdit:hover {
   color: #c60023;
 }
 

@@ -43,9 +43,6 @@ import loading from '../../common/loading.vue'
 import request from '../../../util/apiRequest.js'
 import commonUtil from '../../../util/common.js'
 
-var scrollPosition = sessionStorage['scrollPosition']
-
-window.onbeforeunload = function () {}
 export default {
   components: {
     'loading': loading
@@ -79,36 +76,34 @@ export default {
     scrollMethod: function () {
       var viewHeight = this.$refs.cnodeTopics.offsetHeight
       var scrollTop = this.$refs.cnodeTopics.scrollTop
-      var scrollHeight = this.$refs.cnodeTopics.scrollHeight
-      sessionStorage['scrollPosition'] = this.$refs.cnodeTopics.scrollTop
-      // console.log('【测量结果】' + '显示区域的高:' + viewHeight + ', ' + '网页被卷去的高:' + scrollTop + ', ' + '区域内所有元素的总高为:' + scrollHeight)
+      var totalHeight = this.$refs.cnodeTopics.scrollHeight
       // 判断向上或者向下的滚动事件
       if (this.scrollTopBefore < scrollTop) {
         // 向下滚动时
         this.showTabbar = true
       } else {
         // 向上滚动时
-        if (scrollTop < 100) {
+        if (scrollTop < 150) {
           // 快接近顶部时显示(如果判断scrollTop=0则出现的很突兀，体验不好)
           this.showTabbar = true
         } else {
           this.showTabbar = false
         }
       }
-      // 瀑布流底部请求
       this.scrollTopBefore = scrollTop
-      if ((viewHeight + scrollTop >= scrollHeight) && (viewHeight !== 0)) {
-        // 半透明loading出现时阻止瀑布流loading加载
-        if (!this.loading) {
-          this.loadingBlock = true
-        }
-        this.getData(this.currentTab)
-      }
-      // 向下滚动距离大于1000显示回到顶部按钮
+      // 向下滚动距离大于500显示回到顶部按钮
       if (scrollTop > 500) {
         this.backToTopBtn = true
       } else {
         this.backToTopBtn = false
+      }
+      // 瀑布流底部请求,路由跳转之后高度会变为0,滚动事件依然触发,不参与此判定
+      if ((viewHeight + scrollTop >= totalHeight) && (viewHeight !== 0)) {
+        // 半透明loading出现时阻止瀑布流loadingBlock加载
+        if (!this.loading) {
+          this.loadingBlock = true
+        }
+        this.getData(this.currentTab)
       }
     },
     // 发送接口请求，获取返回数据
@@ -120,6 +115,7 @@ export default {
         limit: this.limit,
         tab: currentTab
       }, (res) => {
+        // 日期转换
         for (let i = 0; i < res.data.data.length; i++) {
           res.data.data[i].create_at = commonUtil.transformTimeInterval(res.data.data[i].create_at)
         }
@@ -134,13 +130,11 @@ export default {
     // 将滚动条拉到顶部
     backToTop: function () {
       commonUtil.smoothScroll(0, this.$refs.cnodeTopics)
-      // this.$refs.cnodeTopics.scrollTop = 0
     },
     // 点击cnode主页头部的浮动tab标签触发的事件
     selectTab: function (e) {
       if (this.currentTab !== e.target.id) {
         // 在请求之前做一些初始化工作，初始化limit防止反复点击叠加
-        // 如果要记忆上次滚动位置和请求数量的话每个选项卡需要单独的字段来存储,还有刷新时是否要记忆tab选中状态和请求状态
         this.$refs.cnodeTopics.scrollTop = 0
         this.loading = true
         this.limit = 12
@@ -155,11 +149,9 @@ export default {
       }
     }
   },
-  // created在实例创建完成后立即被调用，当前已完成数据观测，属性和方法的运算，watch/event事件回调，但挂载阶段还没开始
   created: function () {
-    // vue实例被创建之后，调用一次接口请求方法
     this.loading = true
-    // 初次或重新加载的时候回填上次选择的
+    // 初次或重新加载的时候回填上次选择的tab分类标签
     if (!sessionStorage['currentTab']) {
       sessionStorage['currentTab'] = this.currentTab
     } else {
@@ -167,19 +159,18 @@ export default {
     }
     this.getData(this.currentTab)
   },
-  // 所有模板渲染完成并基本完成挂载时，添加一个scroll鼠标滚动事件的监听器
   mounted: function () {
     window.addEventListener('scroll', this.scrollMethod, true)
   },
   beforeRouteLeave: function (to, from, next) {
     // 切换路由时更新滚动条浏览位置的数据
-    scrollPosition = this.$refs.cnodeTopics.scrollTop
+    sessionStorage['scrollPosition'] = this.$refs.cnodeTopics.scrollTop
     next()
   },
   beforeRouteEnter: function (to, from, next) {
     // 切换至其他路由又切回来时还原上次的浏览位置
-    next(vm => {
-      vm.$refs.cnodeTopics.scrollTop = scrollPosition
+    next((vm) => {
+      vm.$refs.cnodeTopics.scrollTop = sessionStorage['scrollPosition']
     })
   }
 }

@@ -1,4 +1,3 @@
-// 我是路由配置中心，页面显示不同的内容对应不同的url是由我来配置的
 import Vue from 'vue'
 import Router from 'vue-router'
 import cnodejsTopic from '../components/navSideContent/cnodeContent/cnodejsTopic.vue'
@@ -34,7 +33,7 @@ export default new Router({
       path: '/cnodeCommunity/cnodejsTopic',
       // 冒号的前面对应cnodejsTopic里面的router-view里面的name
       // 冒号后面的cnodejsTopic是引入的cnodejsTopic子组件
-      // 如果二者名字相同的话，写一个就可以
+      // 如果二者名字相同，写一个就可以
       components: {
         cnodejsTopic: cnodejsTopic
       }
