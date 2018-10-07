@@ -1,7 +1,7 @@
 <template>
   <div ref="article" class="articleBackground">
     <loading v-if="loading"></loading>
-    <div class="anchorPosition">
+    <div v-show="!eidtWindow" class="anchorPosition">
       <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
       <span @click="anchorPosition('comments')" class="fa fa-commenting" title="查看评论"></span>
     </div>
