@@ -12,10 +12,11 @@
       </div>
       <!-- 返回顶部按钮 -->
       <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
-      <!-- cnode主页文章列表 -->
+      <!-- 文章列表 -->
       <div class='cnodeTopicsContent'>
+        <!-- 文章条目 -->
         <div v-for='item of content' :key='item.id' class="topicItem">
-          <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}'>
+          <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}' class="avatarWrp" tag='div'>
             <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
           </router-link>
           <div class='articleTextInfo'>
@@ -30,6 +31,7 @@
             </div>
           </div>
         </div>
+        <!-- 瀑布流loading块 -->
         <div v-show="loadingBlock" class="loadingBlock">
           <img src="../../../assets/loadingBlock.gif">
         </div>
@@ -274,13 +276,65 @@ a {
   flex-direction: column;
   font-size: 1.5rem;
 }
-.cnodeTopicsContent>div {
+.cnodeTopicsContent .topicItem {
   padding: 0.5rem;
   border-bottom: 1px solid #c4c4c4;
   display: flex;
   flex-direction: row;    /* flex-direction属性默认是row */
   align-items: center;    /* flex布局中，子元素中心线(水平or垂直)居中于父容器 */
 }
+.cnodeTopicsContent .topicItem .avatarWrp {
+  margin-right: 2rem;
+  margin-bottom: 0.4rem;
+}
+.cnodeTopicsContent .topicItem .avatarWrp img {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #ccc;
+  display: block;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+/* 话题item头像右侧内容区样式 */
+.articleTextInfo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.articleTextInfo a {
+  color: #000;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.articleTextInfo a:hover {
+  color: #175199;
+}
+.articleTextInfo a:visited {
+  color: #999;
+}
+.articleTextInfo .topTag {
+  height: 1.0rem;
+  line-height: 1.1rem;
+  width: 35px;
+  border-radius: 3px;
+  margin: 2px 5px 0px 0px;
+  background: #c60023;
+  font-size: .7rem;
+  color: #fff;
+  text-align: center;
+  float: left;
+}
+.articleTextInfo .articleSubInfo {
+  font-size: 0.7rem;
+  margin-top: 1rem;
+  color: #666;
+}
+.articleTextInfo .articleSubInfo span:first-child {
+  margin-right: 1.5rem;
+}
+
+/* 瀑布流加载块的样式 */
 .loadingBlock {
   width: 90%;
   height: 4rem;
@@ -292,50 +346,7 @@ a {
   width: 50%;
   margin: 0 auto;
 }
-.cnodeTopicsContent .topicItem img {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #ccc;
-  margin-right: 2rem;
-}
-.articleTextInfo {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-/* 帖子标题样式  */
-.articleTextInfo a {
-  color: #000;
-  font-size: 1rem;
-  font-weight: bold;
-}
-/* 帖子标题被点击之后的样式  */
-.articleTextInfo a:visited {
-  color: #999;
-}
-.topTag {
-  height: 1.0rem;
-  line-height: 1.1rem;
-  width: 35px;
-  border-radius: 3px;
-  margin-right: 5px;
-  background: #c60023;
-  font-size: .7rem;
-  color: #fff;
-  text-align: center;
-  float: left;
-}
 
-/* 帖子标题下方部分样式  */
-.articleSubInfo {
-  font-size: 0.7rem;
-  margin-top: 1rem;
-  color: #666;
-}
-.articleSubInfo span:first-child {
-  margin-right: 1.5rem;
-}
 /* 回到顶部按钮的样式 */
 .backToTopBtn {
   width: 2rem;

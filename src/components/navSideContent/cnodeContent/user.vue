@@ -39,7 +39,7 @@
         <h2>收藏的话题</h2>
         <span v-if="!userCollect.length">收藏是不可能的，这辈子都不可能的</span>
         <div v-if="userCollect.length" v-for='(item, index) in userCollect' v-bind:key='index' class="topicItem">
-          <img v-bind:src='item.author.avatar_url' >
+          <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname'>
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
             <span>{{item.title}}</span>
           </router-link>
