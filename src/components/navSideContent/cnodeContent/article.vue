@@ -1,17 +1,21 @@
 <template>
   <div ref="article" class="articleBackground">
     <loading v-if="loading"></loading>
+    <!-- 锚点定位快速跳转按钮 -->
     <div v-show="!eidtWindow" class="anchorPosition">
       <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
       <span @click="anchorPosition('comments')" class="fa fa-commenting" title="查看评论"></span>
     </div>
+    <!-- 文章详情页 -->
     <div v-show="displayArticleContent" class="articleWrp">
       <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
-        <div @click="editController('edit')" v-if="(article.author.loginname === loginName) && loginStatus" class="editBtn" title="点击编辑">
+        <!-- 编辑按钮 -->
+        <div @click="editController('edit')" v-if="article.author.loginname === $store.state.loginUsername" class="editBtn" title="点击编辑">
           <span class="fa fa-edit"></span>
         </div>
+        <!-- 收藏按钮 -->
         <button :disabled="subLoading.collectLoading" @click="collectController()" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
           <span v-if="!subLoading.collectLoading">{{collect}}</span>
           <span v-if="subLoading.collectLoading" class="fa fa-spinner fa-spin"></span>
@@ -83,11 +87,9 @@ import vueMarkdown from 'vue-markdown'
 import loading from '../../common/loading.vue'
 import editTopic from './createTopic.vue'
 import request from '../../../util/apiRequest.js'
-import bus from '../../../util/eventBus.js'
 import commonUtil from '../../../util/common.js'
 
 export default {
-  props: ['loginStatus'],
   components: {
     'loading': loading,
     'edit-topic': editTopic,
@@ -98,7 +100,6 @@ export default {
       article: {
         title: '',
         author: {
-          // 给loginname设置缺省值，防止vue-router在console警告
           loginname: 'temp'
         },
         visit_count: '',
@@ -117,7 +118,6 @@ export default {
       collect: '收藏',
       collectBtnActive: false,
       commentContent: '',
-      loginName: '',
       loading: true,
       subLoading: {
         collectLoading: false,
@@ -136,7 +136,7 @@ export default {
       var replyId = this.article.replies[replyIndex].id
       if (!this.loginStatus) {
         alert('需要登录')
-      } else if (sessionStorage['loginUsername'] === this.article.replies[replyIndex].author.loginname) {
+      } else if (this.$store.state.loginUsername === this.article.replies[replyIndex].author.loginname) {
         alert('呵呵，不能给自己点赞')
       } else {
         this.subLoading.likeLoading = true
@@ -227,10 +227,12 @@ export default {
     editController: function (controlType) {
       if (controlType === 'edit') {
         console.log('准备打开编辑组件')
+        commonUtil.exchangePageTitle(this.article.title, 'editArticle')
         // 隐藏文章主体，显示编辑组件
         this.displayArticleContent = false
         this.eidtWindow = true
       } else if (controlType === 'cancelEdit') {
+        commonUtil.exchangePageTitle(this.article.title, 'article')
         this.displayArticleContent = true
         this.eidtWindow = false
       } else {
@@ -239,7 +241,7 @@ export default {
     },
     // 打开登录弹窗
     openLoginWindow: function () {
-      bus.$emit('openLoginCard', true)
+      this.$store.commit('openLoginCard', true)
     },
     // 锚点定位
     anchorPosition: function (position) {
@@ -252,9 +254,17 @@ export default {
       }
     }
   },
+  computed: {
+    loginStatus: function () {
+      return this.$store.state.loginStatus
+    }
+  },
+  watch: {
+    loginStatus: function () {
+      this.$parent.reload()
+    }
+  },
   created: function () {
-    // 初始化loginName字段
-    this.loginName = sessionStorage['loginUsername']
     // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
     request.getTopicDetail(articleId, {
@@ -274,10 +284,10 @@ export default {
           this.collectBtnActive = true
         }
       } else {
-        console.log('尚未登录，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
+        alert('当前尚未登录\n无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
       }
     }, (err) => {
-      console.log('文章被删除了,错误信息是：' + err)
+      console.log('文章获取失败了，错误信息是：' + err)
     })
     // 解析当前url，替换文章与评论中出现的@用户链接
     var tempUrlPart = window.location.href

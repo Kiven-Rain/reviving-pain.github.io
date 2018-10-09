@@ -11,7 +11,7 @@
         </div>
       </div>
       <!-- 返回顶部按钮 -->
-      <button class="backToTopBtn" v-show="backToTopBtn" @click="backToTop">回到顶部</button>
+      <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
       <!-- 文章列表 -->
       <div class='cnodeTopicsContent'>
         <!-- 文章条目 -->
@@ -171,6 +171,7 @@ export default {
   },
   beforeRouteEnter: function (to, from, next) {
     // 切换至其他路由又切回来时还原上次的浏览位置
+    commonUtil.exchangePageTitle('CNodeJS社区主页')
     next((vm) => {
       vm.$refs.cnodeTopics.scrollTop = sessionStorage['scrollPosition']
     })
@@ -336,15 +337,14 @@ a {
 
 /* 瀑布流加载块的样式 */
 .loadingBlock {
-  width: 90%;
-  height: 4rem;
-  margin: 0 auto;
+  width: 100%;
   margin-top: 10px;
   margin-bottom: 10px;
 }
 .loadingBlock img {
   width: 50%;
   margin: 0 auto;
+  display: block;
 }
 
 /* 回到顶部按钮的样式 */
@@ -361,6 +361,7 @@ a {
   outline: none;
   color: #fff;
   font-size: 1rem;
+  cursor: pointer;
 }
 .backToTopBtn:hover {
   background: #c60023;

@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-06 19:25:50
+ * @Last Modified time: 2018-10-09 21:09:41
  */
 
 export default {
@@ -84,14 +84,16 @@ export default {
       }
     }
   },
-  // 更改页面标题
+  // 更改页面标题,需要特殊处理的就传入pageType
   exchangePageTitle: function (pageName, pageType) {
     if (pageType === 'article') {
       document.title = '文章 - ' + pageName
+    } else if (pageType === 'editArticle') {
+      document.title = '编辑 - ' + pageName
     } else if (pageType === 'userCenter') {
-      if (sessionStorage['loginUsername'] !== pageName) {
-        document.title = pageName + ' 的主页'
-      }
+      document.title = pageName + ' 的主页'
+    } else if (pageType === 'profile') {
+      document.title = 'CnodeJS社区个人中心'
     } else {
       document.title = pageName
     }

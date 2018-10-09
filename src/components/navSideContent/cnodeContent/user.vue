@@ -27,7 +27,7 @@
       </div>
       <div class="relatedTopics commonBlockWrp">
         <h2>最近参与的话题</h2>
-        <span v-if="!userInfo.recent_replies.length">快去CNode社区主页点开话题参与讨论吧</span>
+        <span v-if="!userInfo.recent_replies.length">最近没有参与任何讨论</span>
         <div v-if="userInfo.recent_replies.length" v-for='(item, index) in userInfo.recent_replies' v-bind:key='index' class="topicItem">
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname'>
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
@@ -55,9 +55,6 @@ import request from '../../../util/apiRequest.js'
 import commonUtil from '../../../util/common.js'
 
 export default {
-  props: {
-    'userName': String
-  },
   components: {
     'loading': loading
   },
@@ -74,11 +71,12 @@ export default {
     }
   },
   created: function () {
-    var userName = ''
-    if (!this.userName) {
-      userName = (this.$route.path).split('/').pop()
+    let userName = (this.$route.path).split('/').pop()
+    if (userName === 'profile') {
+      commonUtil.exchangePageTitle(userName, 'profile')
+      userName = this.$store.state.loginUsername
     } else {
-      userName = this.userName
+      commonUtil.exchangePageTitle(userName, 'userCenter')
     }
     // 请求用户基本信息
     request.getUserInfo(userName, (res) => {
@@ -93,8 +91,6 @@ export default {
     }, (err) => {
       console.log('无法获取用户收藏，错误信息是：' + err)
     })
-    // 更改页面标题
-    commonUtil.exchangePageTitle(userName, 'userCenter')
   }
 }
 </script>

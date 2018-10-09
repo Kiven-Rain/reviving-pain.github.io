@@ -149,6 +149,7 @@ export default {
     }
   },
   created: function () {
+    commonUtil.exchangePageTitle('我的社区消息')
     this.loading = true
     request.getUserMsg({
       accesstoken: sessionStorage['accesstoken']
@@ -163,7 +164,6 @@ export default {
     }, (err) => {
       console.log(err)
     })
-    commonUtil.exchangePageTitle('社区消息')
   }
 }
 </script>

@@ -42,6 +42,7 @@
 <script>
 import vueMarkdown from 'vue-markdown'
 import request from '../../../util/apiRequest.js'
+import commonUtil from '../../../util/common.js'
 
 export default {
   props: {
@@ -146,6 +147,10 @@ export default {
     }
   },
   created: function () {
+    // 更改页面标题
+    if (this.$route.path.split('/').pop() === 'createTopic') {
+      commonUtil.exchangePageTitle('在CnodeJS社区发布话题')
+    }
     // 判断组件使用区域，回填表单，替换提交按钮
     if (this.topicTab) {
       this.isModify = true

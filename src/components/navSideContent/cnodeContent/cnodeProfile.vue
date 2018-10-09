@@ -1,5 +1,5 @@
 <template>
-  <user-proifle :userName="loginName"></user-proifle>
+  <user-proifle></user-proifle>
 </template>
 
 <script>
@@ -11,11 +11,8 @@ export default {
   },
   data: function () {
     return {
-      loginName: ''
+      // some data here
     }
-  },
-  created: function () {
-    this.loginName = sessionStorage['loginUsername']
   }
 }
 </script>

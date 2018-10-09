@@ -11,7 +11,7 @@
     <div v-show="showFooter" class="footer-wrap">
       <footer-wrap></footer-wrap>
     </div>
-    <cnode-login></cnode-login>
+    <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- github的fork标签 -->
     <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank">
       <img class="fork-on-github" src="./assets/fork_on_github.png" alt="Fork me on GitHub">
@@ -27,7 +27,6 @@ import cnodeLogin from './components/cnodeLogin.vue'
 import footerWrap from './components/footerWrap.vue'
 import loading from './components/common/loading.vue'
 import request from './util/apiRequest.js'
-import bus from './util/eventBus.js'
 
 export default {
   components: {
@@ -47,7 +46,6 @@ export default {
       // 控制footer的显隐
       showFooter: true,
       loading: false,
-      loginStatus: false,
       isMobil: true,
       mobilDirection: 0
     }
@@ -83,37 +81,39 @@ export default {
         // 当前是PC端
         this.isMobil = false
       }
-    }
-  },
-  created: function () {
-    // 验证token(被动),初次加载或者页面刷新时候的token验证
-    if (sessionStorage['accesstoken']) {
-      this.loading = true
+    },
+    // accesstoken验证
+    verifyToken: function () {
       request.verifyAccesstoken({
         accesstoken: sessionStorage['accesstoken']
       }, (res) => {
-        sessionStorage['loginUsername'] = res.data.loginname
-        sessionStorage['loginId'] = res.data.id
         this.loading = false
-        this.loginStatus = res.data.success
-        bus.$emit('userBasicInfo', res.data)
-        bus.$emit('loginStatus', this.loginStatus)
+        this.$store.commit('changeLoginStatus', res.data)
       }, (err) => {
-        // token过期
-        console.log(err.response)
+        this.$store.commit('changeLoginStatus', {
+          success: false
+        })
+        alert('认证失败，' + err.response.data.error_msg)
+        // 重新加载一下登录组件
+        this.$store.commit('openLoginCard', false)
+        this.$nextTick(() => {
+          this.$store.commit('openLoginCard', true)
+        })
         sessionStorage['accesstoken'] = ''
-        sessionStorage['loginUsername'] = ''
-        sessionStorage['loginId'] = ''
-        this.loginStatus = false
-        console.log('token不正确，可能需要更新token')
-        bus.$emit('loginStatus', this.loginStatus)
       })
+    }
+  },
+  created: function () {
+    // 验证是否有token存储
+    if (sessionStorage['accesstoken']) {
+      this.loading = true
+      this.verifyToken()
     } else {
-      console.log('尚未登录，请先登录')
+      this.$store.commit('openLoginCard', true)
     }
   },
   mounted: function () {
-    // 在vue完成dom渲染以及事件基本挂载完成的时候添加这个窗口resize事件监听器
+    // 添加这个窗口resize事件监听器
     window.addEventListener('resize', this.resizeMethod, true)
     this.resizeMethod()
   }

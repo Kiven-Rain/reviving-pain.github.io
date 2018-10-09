@@ -1,59 +1,48 @@
 <template>
   <div class="header" ref="navHead">
     <!-- 移动显示模式下侧边导航控制按钮 -->
-    <span @click="mobilSidebarBtn" class="fa fa-th-list"></span>
+    <span @click="mobilSidebarController" class="fa fa-th-list"></span>
     <!-- 头像相关内容 -->
     <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
     <div @click="showMenu" class="userAvatar">
-      <img v-if="!isLogin" src="../assets/default_avatar.png" title="点击登录">
-      <img v-if="isLogin" :src="this.baseUserInfo.avatar_url" :title="this.baseUserInfo.loginname">
+      <img v-if="!loginStatus" src="../assets/default_avatar.png" title="点击登录">
+      <img v-if="loginStatus" :src="$store.state.loginAvatarUrl" :title="$store.state.loginUsername">
     </div>
     <div v-show="showAvatarMenu" class="avatarMenu">
       <div class="menuHead"></div>
       <div class="menuBody">
         <ul @click="avataMenuMethod">
-          <li id="login" v-if="!isLogin" class="fa fa-user"> 登 录</li>
-          <li id="userCenter" v-if="isLogin" class="fa fa-home"> 个人中心</li>
-          <li id="logout" v-if="isLogin" class="fa fa-sign-out"> 退出登录</li>
+          <li id="login" v-if="!loginStatus" class="fa fa-user"> 登 录</li>
+          <li id="userCenter" v-if="loginStatus" class="fa fa-home"> 个人中心</li>
+          <li id="logout" v-if="loginStatus" class="fa fa-sign-out"> 退出登录</li>
         </ul>
       </div>
     </div>
     <!-- 消息提醒 -->
-    <router-link :to="{path: '/cnodeCommunity/messages'}" class="messageTipsWrp">
+    <router-link :to="{path: '/cnodeCommunity/messages'}" class="messageTipsWrp" title="我的消息">
       <span v-if="hasMsg" class="tipsNum">{{msgNum}}</span>
       <span v-if="hasMsg" class="fa fa-envelope"></span>
-      <span v-if="!isLogin" class="fa fa-envelope"></span>
-      <span v-if="!hasMsg & isLogin" class="fa fa-envelope-open"></span>
+      <span v-if="!loginStatus" class="fa fa-envelope"></span>
+      <span v-if="!hasMsg & loginStatus" class="fa fa-envelope-open"></span>
     </router-link>
   </div>
 </template>
 
 <script>
-import bus from '../util/eventBus.js'
 import request from '../util/apiRequest.js'
 
 export default {
   data: function () {
     return {
-      baseUserInfo: [],
-      mobilSidebarOrder: true,
       showAvatarMenu: false,
       showMenuMask: false,
-      isLogin: false,
       hasMsg: false,
       msgNum: 0
     }
   },
   methods: {
-    mobilSidebarBtn: function () {
-      bus.$emit('show-mobil-sidebar', this.mobilSidebarOrder)
-      if (this.mobilSidebarOrder === true) {
-        this.mobilSidebarOrder = false
-      } else if (this.mobilSidebarOrder === false) {
-        this.mobilSidebarOrder = true
-      }
-      // alert('现在移动侧边导航按钮命令已转变为：' + this.mobilSidebarOrder)
-      bus.$emit('displayContentMask', !(this.mobilSidebarOrder))
+    mobilSidebarController: function () {
+      this.$store.commit('navSideController', !(this.$store.state.showNavside))
     },
     showMenu: function () {
       this.showAvatarMenu = !this.showAvatarMenu
@@ -68,21 +57,21 @@ export default {
       switch (e.target.id) {
         case 'login':
           console.log('打开登录窗口')
-          bus.$emit('openLoginCard', true)
+          this.$store.commit('openLoginCard', true)
           break
         case 'userCenter':
-          console.log('通过url跳转到个人中心')
+          console.log('前往个人中心')
           this.$router.push({path: '/cnodeCommunity/profile'})
           break
         case 'logout':
           var logout = confirm('确认要注销登录吗？')
           if (logout === true) {
             console.log('执行注销登陆')
+            this.$store.commit('changeLoginStatus', {
+              success: false
+            })
             sessionStorage['accesstoken'] = ''
-            sessionStorage['loginUsername'] = ''
-            sessionStorage['loginId'] = ''
-            location.reload()
-            this.$router.push({path: '/cnodeCommunity/cnodejsTopic'})
+            alert('您已注销登录')
           } else {
             console.log('注销登陆操作已取消')
           }
@@ -109,31 +98,28 @@ export default {
       })
     }
   },
+  computed: {
+    // 获取登录状态
+    loginStatus: function () {
+      return this.$store.state.loginStatus
+    }
+  },
   watch: {
-    baseUserInfo: function (after, before) {
-      if (after.success) {
+    loginStatus: function () {
+      if (this.loginStatus) {
+        // 当变为登录状态后先获取一次消息数量
+        this.getUserMsgNum()
         // 当接收到来自于根组件的用户信息时，挂载定时请求方法,定时接收消息
         this.timer = setInterval(() => {
           // 每1分钟请求一次
           this.getUserMsgNum()
         }, 60000)
       } else {
-        // 在失去登录状态时清除请求计时器
+        // 在失去登录状态时清除请求计时器，同时清除消息提示
         clearInterval(this.timer)
+        this.hasMsg = false
       }
     }
-  },
-  created: function () {
-    // 获取来自于content遮罩层传来的侧边栏按钮复位信息
-    bus.$on('resetMobilsideBtn', (msg) => {
-      this.mobilSidebarOrder = msg
-    })
-    // 获取从根组件传来的登录用户基本信息
-    bus.$on('userBasicInfo', (userBasicInfo) => {
-      this.baseUserInfo = userBasicInfo
-      this.isLogin = this.baseUserInfo.success
-      this.getUserMsgNum()
-    })
   },
   beforeDestroy: function () {
     // 在实例销毁之前清除请求计时器
@@ -154,7 +140,7 @@ export default {
   height: 40px;
   width: 40px;
   border: 2px solid #57cbde;
-  border-radius: 5px;
+  border-radius: 6px;
   margin: 8px;
   float: right;
   background: #fff;
@@ -229,6 +215,7 @@ export default {
 .header .userAvatar > img {
   width: 100%;
   height: 100%;
+  border-radius: 4px;
 }
 .avataMenuMask {
   position: fixed;

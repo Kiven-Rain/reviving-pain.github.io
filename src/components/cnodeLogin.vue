@@ -1,5 +1,5 @@
 <template>
-  <div v-show="showLoginCard" class="loginWrp">
+  <div class="loginWrp">
     <div @click="closeLoginCard" class="loginCardMask"></div>
     <div class="loginCard">
       <div @click="closeLoginCard" class="close">×</div>
@@ -29,13 +29,9 @@
 </template>
 
 <script>
-import bus from '../util/eventBus.js'
-import request from '../util/apiRequest.js'
-
 export default {
   data: function () {
     return {
-      showLoginCard: false,
       loginTabActive: true,
       registerTabActive: false,
       accesstoken: '',
@@ -55,40 +51,32 @@ export default {
       this.registerTabActive = true
     },
     closeLoginCard: function () {
-      this.showLoginCard = false
+      this.$store.commit('openLoginCard', false)
     },
     verifyIdentifyInfo: function () {
       if (this.accesstoken === '') {
         alert('请先填入认证码')
       } else {
-        // 验证token
-        console.log('执行登录程序')
         this.loading = true
-        request.verifyAccesstoken({
-          accesstoken: this.accesstoken
-        }, (res) => {
-          this.loading = false
-          // 存下来token留给根组件初始化请求用
-          sessionStorage['accesstoken'] = this.accesstoken
-          this.showLoginCard = false
-          alert('认证成功，欢迎' + res.data.loginname)
-          location.reload()
-        }, (err) => {
-          console.log('返回信息为：' + err.response.data.error_msg)
-          alert('认证失败')
-        })
+        // 存储token并验证
+        sessionStorage['accesstoken'] = this.accesstoken
+        this.$parent.verifyToken()
       }
     }
   },
-  mounted: function () {
-    // 组件重新加载的时候判断当前登录状态
-    if (!sessionStorage['accesstoken']) {
-      this.showLoginCard = true
+  computed: {
+    loginStatus: function () {
+      return this.$store.state.loginStatus
     }
-    // 接收来自于其他组件的参数，控制该组件的打开与关闭
-    bus.$on('openLoginCard', (msg) => {
-      this.showLoginCard = msg
-    })
+  },
+  watch: {
+    loginStatus: function () {
+      if (this.loginStatus) {
+        alert('认证成功，欢迎' + this.$store.state.loginUsername)
+        this.loading = false
+        this.$store.commit('openLoginCard', false)
+      }
+    }
   }
 }
 </script>

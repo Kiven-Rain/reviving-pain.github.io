@@ -1,12 +1,12 @@
 <template>
   <div class="content-wrap">
-    <div v-show="displayContentMask" @click="hideMobilSidebar" class="content-mask">我是content遮罩层</div>
+    <div v-show="this.$store.state.showNavside" @click="hideMobilSidebar" class="content-mask">我是content遮罩层</div>
     <router-view name="defaultContent"></router-view>
     <keep-alive>
       <router-view name="cnodejsTopic"></router-view>
     </keep-alive>
     <router-view name="user"></router-view>
-    <router-view name="article" :loginStatus="loginStatus" v-if="isRouterAlive"></router-view>
+    <router-view name="article" v-if="isRouterAlive"></router-view>
     <!-- 需要强制登录的的组件都放在这里 -->
     <div v-if="loginStatus">
       <router-view name="createTopic" v-if="isRouterAlive"></router-view>
@@ -21,7 +21,6 @@
 
 <script>
 import loading from './common/loading.vue'
-import bus from '../util/eventBus.js'
 
 export default {
   components: {
@@ -29,8 +28,6 @@ export default {
   },
   data: function () {
     return {
-      hideBarOrder: true,
-      displayContentMask: false,
       isRouterAlive: true,
       loading: true,
       // 管理需要登录才能查看的组件
@@ -38,18 +35,13 @@ export default {
         'createTopic',
         'profile',
         'messages'
-      ],
-      loginStatus: false
+      ]
     }
   },
   methods: {
     hideMobilSidebar: function () {
-      // 发出收起移动侧边栏的命令
-      bus.$emit('hide-mobil-sidebar', this.hideBarOrder)
-      // 发出复位顶部的侧边栏呼出按钮的命令
-      bus.$emit('resetMobilsideBtn', this.hideBarOrder)
-      // 遮罩层被点击之后隐藏
-      this.displayContentMask = false
+      // 点击遮罩层之后，隐藏侧边导航
+      this.$store.commit('navSideController', !(this.$store.state.showNavside))
     },
     // 重新加载子组件
     reload: function () {
@@ -59,35 +51,45 @@ export default {
       })
     },
     // 判断当前登录状态选择页面加载
-    manageView: function () {
+    manageView: function (changeType) {
       if (!this.loginStatus) {
-        var currentPage = this.$route.path.split('/').pop()
+        let currentPage = this.$route.path.split('/').pop()
         if (this.pageShouldLogin.indexOf(currentPage) + 1) {
           this.loading = true
-          alert('您尚未登录，请先登录')
-          bus.$emit('openLoginCard', true)
+          if (changeType === 'routeChange') {
+            // 失去登录状态后，从其他页面跳转到的当前页面如果必须登录才能查看，弹出alert提示
+            alert('您尚未登录，请先登录')
+          } else if (changeType === 'statusChange') {
+            // 如果当前页面必须登录才能查看，失去登录状态后跳转到主页
+            this.$router.push({path: '/cnodeCommunity/cnodejsTopic'})
+          }
+          this.$store.commit('openLoginCard', true)
         } else {
           this.loading = false
         }
       }
     }
   },
+  computed: {
+    loginStatus: function () {
+      return this.$store.state.loginStatus
+    }
+  },
   watch: {
+    // 切换路由时监控登录状态
     $route: function () {
-      this.manageView()
+      this.manageView('routeChange')
+    },
+    // 登录状态变化时的逻辑
+    loginStatus: function () {
+      if (this.loginStatus) {
+        this.loading = !this.loginStatus
+      } else {
+        this.manageView('statusChange')
+      }
     }
   },
   mounted: function () {
-    // 接收来自于header侧边栏按钮的命令并决定content遮罩层的显隐
-    bus.$on('displayContentMask', (msg) => {
-      this.displayContentMask = msg
-    })
-    // 统一管理需要登录才能够加载的组件
-    bus.$on('loginStatus', (loginStatus) => {
-      this.loginStatus = loginStatus
-      this.loading = !this.loginStatus
-      this.manageView()
-    })
     // 当未登录时，模块初次加载通过解析url只要不是pageShouldLogin里的成员就不需要loading
     for (var i = 0; i < this.pageShouldLogin.length; i++) {
       if (this.pageShouldLogin[i] !== this.$route.path.split('/')[2]) {

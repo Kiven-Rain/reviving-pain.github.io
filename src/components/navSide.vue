@@ -1,12 +1,12 @@
 <template>
-  <div v-bind:class="['nav-side-wrp', {'nav-side-pc': pcSidebar, 'show-mobil-sidebar': mobilSidebarOrder, 'hide-mobil-sidebar': pcSidebar}]">
+  <div v-bind:class="['nav-side-wrp', {'nav-side-pc': !(this.$store.state.showNavside), 'show-mobil-sidebar': this.$store.state.showNavside, 'hide-mobil-sidebar': !(this.$store.state.showNavside)}]">
     <!-- 一级菜单选项 -->
     <transition-group name="tabs" class="tabs" tag="ul">
       <li @click="selectTabItem(index+1, tab)" v-for="(tab, index) in tabs" v-bind:key="index" class="tabs-item">
         {{tab.menu}}<i v-if="tab.subTabs" v-bind:class="['fa', 'fa-chevron-right', {'chevron-right-rotate': index+1 === selectedTabNum}]"></i>
         <!-- 二级菜单选项 -->
         <ul v-if="tab.subTabs" v-show="index+1 === selectedTabNum" class="subTabs">
-          <router-link @click.native.stop="selectSubtabItem(tab, subTab)"
+          <router-link @click.native.stop="selectSubtabItem()"
           v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li" class="subTabs-item"
           :to="{path: tab.path + subTab.path}">
             {{subTab.subMenu}}
@@ -18,19 +18,11 @@
 </template>
 
 <script>
-import bus from '../util/eventBus.js'
-import commonUtil from '../util/common.js'
 import {navSidebarData} from '../data/navSidebarData.js'
 
 export default {
   data: function () {
     return {
-      // 控制侧边导航移动显示模式下的css样式
-      mobilSidebarOrder: false,
-      // 控制@media监控的侧边栏css样式
-      pcSidebar: true,
-      // 接收来自于header的移动端侧边导航按钮的指令
-      navHeadBtnMsg: null,
       // 记录当前选中的侧边栏一级菜单的序号
       selectedTabNum: 0,
       // 侧边导航菜单的数据
@@ -48,15 +40,10 @@ export default {
         this.$router.push({path: tab.path})
         this.selectedTabNum = tabNum
       }
-      // 处理无二级菜单的一级菜单选中时，修改对应的页面标题
-      if (!tab.subTabs) {
-        commonUtil.exchangePageTitle(tab.menu)
-      }
     },
     // 选中二级菜单时触发的事件，同时防止二级菜单的点击事件冒泡
-    selectSubtabItem: function (tab, subtab) {
-      // 选中二级菜单更改页面标题
-      commonUtil.exchangePageTitle(subtab.subMenu)
+    selectSubtabItem: function () {
+      // do nothing
     },
     // 当组件第一次or重新加载的时候，或者当前路由发生变化的时候，回填侧边栏展开样式，更改页面标题
     urlVerify: function (self) {
@@ -71,19 +58,11 @@ export default {
       tabUrl = '/' + currentPath.split('/')[1]
       for (var i = 0; i < navSidebarData.length; i++) {
         if (navSidebarData[i].path === tabUrl) {
-          if (self.selectedTabNum === 0) { // 通过url直接访问或者刷新页面，菜单展开样式的回填
+          if (self.selectedTabNum === 0) {
+            // 通过url直接访问或者刷新页面，菜单展开样式的回填
             self.selectedTabNum = i + 1
-            // 刷新页面时更改标题
-            if (self.tabs[i].path.substr(1) === currentPath.split('/').pop()) { // 如果选中的是无下拉菜单的一级选项卡
-              commonUtil.exchangePageTitle(self.tabs[i].menu)
-            } else { // 如果选中的是有下拉菜单的二级选项卡
-              for (var j = 0; j < self.tabs[i].subTabs.length; j++) {
-                if (self.tabs[i].subTabs[j].path.substr(1) === currentPath.split('/').pop()) {
-                  commonUtil.exchangePageTitle(self.tabs[i].subTabs[j].subMenu)
-                }
-              }
-            }
-          } else { // 使用浏览器前进后退按钮，检测到router的变化，执行菜单展开样式的回填
+          } else {
+            // 使用浏览器前进后退按钮，检测到router的变化，执行菜单展开样式的回填
             this.selectedTabNum = i + 1
           }
         }
@@ -91,24 +70,10 @@ export default {
     }
   },
   mounted: function () {
-    var self = this
-    // 接收来自于顶部的侧边栏呼出按钮的命令
-    bus.$on('show-mobil-sidebar', function (msg) {
-      self.navHeadBtnMsg = msg
-    })
-    // 复位header里菜单栏控制按钮的呼出命令
-    bus.$on('hide-mobil-sidebar', function (msg) {
-      self.navHeadBtnMsg = !msg
-      bus.$emit('resetMobilsideBtn', msg)
-    })
-    self.$options.methods.urlVerify(self)
+    // 初次加载或者刷新页面时调用
+    this.urlVerify(this)
   },
   watch: {
-    // 当从header传过来的侧边栏显示命令改变时，更改侧边导航的整体css样式
-    navHeadBtnMsg: function () {
-      this.mobilSidebarOrder = this.navHeadBtnMsg
-      this.pcSidebar = !(this.navHeadBtnMsg)
-    },
     // 监听路由的变化，执行自定义方法
     '$route': 'urlVerify'
   }
@@ -151,6 +116,15 @@ export default {
     transition: all 0.4s ease;
     transform: translateX(0px);
   }
+  /* 一级菜单hover样式 */
+  .tabs .tabs-item:hover {
+    color: #555;
+  }
+  /* 二级菜单hover样式 */
+  .tabs .tabs-item .subTabs .subTabs-item:hover {
+    background-color: #ddd;
+    color: #fff;
+  }
 }
 
 /*响应菜单中的v-show与v-if，为此添加默认的过渡动画*/
@@ -186,9 +160,6 @@ export default {
   transform: rotate(90deg);
   transform-origin: 25% 50%;
 }
-.tabs .tabs-item:hover {
-  color: #555;
-}
 /*二级菜单样式*/
 .tabs .tabs-item .subTabs {
   height: auto;
@@ -202,10 +173,6 @@ export default {
   padding-left: 15px;
   font-size: 17px;
   font-weight: normal;
-}
-.tabs .tabs-item .subTabs .subTabs-item:hover {
-  background-color: #ddd;
-  color: #fff;
 }
 .router-link-active {
   background-color: #bbb;
