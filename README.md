@@ -19,6 +19,8 @@
 
 [Vue-router](https://router.vuejs.org/zh/)  
 
+[Vuex](https://vuex.vuejs.org/zh/)  
+
 [Vue-markdown](https://www.npmjs.com/package/vue-markdown)  
 
 [Axios](https://www.jianshu.com/p/7a9fbcbb1114)  
@@ -54,6 +56,16 @@ npm run build
 
 ## 接下来准备完成的
 
-1、融合vuex进行重构(包括数据存储模式)
+1、添加网络超时提醒，请求失败拦截
 
-2、加入UI插件进行界面重构
+2、做移动端二维码登录（完成之后添加到上方的"功能介绍中"）
+
+3、为各种alert与confirm，以及提示信息做虚拟弹窗
+
+4、添加记住密码功能
+
+5、给评论末尾，发布文章时的文章末尾加上推广小尾巴链接
+
+6、给侧边导航的选项加字体图标，把项目中用到的图片尽量转换成svg代码
+
+7、选择UI插件并进行界面重构
