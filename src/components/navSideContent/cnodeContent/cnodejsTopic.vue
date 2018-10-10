@@ -33,7 +33,7 @@
         </div>
         <!-- 瀑布流loading块 -->
         <div v-show="loadingBlock" class="loadingBlock">
-          <img src="../../../assets/loadingBlock.gif">
+          <span class="fa fa-spinner fa-pulse"></span>
         </div>
       </div>
     </div>
@@ -341,10 +341,10 @@ a {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.loadingBlock img {
-  width: 50%;
-  margin: 0 auto;
-  display: block;
+.loadingBlock span {
+  width: 100%;
+  text-align: center;
+  font-size: 3rem;
 }
 
 /* 回到顶部按钮的样式 */

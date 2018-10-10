@@ -5,7 +5,7 @@
     <!-- 头像相关内容 -->
     <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
     <div @click="showMenu" class="userAvatar">
-      <img v-if="!loginStatus" src="../assets/default_avatar.png" title="点击登录">
+      <span v-if="!loginStatus" class="defalutAvatar fa fa-user-circle" title="点击登录"></span>
       <img v-if="loginStatus" :src="$store.state.loginAvatarUrl" :title="$store.state.loginUsername">
     </div>
     <div v-show="showAvatarMenu" class="avatarMenu">
@@ -13,7 +13,7 @@
       <div class="menuBody">
         <ul @click="avataMenuMethod">
           <li id="login" v-if="!loginStatus" class="fa fa-user"> 登 录</li>
-          <li id="userCenter" v-if="loginStatus" class="fa fa-home"> 个人中心</li>
+          <li id="userCenter" v-if="loginStatus" class="fa fa-user-circle-o"> 个人中心</li>
           <li id="logout" v-if="loginStatus" class="fa fa-sign-out"> 退出登录</li>
         </ul>
       </div>
@@ -147,10 +147,18 @@ export default {
   cursor: pointer;
   user-select: none;
 }
+.header .userAvatar .defalutAvatar {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  background: #272636;
+  color: #fff;
+  font-size: 2.2rem;
+}
 @media only screen and (min-width: 900px) {
   .header .avatarMenu {
     position: relative;
-    z-index: 200;
     display: inline-block;
     left: 20px;
     top: 52px;
@@ -170,7 +178,6 @@ export default {
 @media only screen and (max-width: 900px) {
   .header .avatarMenu {
     position: relative;
-    z-index: 200;
     display: inline-block;
     right: 5px;
     top: 52px;
@@ -223,8 +230,6 @@ export default {
   right: 0px;
   top: 0px;
   bottom: 0px;
-  z-index: 160;
-
 }
 
 /* 移动端按钮样式 */

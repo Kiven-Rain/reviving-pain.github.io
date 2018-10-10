@@ -6,8 +6,9 @@
         {{tab.menu}}<i v-if="tab.subTabs" v-bind:class="['fa', 'fa-chevron-right', {'chevron-right-rotate': index+1 === selectedTabNum}]"></i>
         <!-- 二级菜单选项 -->
         <ul v-if="tab.subTabs" v-show="index+1 === selectedTabNum" class="subTabs">
-          <router-link @click.native.stop="selectSubtabItem()"
-          v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li" class="subTabs-item"
+          <router-link @click.native.stop="selectSubtabItem"
+          v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li"
+          :class="['subTabs-item', 'fa', subTab.iconMark]"
           :to="{path: tab.path + subTab.path}">
             {{subTab.subMenu}}
           </router-link>
@@ -150,7 +151,7 @@ export default {
   cursor: pointer;
   user-select: none;
 }
-.tabs .tabs-item .fa {
+.tabs .tabs-item .fa.fa-chevron-right {
   line-height: 50px;
   padding-right: 5px;
   float: right;
@@ -166,13 +167,16 @@ export default {
   width: 200px;
   padding: 0px 0px 10px 0px;
   list-style: none;
+  overflow: hidden;
 }
 .tabs .tabs-item .subTabs .subTabs-item {
   height: 30px;
+  width: 93%;
   line-height: 30px;
   padding-left: 15px;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: normal;
+  float: left;
 }
 .router-link-active {
   background-color: #bbb;

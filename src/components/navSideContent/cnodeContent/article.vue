@@ -51,7 +51,7 @@
         <!-- 已发表的评论 -->
         <h2>{{article.reply_count}} 条评论</h2>
         <span v-if="!article.replies.length">
-          <img class="sofa" src="../../../assets/sofa.png" alt="抢沙发" title="抢沙发">
+          <img class="sofa" src="../../../assets/sofa.svg" alt="抢沙发" title="抢沙发">
         </span>
         <div v-if="article.replies.length" v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
           <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'  class="commentAvatar">

@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-26 12:35:31
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-05 19:13:58
+ * @Last Modified time: 2018-10-10 20:13:16
  */
 
 import http from './apiUtil.js'
@@ -139,6 +139,24 @@ export default {
     http.ajaxRequest('/topics', 'get',
       params,
       {},
+      resolve,
+      reject
+    )
+  },
+  // 【模拟请求】发送get请求，获取mock随机数据
+  getMockUserInfo: function (resolve, reject) {
+    http.ajaxRequest('http://test.com', 'get',
+      {},
+      {},
+      resolve,
+      reject
+    )
+  },
+  //  【模拟请求】发送post请求，mock接收请求参数
+  postInfoToMock: function (data, resolve, reject) {
+    http.ajaxRequest('http://testorz.com', 'post',
+      {},
+      data,
       resolve,
       reject
     )

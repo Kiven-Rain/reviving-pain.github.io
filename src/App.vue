@@ -13,8 +13,8 @@
     </div>
     <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- github的fork标签 -->
-    <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank">
-      <img class="fork-on-github" src="./assets/fork_on_github.png" alt="Fork me on GitHub">
+    <a href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
+      <fork-me class="fork-me"></fork-me>
     </a>
   </div>
 </template>
@@ -26,6 +26,7 @@ import contentWrap from './components/contentWrap.vue'
 import cnodeLogin from './components/cnodeLogin.vue'
 import footerWrap from './components/footerWrap.vue'
 import loading from './components/common/loading.vue'
+import forkMe from './components/common/forkMe.vue'
 import request from './util/apiRequest.js'
 
 export default {
@@ -35,7 +36,8 @@ export default {
     'content-wrap': contentWrap,
     'cnode-login': cnodeLogin,
     'footer-wrap': footerWrap,
-    'loading': loading
+    'loading': loading,
+    'fork-me': forkMe
   },
   data: function () {
     return {
@@ -161,6 +163,7 @@ html, body {
 
 .header {
   height: 60px;
+  z-index: 200;
 }
 .wrapper {
   flex: 1;
@@ -169,14 +172,13 @@ html, body {
 }
 .footer-wrap{
   height: 50px;
+  z-index: 150;
 }
-.fork-on-github {
-  width: 120px;
-  height: 120px;
-  border: 0;
-  position: absolute;
-  bottom: 50px;
-  right: 0;
+.fork-me {
+  position: fixed;
+  transform: rotate(-45deg)!important;
+  right: -45px;
+  bottom: 85px;
   z-index: 120;
 }
 .loading {

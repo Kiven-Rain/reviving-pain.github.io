@@ -1,11 +1,13 @@
 <template>
   <div class="notFoundWrp">
-    <img src="../../assets/pageNotFound.png">
+    <img src="../../assets/pageNotFound.svg">
     <h1>页面不见了...</h1>
   </div>
 </template>
 
 <script>
+import commonUtil from '../../util/common.js'
+
 export default {
   data: function () {
     return {
@@ -14,6 +16,9 @@ export default {
   },
   methods: {
     // put some function here
+  },
+  created: function () {
+    commonUtil.exchangePageTitle('页面不见了…')
   }
 }
 </script>
@@ -42,5 +47,7 @@ export default {
   left: 50%;
   top: 50%;
   display: block;
+  font-family: '幼圆';
+  user-select: none;
 }
 </style>
