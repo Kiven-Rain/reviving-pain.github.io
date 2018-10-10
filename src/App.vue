@@ -13,7 +13,7 @@
     </div>
     <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- github的fork标签 -->
-    <a href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
+    <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
       <fork-me class="fork-me"></fork-me>
     </a>
   </div>
