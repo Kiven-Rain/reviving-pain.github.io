@@ -28,6 +28,7 @@ import footerWrap from './components/footerWrap.vue'
 import loading from './components/common/loading.vue'
 import forkMe from './components/common/forkMe.vue'
 import request from './util/apiRequest.js'
+import commonUtil from './util/common.js'
 
 export default {
   components: {
@@ -95,6 +96,10 @@ export default {
         this.$store.commit('changeLoginStatus', {
           success: false
         })
+        // 如果在登录时选择了记住密码，密码验证错误时清除错误的cookie存储
+        if (commonUtil.getCookie('accesstoken')) {
+          commonUtil.removeCookie('accesstoken')
+        }
         alert('认证失败，' + err.response.data.error_msg)
         // 重新加载一下登录组件
         this.$store.commit('openLoginCard', false)
@@ -108,6 +113,10 @@ export default {
   created: function () {
     // 验证是否有token存储
     if (sessionStorage['accesstoken']) {
+      this.loading = true
+      this.verifyToken()
+    } else if (commonUtil.getCookie('accesstoken')) {
+      sessionStorage['accesstoken'] = commonUtil.getCookie('accesstoken')
       this.loading = true
       this.verifyToken()
     } else {
@@ -131,26 +140,6 @@ html, body {
   /*处理移动端点击时出现高亮蓝色背景的问题*/
   -webkit-tap-highlight-color: transparent;
 }
-/*调整浏览器滚动条宽度*/
-::-webkit-scrollbar {
-  /* 垂直滚动条宽度 */
-  width: 8px;
-  /* 水平滚动条宽度 */
-  height: 8px;
-}
-/*定义滚动条滑块 内阴影+圆角+滑块颜色*/
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
-  background-color: #c4c4c4;
-}
-/*定义滚动条轨道 内阴影+圆角+轨道颜色*/
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  border-radius: 8px;
-  background-color: #F5F5F5;
-}
-
 #app {
   height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

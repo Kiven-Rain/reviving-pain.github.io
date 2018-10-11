@@ -75,7 +75,7 @@
     <edit-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
     v-if="eidtWindow" class="editTopic">
       <div slot="modifyBlockTitle">
-        <span>文章编辑</span>
+        <span>话题编辑</span>
         <span @click="editController('cancelEdit')" class="cancelEdit">取消编辑</span>
       </div>
     </edit-topic>
@@ -207,6 +207,8 @@ export default {
           this.subLoading.commentLoading = true
           // 提交评论，预处理提交内容中的链接
           this.commentContent = this.commentContent.replace('](www', '](https://www')
+          // 给评论末尾添加推广链接
+          this.commentContent = this.commentContent.concat('\n\n来自 [娇羞的CNode社区处女作客户端](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopic)')
           var topicId = this.$route.path.split('/').pop()
           request.createComment(topicId, {
             accesstoken: sessionStorage['accesstoken'],
@@ -337,7 +339,7 @@ h2 {
   box-shadow: 0px 0px 10px #ccc;
 }
 .articleBackground {
-  background: #f6f6f6;
+  background: rgba(246, 246, 246, 0.9);
   left: 0px;
   right: 0px;
   top: 0px;

@@ -14,6 +14,7 @@ export default {
   width: 100%;
   height: 100%;
   display: table;
+  background: rgba(246, 246, 246, 0.9);
 }
 .defautlContentWrp .temptext {
   color: #ccc;

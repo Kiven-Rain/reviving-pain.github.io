@@ -4,7 +4,7 @@
       <!-- 作为编辑文章组件时添加的标题 -->
       <div class="componentTitle">
         <slot name="modifyBlockTitle">
-          <span>发布文章</span>
+          <span>发布话题</span>
         </slot>
       </div>
       <div class="selectType">
@@ -82,6 +82,10 @@ export default {
               if (publishType === 'newPublish') {
                 if (confirm('确认发布？')) {
                   this.subLoading = true
+                  // 给发布的文章内容末尾添加推广链接
+                  if (!(RegExp(/娇羞的CNode社区处女作客户端/).test(this.publishData.topicContent))) {
+                    this.publishData.topicContent = this.publishData.topicContent.concat('\n\n由 [娇羞的CNode社区处女作客户端](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopic) 独家发布')
+                  }
                   this.createTopic()
                 } else {
                   console.log('发布已取消')
@@ -166,7 +170,7 @@ export default {
 .publishBackground {
   min-height: 100%;
   padding: 0px 10px 0px 10px;
-  background: linear-gradient(#f6f6f6, #fff);
+  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
   overflow: hidden;
 }
 .publishWrp {

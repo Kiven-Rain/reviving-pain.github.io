@@ -1,7 +1,7 @@
 <template>
   <div class="header" ref="navHead">
     <!-- 移动显示模式下侧边导航控制按钮 -->
-    <span @click="mobilSidebarController" class="fa fa-th-list"></span>
+    <span @click="mobilSidebarController" :class="['fa', 'fa-th-list', {'list-out': $store.state.showNavside}]"></span>
     <!-- 头像相关内容 -->
     <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
     <div @click="showMenu" class="userAvatar">
@@ -30,6 +30,7 @@
 
 <script>
 import request from '../util/apiRequest.js'
+import commonUtil from '../util/common.js'
 
 export default {
   data: function () {
@@ -70,6 +71,10 @@ export default {
             this.$store.commit('changeLoginStatus', {
               success: false
             })
+            // 注销登录时如果有存储cookie则清除cookie
+            if (commonUtil.getCookie('accesstoken')) {
+              commonUtil.removeCookie('accesstoken')
+            }
             sessionStorage['accesstoken'] = ''
             alert('您已注销登录')
           } else {
@@ -216,6 +221,7 @@ export default {
   user-select: none;
 }
 .menuBody ul li:hover {
+  border-radius: 6px;
   background: #ccc;
   color: #fff;
 }
@@ -234,12 +240,15 @@ export default {
 
 /* 移动端按钮样式 */
 .header .fa.fa-th-list {
-  margin: 10px;
+  margin: 10px 10px 10px 13px;
   color: #fff;
-  left: 0px;
   font-size: 40px;
   position: fixed;
   transform: rotate(-90deg);
+}
+.header .fa.fa.fa-th-list.list-out {
+  transform: rotate(45deg);
+  transition: all 0.5 ease;
 }
 @media only screen and (min-width: 900px) {
   .header .fa.fa-th-list {

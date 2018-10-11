@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-09 21:09:41
+ * @Last Modified time: 2018-10-11 20:55:33
  */
 
 export default {
@@ -54,6 +54,7 @@ export default {
   // 平滑滚动方法,传入"目标位置"和"需要滚动的DOM对象"
   smoothScroll: function (aimPosition, passenger) {
     let currentPosition = passenger.scrollTop
+    let step = Math.abs(currentPosition - aimPosition) / 50
     if (aimPosition !== currentPosition) {
       if (aimPosition > currentPosition) {
         smoothDown()
@@ -63,8 +64,8 @@ export default {
     }
     function smoothDown () {
       if (currentPosition < aimPosition) {
-        // currentPosition每次朝着aimPosition前进100像素
-        currentPosition += 100
+        // currentPosition每次朝着aimPosition前进step像素
+        currentPosition += step
         passenger.scrollTop = currentPosition
         // (异步回调)将每一次回调在间隔时间结束后都依次推入事件队列一个接一个执行
         setTimeout(smoothDown, 10)
@@ -76,7 +77,7 @@ export default {
     }
     function smoothUp () {
       if (currentPosition > aimPosition) {
-        currentPosition -= 100
+        currentPosition -= step
         passenger.scrollTop = currentPosition
         setTimeout(smoothUp, 10)
       } else {
@@ -97,5 +98,27 @@ export default {
     } else {
       document.title = pageName
     }
+  },
+  // 封装存储cookie的方法
+  setCookie: function (name, value, hours) {
+    // 创建一个日期对象，用来存储过期时间
+    let date = new Date()
+    date.setTime(date.getTime() + (hours - 8) * 1000 * 3600)
+    document.cookie = name + '=' + value + ';expires=' + date
+  },
+  // 封装获取cookie的方法
+  getCookie: function (name) {
+    let cookies = document.cookie.split(' ')
+    for (let i = 0; i < cookies.length; i++) {
+      if (RegExp(name).test(cookies[i])) {
+        return cookies[i].split('=')[1].trim(';', 'right').replace(';', '')
+      }
+    }
+  },
+  // 封装清除cookie的方法
+  removeCookie: function (name) {
+    let date = new Date()
+    date.setTime(date.getTime() - 12 * 1000 * 3600)
+    document.cookie = name + '=' + '' + ';expires=' + date
   }
 }

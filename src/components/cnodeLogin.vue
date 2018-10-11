@@ -13,6 +13,10 @@
           请输入认证码<br>
           <input @keyup.enter="verifyIdentifyInfo" placeholder="cnode社区token" class="identityInfo" v-model.trim="accesstoken" type="password">
           <div @click="loginTips" class="loginTips">如何获取token？</div>
+          <div class="rememberToken">
+            <input type="checkbox" id="rememberToken" v-model="storeToekn">
+            <label for="rememberToken">十天免登陆</label>
+          </div>
           <button :disabled="loading" @click="verifyIdentifyInfo" class="submitIdentifyInfo">
             <span v-if="!loading">检测认证信息</span>
             <span v-if="loading"><span class="fa fa-spinner fa-spin"></span> 正在登录，请稍候…</span>
@@ -29,13 +33,16 @@
 </template>
 
 <script>
+import commonUtil from '../util/common.js'
+
 export default {
   data: function () {
     return {
       loginTabActive: true,
       registerTabActive: false,
       accesstoken: '',
-      loading: false
+      loading: false,
+      storeToekn: false
     }
   },
   methods: {
@@ -58,6 +65,10 @@ export default {
         alert('请先填入认证码')
       } else {
         this.loading = true
+        if (this.storeToekn === true) {
+          // 确认存储token，执行setCookie方法
+          commonUtil.setCookie('accesstoken', this.accesstoken, 240)
+        }
         // 存储token并验证
         sessionStorage['accesstoken'] = this.accesstoken
         this.$parent.verifyToken()
@@ -190,6 +201,10 @@ export default {
 .loginTips:hover {
   color: #000;
   text-decoration: underline;
+}
+.rememberToken {
+  margin-top: 5px;
+  float: right;
 }
 .submitIdentifyInfo {
   width: 100%;

@@ -111,7 +111,7 @@ export default {
   bottom: 0px;
   left: 260px;
   right: 0px;
-  background: #fff;
+  background: url(../assets/pub_background.jpg);
   text-align: left;
   position: absolute;
   overflow-y: auto;

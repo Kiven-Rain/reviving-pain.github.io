@@ -37,12 +37,19 @@
       </div>
       <div class="relatedTopics commonBlockWrp">
         <h2>收藏的话题</h2>
-        <span v-if="!userCollect.length">收藏是不可能的，这辈子都不可能的</span>
-        <div v-if="userCollect.length" v-for='(item, index) in userCollect' v-bind:key='index' class="topicItem">
+        <span v-if="!this.hasCollect">收藏是不可能的，这辈子都不可能的</span>
+        <div v-show="index < collectShowNum" v-for='(item, index) in userCollect' v-bind:key='index' class="topicItem">
           <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname'>
           <router-link v-bind:to='{name: "ArticleRoute", params: {id: item.id}}'>
             <span>{{item.title}}</span>
           </router-link>
+        </div>
+        <div @click="showMoreCollect" v-if="(userCollect.length > 6)" class="showMoreCollect">
+          <span v-show="collectShowNum === 5">查看更多&nbsp;<i class="fa fa-angle-double-right"></i></span>
+          <span v-show="collectShowNum > 5">收起&nbsp;<i class="fa fa-angle-double-up"></i></span>
+        </div>
+        <div v-if="collectLoading" class="collectLoadingWrp">
+          <span class="fa fa-spinner fa-pulse"></span>
         </div>
       </div>
     </div>
@@ -63,11 +70,22 @@ export default {
       userInfo: {
         create_at: '',
         recent_topics: [],
-        recent_replies: [],
-        userCollect: []
+        recent_replies: []
       },
       userCollect: {},
+      hasCollect: true,
+      collectLoading: true,
+      collectShowNum: 5,
       loading: true
+    }
+  },
+  methods: {
+    showMoreCollect: function () {
+      if (this.collectShowNum === 5) {
+        this.collectShowNum = this.userCollect.length
+      } else {
+        this.collectShowNum = 5
+      }
     }
   },
   created: function () {
@@ -87,7 +105,11 @@ export default {
     })
     // 请求用户收藏的文章
     request.getUserCollectedTopic(userName, (res) => {
+      this.collectLoading = false
       this.userCollect = res.data.data
+      if (!this.userCollect.length) {
+        this.hasCollect = false
+      }
     }, (err) => {
       console.log('无法获取用户收藏，错误信息是：' + err)
     })
@@ -114,7 +136,7 @@ h2 {
   box-shadow: 0px 0px 10px #ccc;
 }
 .userBackground {
-  background: linear-gradient(#f6f6f6, #fff);
+  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
   min-height: 100%;
 }
 .userProfile {
@@ -158,6 +180,10 @@ h2 {
     line-height: 30px;
     float: left;
   }
+  /* 收藏板块查看更多按钮的hover */
+  .showMoreCollect:hover {
+    color: #175199;
+  }
 }
 .basicProfile .basicProfileText a {
   font-size: 1rem;
@@ -193,5 +219,23 @@ h2 {
 }
 .relatedTopics .topicItem a:hover {
   color: #999;
+}
+/* 收藏loading */
+.collectLoadingWrp {
+  width: 100%;
+  height: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.collectLoadingWrp .fa {
+  width: 100%;
+  font-size: 3rem;
+  text-align: center;
+  color: #333;
+}
+.showMoreCollect {
+  padding: 10px 10px 0px 0px;
+  display: inline-block;
+  cursor: pointer;
 }
 </style>

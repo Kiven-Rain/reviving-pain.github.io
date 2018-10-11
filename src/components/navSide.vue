@@ -7,9 +7,9 @@
         <!-- 二级菜单选项 -->
         <ul v-if="tab.subTabs" v-show="index+1 === selectedTabNum" class="subTabs">
           <router-link @click.native.stop="selectSubtabItem"
-          v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li"
-          :class="['subTabs-item', 'fa', subTab.iconMark]"
+          v-for="(subTab, subIndex) in tab.subTabs" v-bind:key="subIndex" tag="li" class="subTabs-item"
           :to="{path: tab.path + subTab.path}">
+            <span :class="['fa', subTab.iconMark, ' fa-fw']">&nbsp;</span>
             {{subTab.subMenu}}
           </router-link>
         </ul>
@@ -155,9 +155,9 @@ export default {
   line-height: 50px;
   padding-right: 5px;
   float: right;
+  transition: all 0.4s ease;
 }
 .chevron-right-rotate {
-  transition: all 0.4s ease;
   transform: rotate(90deg);
   transform-origin: 25% 50%;
 }
@@ -178,6 +178,7 @@ export default {
   font-weight: normal;
   float: left;
 }
+/* 二级菜单选项激活后的样式 */
 .router-link-active {
   background-color: #bbb;
   color: #fff;

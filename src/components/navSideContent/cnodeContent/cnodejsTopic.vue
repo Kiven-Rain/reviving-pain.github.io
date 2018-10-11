@@ -3,7 +3,7 @@
     <loading class="loading" v-if="loading"></loading>
     <div class='cnodeTopicsWrp' ref="cnodeTopics">
       <!-- cnode主页文章分类导航 -->
-      <div v-show="showTabbar" class="topicTabWrp">
+      <div v-show="showTabbar" class="topicTabWrp tabWrpMobileAdjust">
         <div class="tabBar">
           <button :disabled="!isTabBarActive" @click="selectTab" v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
             {{tab.name}}
@@ -189,7 +189,8 @@ a {
 }
 .cnodeTopicsWrp {
   padding: 10px;
-  background: #f6f6f6;
+  background:rgba(246, 246, 246, 0.9);
+  background-repeat: no-repeat;
   left: 0px;
   right: 0px;
   top: 0px;
@@ -198,38 +199,34 @@ a {
   overflow-y: auto;
 }
 /* tab选项卡样式 */
+.topicTabWrp {
+  max-width: 900px;
+  height: 70px;
+  padding: 10px;
+  margin: 0 auto;
+  position: fixed;
+  transition: left 0.4s ease;
+  top: 60px;
+  right: 0px;
+  box-sizing: border-box;
+  z-index: 110;
+}
 @media only screen and (min-width: 900px) {
-  .topicTabWrp{
-    max-width: 900px;
-    height: 70px;
-    padding: 10px;
-    margin: 0 auto;
-    position: fixed;
-    transition: left 0.4s ease;
-    top: 60px;
+  .tabWrpMobileAdjust{
     left: 250px;
-    right: 0px;
-    box-sizing: border-box;
-    z-index: 110;
   }
   .tabBar > button:hover {
     background: #c60023;
     color: #fff;
   }
+  /* 回到顶部按钮的hover样式 */
+  .backToTopBtn:hover {
+    background: #c60023;
+  }
 }
 @media only screen and (max-width: 900px) {
-  .topicTabWrp{
-    max-width: 900px;
-    height: 70px;
-    padding: 10px 18px 10px 10px;
-    margin: 0 auto;
-    position: fixed;
-    transition: left 0.4s ease;
-    top: 60px;
+  .tabWrpMobileAdjust{
     left: 0px;
-    right: 0px;
-    box-sizing: border-box;
-    z-index: 110;
   }
 }
 .tabBar {
@@ -247,10 +244,7 @@ a {
   height: 40px;
   line-height: 40px;
   border: none;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  margin-left: 1%;
-  margin-right: 1%;
+  margin: 5px 1% 5px 1%;
   background: #fff;
   text-align: center;
   display: block;
@@ -362,8 +356,5 @@ a {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-}
-.backToTopBtn:hover {
-  background: #c60023;
 }
 </style>

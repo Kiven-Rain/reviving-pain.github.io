@@ -2,7 +2,7 @@
 * @Author: Reviving-Pain-Laptop
 * @Date:   2018-07-25 19:37:54
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-10 21:02:51
+ * @Last Modified time: 2018-10-11 23:19:29
 */
 
 // 引入mockjs插件
@@ -53,7 +53,7 @@ Mock.mock('http://test233.com', 'get', function () {
   return Mock.mock({
     'user|1-3': [{
       'name': '@cname',
-      'id': 16
+      'id|+1': 16
     }]
   })
 })
@@ -65,7 +65,7 @@ Mock.mock('http://testorz.com', function (options) {
   return Mock.mock({
     'user|1-3': [{
       'name': '@cname',
-      'id': 23
+      'id|+1': 23
     }]
   })
 })

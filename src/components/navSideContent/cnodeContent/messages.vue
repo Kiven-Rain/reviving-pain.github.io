@@ -180,7 +180,7 @@ h2 {
 }
 .userMsgWrp {
   min-height: 100%;
-  background: linear-gradient(#f6f6f6, #fff);
+  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
 }
 .userMsgFrame {
   max-width: 800px;
@@ -198,6 +198,16 @@ h2 {
   /* div中文本超出时自动换行 */
   word-break: break-all;
 }
+/* 区分移动模式与pc模式的css样式 */
+@media only screen and (min-width: 900px) {
+  .selectMsgBtn:hover {
+    background: #c60023;
+    color: #fff;
+  }
+  .msgItem a:hover {
+    text-decoration: underline;
+  }
+}
 .selectMsgBtn {
   height: 2rem;
   line-height: 2rem;
@@ -205,16 +215,12 @@ h2 {
   border: none;
   border-radius: 3px;
   margin: 0px 10px 10px 0px;
-  background: #ccc;
+  background: #eee;
   font-size: 1rem;
   color: #444;
   cursor: pointer;
   user-select: none;
   outline: none;
-}
-.selectMsgBtn:hover {
-  background: #c60023;
-  color: #fff;
 }
 .msgItem {
   padding: 10px 0px 10px 0px;
@@ -223,8 +229,5 @@ h2 {
 .msgItem a {
   text-decoration: none;
   color: #0099cc;
-}
-.msgItem a:hover {
-  text-decoration: underline;
 }
 </style>
