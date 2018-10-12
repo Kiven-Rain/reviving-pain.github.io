@@ -1,41 +1,39 @@
 <template>
-  <div class="publishBackground">
-    <div class="publishWrp">
-      <!-- 作为编辑文章组件时添加的标题 -->
-      <div class="componentTitle">
-        <slot name="modifyBlockTitle">
-          <span>发布话题</span>
-        </slot>
-      </div>
-      <div class="selectType">
-        <span>选择板块：</span>
-        <select name="topicTab" v-model="publishData.topicTab">
-          <option value="default_select">请选择</option>
-          <option value="share">分享</option>
-          <option value="ask">问答</option>
-          <option value="job">招聘</option>
-          <option value="dev">客户端测试</option>
-        </select>
-      </div>
-      <div class="topicTitle">
-        <input type="text" v-model.trim="publishData.topicTitle" placeholder="标题字数10字以上">
-      </div>
-      <div class="topicContent">
-        <textarea v-model.trim="publishData.topicContent" placeholder="(支持markdown语法) 测试帖请选择“客户端测试”板块！"></textarea>
-        <span>发布内容预览：</span>
-        <vue-markdown :source="publishData.topicContent.replace('](www', '](https://www')" class="markdownDisplay"></vue-markdown>
-      </div>
-      <!-- newPublish按钮 -->
-      <button v-if="!isModify" :disabled="subLoading" @click="publishTopic('newPublish')" class="publishBtn">
-        <span v-if="!subLoading">发布</span>
-        <span v-if="subLoading"><span class="fa fa-spinner fa-spin"></span> 发布中…</span>
-      </button>
-      <!-- modifyPublish按钮 -->
-      <button v-if="isModify" :disabled="subLoading" @click="publishTopic('modify')" class="publishBtn">
-        <span v-if="!subLoading">提交修改</span>
-        <span v-if="subLoading"><span class="fa fa-spinner fa-spin"></span> 提交中…</span>
-      </button>
+  <div class="publishWrp">
+    <!-- 作为编辑文章组件时添加的标题 -->
+    <div class="componentTitle">
+      <slot name="modifyBlockTitle">
+        <span>发布话题</span>
+      </slot>
     </div>
+    <div class="selectType">
+      <span>选择板块：</span>
+      <select name="topicTab" v-model="publishData.topicTab">
+        <option value="default_select">请选择</option>
+        <option value="share">分享</option>
+        <option value="ask">问答</option>
+        <option value="job">招聘</option>
+        <option value="dev">客户端测试</option>
+      </select>
+    </div>
+    <div class="topicTitle">
+      <input type="text" v-model.trim="publishData.topicTitle" placeholder="标题字数10字以上">
+    </div>
+    <div class="topicContent">
+      <textarea v-model.trim="publishData.topicContent" placeholder="(支持markdown语法) 测试帖请选择“客户端测试”板块！"></textarea>
+      <span>发布内容预览：</span>
+      <vue-markdown :source="publishData.topicContent.replace('](www', '](https://www')" class="markdownDisplay"></vue-markdown>
+    </div>
+    <!-- newPublish按钮 -->
+    <button v-if="!isModify" :disabled="subLoading" @click="publishTopic('newPublish')" class="publishBtn">
+      <span v-if="!subLoading">发布</span>
+      <span v-if="subLoading"><span class="fa fa-spinner fa-spin"></span> 发布中…</span>
+    </button>
+    <!-- modifyPublish按钮 -->
+    <button v-if="isModify" :disabled="subLoading" @click="publishTopic('modify')" class="publishBtn">
+      <span v-if="!subLoading">提交修改</span>
+      <span v-if="subLoading"><span class="fa fa-spinner fa-spin"></span> 提交中…</span>
+    </button>
   </div>
 </template>
 
@@ -167,12 +165,6 @@ export default {
 </script>
 
 <style scoped>
-.publishBackground {
-  min-height: 100%;
-  padding: 0px 10px 0px 10px;
-  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
-  overflow: hidden;
-}
 .publishWrp {
   max-width: 800px;
   box-shadow: 0px 0px 10px #ccc;

@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrap">
-    <div v-show="this.$store.state.showNavside" @click="hideMobilSidebar" class="content-mask">我是content遮罩层</div>
+    <div v-show="this.$store.state.showNavside" @click="hideMobilSidebar" class="content-mask"></div>
     <router-view name="defaultContent"></router-view>
     <keep-alive>
       <router-view name="cnodejsTopic"></router-view>
@@ -112,6 +112,8 @@ export default {
   left: 260px;
   right: 0px;
   background: url(../assets/pub_background.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
   text-align: left;
   position: absolute;
   overflow-y: auto;

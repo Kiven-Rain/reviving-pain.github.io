@@ -1,5 +1,5 @@
 <template>
-  <div class="userBackground">
+  <div>
     <loading v-if="loading"></loading>
     <div v-show="!loading" class="userProfile">
       <div class="basicProfile commonBlockWrp">
@@ -134,10 +134,6 @@ h2 {
   background: #fff;
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
-}
-.userBackground {
-  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
-  min-height: 100%;
 }
 .userProfile {
   max-width: 800px;

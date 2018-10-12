@@ -1,13 +1,13 @@
 <template>
-  <div ref="article" class="articleBackground">
+  <div ref="article" class="articleWrp">
     <loading v-if="loading"></loading>
     <!-- 锚点定位快速跳转按钮 -->
     <div v-show="!eidtWindow" class="anchorPosition">
       <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
       <span @click="anchorPosition('comments')" class="fa fa-commenting" title="查看评论"></span>
     </div>
-    <!-- 文章详情页 -->
-    <div v-show="displayArticleContent" class="articleWrp">
+    <!-- 文章详情页主体 -->
+    <div v-show="displayArticleContent" class="articleBody">
       <!-- 文章详情页版头 -->
       <div class="articleHead commonBlockWrp">
         <h3>{{article.title}}</h3>
@@ -73,7 +73,7 @@
     </div>
     <!-- 文章编辑部分 -->
     <edit-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
-    v-if="eidtWindow" class="editTopic">
+    v-if="eidtWindow">
       <div slot="modifyBlockTitle">
         <span>话题编辑</span>
         <span @click="editController('cancelEdit')" class="cancelEdit">取消编辑</span>
@@ -338,16 +338,16 @@ h2 {
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
 }
-.articleBackground {
-  background: rgba(246, 246, 246, 0.9);
+.articleWrp {
+  position: absolute;
   left: 0px;
   right: 0px;
   top: 0px;
   bottom: 0px;
-  position: absolute;
+  /* 不设置overflow-y属性会导致锚定跳转按钮失效 */
   overflow-y: auto;
 }
-.articleWrp {
+.articleBody {
   max-width: 800px;
   padding: 10px;
   margin: 0 auto;
@@ -355,7 +355,7 @@ h2 {
   word-break: break-all;
   z-index: 1;
 }
-.articleWrp >>> pre {
+.articleBody >>> pre {
   /* pre-wrap保留空白符序列，但是正常地进行换行,浏览器默认为nowrap */
   white-space: pre-wrap;
 }
@@ -584,10 +584,7 @@ h2 {
 }
 
 /* 文章编辑组件css样式 */
-.editTopic {
-  background: #f6f6f6 !important;
-}
-.editTopic .cancelEdit {
+.cancelEdit {
   margin: 3px 10px 0px 0px;
   float: right;
   font-size: 1rem;
@@ -596,7 +593,7 @@ h2 {
   cursor: pointer;
   user-select: none;
 }
-.editTopic .cancelEdit:hover {
+.cancelEdit:hover {
   color: #c60023;
 }
 

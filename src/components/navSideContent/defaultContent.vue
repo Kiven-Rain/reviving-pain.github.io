@@ -14,7 +14,6 @@ export default {
   width: 100%;
   height: 100%;
   display: table;
-  background: rgba(246, 246, 246, 0.9);
 }
 .defautlContentWrp .temptext {
   color: #ccc;
@@ -23,5 +22,6 @@ export default {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
+  text-shadow: 3px -3px #666;
 }
 </style>

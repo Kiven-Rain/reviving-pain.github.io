@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-11 20:55:33
+ * @Last Modified time: 2018-10-12 15:53:42
  */
 
 export default {
@@ -111,7 +111,7 @@ export default {
     let cookies = document.cookie.split(' ')
     for (let i = 0; i < cookies.length; i++) {
       if (RegExp(name).test(cookies[i])) {
-        return cookies[i].split('=')[1].trim(';', 'right').replace(';', '')
+        return cookies[i].split('=')[1].replace(';', '')
       }
     }
   },

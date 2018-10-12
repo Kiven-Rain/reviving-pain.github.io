@@ -1,7 +1,7 @@
 <template>
-  <div class="userMsgWrp">
+  <div>
     <loading v-if="loading"></loading>
-    <div v-show="!loading" class="userMsgFrame">
+    <div v-show="!loading" class="userMsgWrp">
       <div class="commonBlockWrp">
         <h2>未读消息</h2>
         <div v-if="msgData.hasnotReadMsgs.length">
@@ -179,15 +179,11 @@ h2 {
   color: #333;
 }
 .userMsgWrp {
-  min-height: 100%;
-  background: linear-gradient(rgba(246, 246, 246, 0.9), rgba(255, 255, 255, 0.9));
-}
-.userMsgFrame {
   max-width: 800px;
   padding: 10px;
   margin: 0 auto;
 }
-.userMsgFrame .commonBlockWrp {
+.userMsgWrp .commonBlockWrp {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;

@@ -184,13 +184,10 @@ a {
   text-decoration: none;
 }
 .loading {
-  background: rgba(255, 255, 255, 0.5);
   z-index: 99!important;
 }
 .cnodeTopicsWrp {
   padding: 10px;
-  background:rgba(246, 246, 246, 0.9);
-  background-repeat: no-repeat;
   left: 0px;
   right: 0px;
   top: 0px;

@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <loading class="loading" v-if="loading"></loading>
     <div class="header">
       <nav-head></nav-head>
     </div>
@@ -16,6 +15,7 @@
     <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
       <fork-me class="fork-me"></fork-me>
     </a>
+    <loading style="z-index:300; background:rgba(255,255,255,1) " v-if="loading"></loading>
   </div>
 </template>
 
@@ -169,8 +169,5 @@ html, body {
   right: -45px;
   bottom: 85px;
   z-index: 120;
-}
-.loading {
-  z-index: 300 !important;
 }
 </style>

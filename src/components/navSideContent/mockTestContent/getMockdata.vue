@@ -63,7 +63,6 @@ export default {
   height: 100%;
   padding: 10px;
   box-sizing: border-box;
-  background: rgba(246, 246, 246, 0.9)
 }
 .mockContentWrp span {
   display: block;
