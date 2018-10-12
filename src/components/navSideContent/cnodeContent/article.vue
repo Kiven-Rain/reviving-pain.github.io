@@ -312,6 +312,7 @@ export default {
 </script>
 
 <style scoped>
+/* 通用css设置 */
 a {
   text-decoration: none;
   font-weight: bold;
@@ -338,18 +339,19 @@ h2 {
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
 }
+
+/* 文章组件样式 */
 .articleWrp {
+  padding: 10px;
   position: absolute;
-  left: 0px;
-  right: 0px;
   top: 0px;
+  right: 0px;
   bottom: 0px;
-  /* 不设置overflow-y属性会导致锚定跳转按钮失效 */
+  left: 0px;
   overflow-y: auto;
 }
 .articleBody {
   max-width: 800px;
-  padding: 10px;
   margin: 0 auto;
   /* 在恰当的断字点进行换行 */
   word-break: break-all;
@@ -454,8 +456,40 @@ h2 {
 }
 .articleContent >>> img {
   max-width:  80%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
   display: block;
   margin: 0 auto;
+}
+.articleContent >>> ol {
+  padding-left: 20px;
+}
+.articleContent >>> blockquote {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+}
+.articleContent >>> pre {
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  background: #f6f6f6;
+}
+.articleContent >>> code {
+  color: #336699;
+}
+.articleContent >>> table {
+  border-collapse: collapse;
+  color: #336666;
+}
+.articleContent >>> table th {
+  border: 1px solid #000;
+  text-align: center;
+}
+.articleContent >>> table td {
+  border: 1px solid #000;
+  padding-left: 5px;
 }
 
 /* 评论区样式 */
@@ -552,7 +586,9 @@ h2 {
 
 /* 强制调整评论内容的css样式 */
 .userComment >>> img {
-  max-width: 70%;
+  max-width: 80%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
   margin: 0 auto;
   display: block;
 }
@@ -562,7 +598,39 @@ h2 {
 }
 .userComment >>> ul {
   list-style: square;
+  padding-left: 20px;
 }
+.userComment >>> ol {
+  padding-left: 20px;
+}
+.userComment >>> blockquote {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px;
+}
+.userComment >>> pre {
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  background: #f6f6f6;
+}
+.userComment >>> code {
+  color: #336699;
+}
+.userComment >>> table {
+  border-collapse: collapse;
+  color: #336666;
+}
+.userComment >>> table th {
+  border: 1px solid #000;
+  text-align: center;
+}
+.userComment >>> table td {
+  border: 1px solid #000;
+  padding-left: 5px;
+}
+
 /* 点赞样式 */
 .like {
   border: none;
@@ -575,7 +643,6 @@ h2 {
 .likeActive {
   color: #c60023;
 }
-/* 设置按钮的disabled状态样式 */
 .like[disabled] {
   color: #000;
 }

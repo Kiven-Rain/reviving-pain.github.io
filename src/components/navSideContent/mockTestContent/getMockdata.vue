@@ -59,10 +59,13 @@ export default {
 
 <style scoped>
 .mockContentWrp {
-  width: 100%;
-  height: 100%;
   padding: 10px;
-  box-sizing: border-box;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow-y: auto;
 }
 .mockContentWrp span {
   display: block;

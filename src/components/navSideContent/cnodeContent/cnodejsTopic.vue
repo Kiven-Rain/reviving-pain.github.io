@@ -1,42 +1,39 @@
 <template>
-  <div>
-    <loading class="loading" v-if="loading"></loading>
-    <div class='cnodeTopicsWrp' ref="cnodeTopics">
-      <!-- cnode主页文章分类导航 -->
-      <div v-show="showTabbar" class="topicTabWrp tabWrpMobileAdjust">
-        <div class="tabBar">
-          <button :disabled="!isTabBarActive" @click="selectTab" v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
-            {{tab.name}}
-          </button>
-        </div>
-      </div>
-      <!-- 返回顶部按钮 -->
-      <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
-      <!-- 文章列表 -->
-      <div class='cnodeTopicsContent'>
-        <!-- 文章条目 -->
-        <div v-for='item of content' :key='item.id' class="topicItem">
-          <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}' class="avatarWrp" tag='div'>
-            <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
-          </router-link>
-          <div class='articleTextInfo'>
-            <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
-              <div v-if="item.top" class="topTag">置顶</div>
-              {{item.title}}
-            </router-link>
-            <div class='articleSubInfo'>
-              <span>回复：{{item.reply_count}}</span>
-              <!-- <span>创建于：{{String(item.create_at).slice(0, 10)}}</span> -->
-              <span>创建于：{{item.create_at}}</span>
-            </div>
-          </div>
-        </div>
-        <!-- 瀑布流loading块 -->
-        <div v-show="loadingBlock" class="loadingBlock">
-          <span class="fa fa-spinner fa-pulse"></span>
-        </div>
+  <div class='cnodeTopicsWrap' ref="cnodeTopics">
+    <!-- cnode主页文章分类导航 -->
+    <div v-show="showTabbar" class="topicTabWrp tabWrpMobileAdjust">
+      <div class="tabBar">
+        <button :disabled="!isTabBarActive" @click="selectTab" v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
+          {{tab.name}}
+        </button>
       </div>
     </div>
+    <!-- 返回顶部按钮 -->
+    <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
+    <!-- 文章列表 -->
+    <div class='cnodeTopicsBody'>
+      <!-- 文章条目 -->
+      <div v-for='item of content' :key='item.id' class="topicItem">
+        <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}' class="avatarWrp" tag='div'>
+          <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
+        </router-link>
+        <div class='articleTextInfo'>
+          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
+            <div v-if="item.top" class="topTag">置顶</div>
+            {{item.title}}
+          </router-link>
+          <div class='articleSubInfo'>
+            <span>回复：{{item.reply_count}}</span>
+            <span>创建于：{{item.create_at}}</span>
+          </div>
+        </div>
+      </div>
+      <!-- 瀑布流loading块 -->
+      <div v-show="loadingBlock" class="loadingBlock">
+        <span class="fa fa-spinner fa-pulse"></span>
+      </div>
+    </div>
+    <loading class="loading loadingResponse" v-if="loading"></loading>
   </div>
 </template>
 
@@ -109,7 +106,7 @@ export default {
       }
     },
     // 发送接口请求，获取返回数据
-    getData: function (currentTab) {
+    getData: function (currentTab, type) {
       this.limit += 3
       // 开始请求cnode社区主页数据
       request.getCnodeTopics({
@@ -120,6 +117,10 @@ export default {
         // 日期转换
         for (let i = 0; i < res.data.data.length; i++) {
           res.data.data[i].create_at = commonUtil.transformTimeInterval(res.data.data[i].create_at)
+        }
+        // 如果是切换tab选项卡操作则将页面拉到顶部
+        if (type === 'switch') {
+          this.$refs.cnodeTopics.scrollTop = 0
         }
         this.content = res.data.data
         this.loading = false
@@ -137,7 +138,6 @@ export default {
     selectTab: function (e) {
       if (this.currentTab !== e.target.id) {
         // 在请求之前做一些初始化工作，初始化limit防止反复点击叠加
-        this.$refs.cnodeTopics.scrollTop = 0
         this.loading = true
         this.limit = 12
         this.currentTab = e.target.id
@@ -145,7 +145,7 @@ export default {
         sessionStorage['currentTab'] = this.currentTab
         this.isTabBarActive = false
         // 开始请求
-        this.getData(this.currentTab)
+        this.getData(this.currentTab, 'switch')
       } else {
         console.log('为什么要反复点呢？')
       }
@@ -162,7 +162,8 @@ export default {
     this.getData(this.currentTab)
   },
   mounted: function () {
-    window.addEventListener('scroll', this.scrollMethod, true)
+    // loadingBlock出现的时候停用监控(发现第三个参数设置为false[冒泡时执行]时,监听就停止了)
+    window.addEventListener('scroll', this.scrollMethod, !this.loadingBlock)
   },
   beforeRouteLeave: function (to, from, next) {
     // 切换路由时更新滚动条浏览位置的数据
@@ -180,21 +181,22 @@ export default {
 </script>
 
 <style scoped>
+/* 通用css设置 */
 a {
   text-decoration: none;
 }
-.loading {
-  z-index: 99!important;
-}
-.cnodeTopicsWrp {
+
+/* cnode主页组件样式 */
+.cnodeTopicsWrap {
   padding: 10px;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
   position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
   overflow-y: auto;
 }
+
 /* tab选项卡样式 */
 .topicTabWrp {
   max-width: 900px;
@@ -220,10 +222,16 @@ a {
   .backToTopBtn:hover {
     background: #c60023;
   }
+  .loadingResponse {
+    left: 260px!important;
+  }
 }
 @media only screen and (max-width: 900px) {
   .tabWrpMobileAdjust{
     left: 0px;
+  }
+  .loadingResponse {
+    left: 0px!important;
   }
 }
 .tabBar {
@@ -256,7 +264,7 @@ a {
  }
 
 /* cnode话题区样式 */
-.cnodeTopicsContent {
+.cnodeTopicsBody {
   max-width: 800px;
   height: auto;
   margin: 0 auto;
@@ -268,18 +276,18 @@ a {
   flex-direction: column;
   font-size: 1.5rem;
 }
-.cnodeTopicsContent .topicItem {
+.cnodeTopicsBody .topicItem {
   padding: 0.5rem;
   border-bottom: 1px solid #c4c4c4;
   display: flex;
   flex-direction: row;    /* flex-direction属性默认是row */
   align-items: center;    /* flex布局中，子元素中心线(水平or垂直)居中于父容器 */
 }
-.cnodeTopicsContent .topicItem .avatarWrp {
+.cnodeTopicsBody .topicItem .avatarWrp {
   margin-right: 2rem;
   margin-bottom: 0.4rem;
 }
-.cnodeTopicsContent .topicItem .avatarWrp img {
+.cnodeTopicsBody .topicItem .avatarWrp img {
   width: 4rem;
   height: 4rem;
   border-radius: 5px;
@@ -288,6 +296,7 @@ a {
   cursor: pointer;
   font-size: 0.8rem;
 }
+
 /* 话题item头像右侧内容区样式 */
 .articleTextInfo {
   display: flex;
@@ -353,5 +362,11 @@ a {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
+}
+.loading {
+  position: fixed!important;
+  top: 60px!important;
+  bottom: 50px!important;
+  z-index: 99!important;
 }
 </style>

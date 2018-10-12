@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="userProfileWrp">
     <loading v-if="loading"></loading>
-    <div v-show="!loading" class="userProfile">
+    <div v-show="!loading" class="userProfileBody">
       <div class="basicProfile commonBlockWrp">
         <img v-bind:src='userInfo.avatar_url' v-bind:title='userInfo.loginname'>
         <div class="basicProfileText">
@@ -118,6 +118,7 @@ export default {
 </script>
 
 <style scoped>
+/* 通用css设置 */
 a {
   color: #000;
   font-size: 1.1rem;
@@ -135,12 +136,22 @@ h2 {
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
 }
-.userProfile {
-  max-width: 800px;
+
+/* 用户Profile组件样式 */
+.userProfileWrp {
   padding: 10px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow-y: auto;
+}
+.userProfileWrp .userProfileBody {
+  max-width: 800px;
   margin: 0 auto;
 }
-.basicProfile {
+.userProfileWrp .userProfileBody .basicProfile {
   padding: 10px;
   overflow: hidden;
 }
@@ -216,6 +227,7 @@ h2 {
 .relatedTopics .topicItem a:hover {
   color: #999;
 }
+
 /* 收藏loading */
 .collectLoadingWrp {
   width: 100%;

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="userMsgWrp">
     <loading v-if="loading"></loading>
-    <div v-show="!loading" class="userMsgWrp">
+    <div v-show="!loading" class="userMsgBody">
       <div class="commonBlockWrp">
         <h2>未读消息</h2>
         <div v-if="msgData.hasnotReadMsgs.length">
@@ -169,6 +169,7 @@ export default {
 </script>
 
 <style scoped>
+/* 通用css设置 */
 h2 {
   height: auto;
   width: 100%;
@@ -178,12 +179,7 @@ h2 {
   font-size: 1.5rem;
   color: #333;
 }
-.userMsgWrp {
-  max-width: 800px;
-  padding: 10px;
-  margin: 0 auto;
-}
-.userMsgWrp .commonBlockWrp {
+.commonBlockWrp {
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
@@ -194,6 +190,22 @@ h2 {
   /* div中文本超出时自动换行 */
   word-break: break-all;
 }
+
+/* 用户消息组件样式 */
+.userMsgWrp {
+  padding: 10px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow-y: auto;
+}
+.userMsgBody {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 /* 区分移动模式与pc模式的css样式 */
 @media only screen and (min-width: 900px) {
   .selectMsgBtn:hover {
