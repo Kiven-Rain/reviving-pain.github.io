@@ -1,42 +1,40 @@
 <template>
   <div id="app">
-    <div class="header">
-      <nav-head></nav-head>
+    <div class="rw-header">
+      <rw-head></rw-head>
     </div>
-    <div class="wrapper">
+    <div class="rw-wrapper">
       <nav-side></nav-side>
-      <content-wrap></content-wrap>
+      <rw-content></rw-content>
     </div>
-    <div v-show="showFooter" class="footer-wrap">
-      <footer-wrap></footer-wrap>
+    <div v-show="showFooter" class="rw-footer">
+      <rw-footer></rw-footer>
     </div>
     <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- github的fork标签 -->
     <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
       <fork-me class="fork-me"></fork-me>
     </a>
-    <loading style="z-index:300; background:rgba(255,255,255,1) " v-if="loading"></loading>
+    <loading style="z-index:300; background:rgba(255,255,255,1)" v-if="loading"></loading>
   </div>
 </template>
 
 <script>
-import navHead from './components/navHead.vue'
+import header from './components/header.vue'
 import navSide from './components/navSide.vue'
-import contentWrap from './components/contentWrap.vue'
+import content from './components/content.vue'
+import footer from './components/footer.vue'
 import cnodeLogin from './components/cnodeLogin.vue'
-import footerWrap from './components/footerWrap.vue'
 import loading from './components/common/loading.vue'
 import forkMe from './components/common/forkMe.vue'
-import request from './util/apiRequest.js'
-import commonUtil from './util/common.js'
 
 export default {
   components: {
-    'nav-head': navHead,
+    'rw-head': header,
     'nav-side': navSide,
-    'content-wrap': contentWrap,
+    'rw-content': content,
+    'rw-footer': footer,
     'cnode-login': cnodeLogin,
-    'footer-wrap': footerWrap,
     'loading': loading,
     'fork-me': forkMe
   },
@@ -49,8 +47,9 @@ export default {
       // 控制footer的显隐
       showFooter: true,
       loading: false,
-      isMobil: true,
-      mobilDirection: 0
+      // 存储本次触发onresize事件时的平台，用于下次判断使用
+      isMobile: true,
+      mobileDirection: 0
     }
   },
   methods: {
@@ -60,13 +59,13 @@ export default {
       if (navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       )) {
+        // 当前是移动端
+        this.$store.commit('mobileController', true)
         // 开发模式下pc端直接切移动端不触发footer相关判断逻辑
-        if (this.isMobil === true) {
-          // 存储本次触发onresize事件时的平台，用于下次判断使用
-          this.isMobil = true
+        if (this.isMobile === true) {
           // 监测到旋转，初始化屏幕默认方向，同时初始化defaultHeight(对比屏幕高度)与currentHeight(当前屏幕高度)
-          if (window.orientation !== this.mobilDirection) {
-            this.mobilDirection = window.orientation
+          if (window.orientation !== this.mobileDirection) {
+            this.mobileDirection = window.orientation
             this.defaultHeight = document.body.clientHeight
             this.currentHeight = document.body.clientHeight
           }
@@ -78,16 +77,18 @@ export default {
             this.showFooter = true
           }
         } else {
-          // do nothing, pc突然转mobil, footer不做任何响应
+          // pc突然转mobile, footer不做任何响应
+          this.isMobile = true
         }
       } else {
         // 当前是PC端
-        this.isMobil = false
+        this.$store.commit('mobileController', false)
+        this.isMobile = false
       }
     },
     // accesstoken验证
     verifyToken: function () {
-      request.verifyAccesstoken({
+      this.$apiRequest.verifyAccesstoken({
         accesstoken: sessionStorage['accesstoken']
       }, (res) => {
         this.loading = false
@@ -97,8 +98,8 @@ export default {
           success: false
         })
         // 如果在登录时选择了记住密码，密码验证错误时清除错误的cookie存储
-        if (commonUtil.getCookie('accesstoken')) {
-          commonUtil.removeCookie('accesstoken')
+        if (this.$commonUtil.getCookie('accesstoken')) {
+          this.$commonUtil.removeCookie('accesstoken')
         }
         alert('认证失败，' + err.response.data.error_msg)
         // 重新加载一下登录组件
@@ -115,8 +116,8 @@ export default {
     if (sessionStorage['accesstoken']) {
       this.loading = true
       this.verifyToken()
-    } else if (commonUtil.getCookie('accesstoken')) {
-      sessionStorage['accesstoken'] = commonUtil.getCookie('accesstoken')
+    } else if (this.$commonUtil.getCookie('accesstoken')) {
+      sessionStorage['accesstoken'] = this.$commonUtil.getCookie('accesstoken')
       this.loading = true
       this.verifyToken()
     } else {
@@ -134,35 +135,46 @@ export default {
 <style>
 html, body {
   height: 100%;
+  width: 100%;
   margin: 0px;
   padding: 0px;
   font-size: 15px;
   /*处理移动端点击时出现高亮蓝色背景的问题*/
   -webkit-tap-highlight-color: transparent;
-}
-#app {
-  height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* root-window(rw) css style */
+#app {
+  width: 100%;
+  height: 100%;
   text-align: center;
   display: flex;
   flex-direction: column;
 }
-
-.header {
-  height: 60px;
+.rw-header {
+  order: 0;
+  flex: 0 1 60px;
   z-index: 200;
 }
-.wrapper {
-  flex: 1;
+.rw-wrapper {
+  order: 1;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  /* flex: 1 1 auto; 为以上三者的缩写*/
+  /* 照顾到子元素的absulute定位 */
   position: relative;
-  overflow: hidden;
 }
-.footer-wrap{
-  height: 50px;
+.rw-footer{
+  order: 2;
+  flex: 0 1 50px;
   z-index: 150;
 }
+
+/* github标签组件定位样式 */
 .fork-me {
   position: fixed;
   transform: rotate(-45deg)!important;

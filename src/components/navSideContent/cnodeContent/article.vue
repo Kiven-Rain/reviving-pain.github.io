@@ -1,93 +1,111 @@
 <template>
-  <div ref="article" class="articleWrp">
-    <loading v-if="loading"></loading>
-    <!-- 锚点定位快速跳转按钮 -->
-    <div v-show="!eidtWindow" class="anchorPosition">
-      <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up" title="回到顶部"></span>
-      <span @click="anchorPosition('comments')" class="fa fa-commenting" title="查看评论"></span>
-    </div>
+  <div ref="article" class="nsc-commonWrp">
     <!-- 文章详情页主体 -->
-    <div v-show="displayArticleContent" class="articleBody">
-      <!-- 文章详情页版头 -->
-      <div class="articleHead commonBlockWrp">
-        <h3>{{article.title}}</h3>
-        <!-- 编辑按钮 -->
-        <div @click="editController('edit')" v-if="article.author.loginname === $store.state.loginUsername" class="editBtn" title="点击编辑">
-          <span class="fa fa-edit"></span>
+    <div v-show="displayArticleContent" class="nsc-commonBody">
+      <!-- 文章头部板块 -->
+      <div class="nsc-commonBlockWrp">
+        <h2 class="block-center" >{{article.title}}</h2>
+        <div class="articleHeadBody">
+          <!-- 文章头部板块作者头像 -->
+          <router-link :to='{name: "UserRoute", params: {name: article.author.loginname}}'>
+            <img class="articleAuthorAvatar" :src='article.author.avatar_url' :title="article.author.loginname">
+          </router-link><br v-show="true">
+          <!-- 文章头部板块基本信息 -->
+          <div class="articleBaseInfo font-green">
+            <i class="fa fa-user fa-fw"></i>
+            <span>{{newLoginname}}</span><br>
+            <i class="fa fa-clock-o fa-fw"></i>
+            <span>{{(article.create_at).slice(0, 10)}}</span><br>
+            <i class="fa fa-tags fa-fw"></i>
+            <span>{{articleTag}}</span><br>
+            <i class="fa fa-eye fa-fw"></i>
+            <span>{{article.visit_count}}</span><br>
+            <i class="fa fa-commenting fa-fw"></i>
+            <span>{{article.reply_count}}</span>
+          </div>
+          <!-- 文章头部板块按钮控制面板 -->
+          <div class="articleControlPanel">
+            <!-- 收藏按钮 -->
+            <button :disabled="subLoading.collectLoading" @click="collectController()" :class="['mid-submit-btn', 'bgc-green', 'float-r', {'bgc-lGray': collectBtnActive}]" :title="collect">
+              <span v-if="!subLoading.collectLoading">{{collect}}</span>
+              <span v-if="subLoading.collectLoading" class="fa fa-spinner fa-spin"></span>
+            </button>
+            <!-- 编辑按钮 -->
+            <button @click="editController('edit')" v-if="article.author.loginname === $store.state.loginUsername" class="mid-submit-btn float-r bgc-lGray" title="点击编辑">
+              <span class="fa fa-edit"></span>
+            </button>
+          </div>
         </div>
-        <!-- 收藏按钮 -->
-        <button :disabled="subLoading.collectLoading" @click="collectController()" v-bind:class="['collectBtn', {'collectBtnActive': collectBtnActive}]" :title="collect">
-          <span v-if="!subLoading.collectLoading">{{collect}}</span>
-          <span v-if="subLoading.collectLoading" class="fa fa-spinner fa-spin"></span>
-        </button>
-        <router-link v-bind:to='{name: "UserRoute", params: {name: article.author.loginname}}'>
-          <img class="authorAvatar" v-bind:src='article.author.avatar_url' :title="article.author.loginname">
-          <span class="authorName">{{article.author.loginname}}</span>
-        </router-link><br v-show="true">
-        <span>发布于：{{(article.create_at).slice(0, 10)}}</span><br>
-        <span class="fa fa-eye"> {{article.visit_count}}</span>
-        <span class="fa fa-tags"> {{tab[article.tab]}}</span>
-        <span class="fa fa-commenting"> {{article.reply_count}}</span>
       </div>
-      <!-- 文章详情页文章内容部分 -->
-      <vue-markdown class="articleContent commonBlockWrp" :source="article.content"></vue-markdown>
-      <!-- 文章详情页评论部分 -->
-      <div ref="comments" class="articleComments commonBlockWrp">
-        <!-- 发表评论 -->
+      <!-- 文章详情页文章内容板块 -->
+      <vue-markdown class="nsc-commonBlockWrp md-content" :source="article.content"></vue-markdown>
+      <!-- 文章详情页评论板块 -->
+      <div ref="comments" class="nsc-commonBlockWrp">
+        <!-- 新建评论区域 -->
         <div class="publishCommnetWrp">
           <div v-if="!loginStatus" class="unLogin">
-            <span class="tipText">发表评论需先</span>
-            <div @click="openLoginWindow" class="commentBtn" title="点此登录">登录</div>
+            <span class="tip-text">发表评论需先</span>
+            <div @click="$store.commit('openLoginCard', true)" class="mid-submit-btn-ato bgc-green float-r" title="点此登录">登录</div>
           </div>
           <div v-if="loginStatus">
             <textarea @keyup.enter="publishComment" class="commentArea" placeholder="写下你的评论…(支持markdown语法，请不要在非测试话题里发表测试评论，后果自负)" v-model.trim="commentContent"></textarea>
-            <span class="tipText">Ctrl+Enter 发表</span>
-            <button :disabled="subLoading.commentLoading" @click="publishComment" class="commentBtn" title="点此发送">
+            <span v-if="!$store.state.isMobile" class="tip-text">Ctrl+Enter 发表</span>
+            <button :disabled="subLoading.commentLoading" @click="publishComment" class="mid-submit-btn bgc-wineRed float-r" title="点此发送">
               <span v-if="!subLoading.commentLoading">发表评论</span>
               <span v-if="subLoading.commentLoading">发送中…</span>
             </button>
           </div>
         </div>
-        <!-- 已发表的评论 -->
+        <!-- 评论展示区域 -->
         <h2>{{article.reply_count}} 条评论</h2>
-        <span v-if="!article.replies.length">
-          <img class="sofa" src="../../../assets/sofa.svg" alt="抢沙发" title="抢沙发">
-        </span>
-        <div v-if="article.replies.length" v-for='(comment, index) in article.replies' v-bind:key='index' class="commentCell">
-          <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'  class="commentAvatar">
-            <img v-bind:src='comment.author.avatar_url' :title="comment.author.loginname">
-          </router-link>
-          <div class="commentContent">
-            <router-link v-bind:to='{name: "UserRoute", params: {name: comment.author.loginname}}'>
-              <span class="commentUsername">{{comment.author.loginname}}</span>
-              <span v-if="article.author.loginname === comment.author.loginname" class="authorTag">作者</span>
-            </router-link>
-            <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(' + currentUrlPrefix + 'cnodeCommunity/user/')" class="userComment"></vue-markdown>
-            <span class="commentDate">{{comment.create_at}}</span>
-            <button :disabled="subLoading.likeLoading" @click="likeController(index)" v-bind:class="['fa', 'like', {'likeActive': comment.is_uped, 'fa-thumbs-o-up': !comment.is_uped, 'fa-thumbs-up': comment.is_uped}]">
-              {{comment.ups.length}}
-            </button>
+        <div class="nsc-commonBlockBody">
+          <!-- 无评论时的填充内容 -->
+          <span v-if="!article.replies.length">
+            <img class="sofa" src="../../../assets/img/sofa.svg" alt="抢沙发" title="抢沙发">
+          </span>
+          <!-- 有评论时的内容 -->
+          <div v-if="article.replies.length" v-for='(comment, index) in article.replies' :key='index' class="commentCell">
+            <div>
+              <router-link :to='{name: "UserRoute", params: {name: comment.author.loginname}}' class="flex-box-row float-l">
+                <img :src='comment.author.avatar_url' :title="comment.author.loginname" class="commentAvatar">
+                <span class="commentUsername">{{comment.author.loginname}}</span>
+                <span v-if="article.author.loginname === comment.author.loginname" class="mark-tag bgc-green">作者</span>
+              </router-link>
+            </div>
+            <vue-markdown :emoji="true" :source="comment.content.replace('(/user/', '(' + currentUrlPrefix + 'cnodeCommunity/user/')" class="md-content commentContent"></vue-markdown>
+            <div>
+              <span class="tip-text float-l">{{comment.create_at}}</span>
+              <button :disabled="subLoading.likeLoading" @click="likeController(index)" :class="['tip-text', 'float-r', 'fa', 'like', {'likeActive': comment.is_uped, 'fa-thumbs-o-up': !comment.is_uped, 'fa-thumbs-up': comment.is_uped}]">
+                {{comment.ups.length}}
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- 文章编辑部分 -->
-    <edit-topic :topicTab="article.tab" :topicTitle="article.title" :topicContent="article.content"
+    <!-- 文章编辑组件 -->
+    <edit-topic :topicTag="article.tab" :topicTitle="article.title" :topicContent="article.content"
     v-if="eidtWindow">
       <div slot="modifyBlockTitle">
-        <span>话题编辑</span>
-        <span @click="editController('cancelEdit')" class="cancelEdit">取消编辑</span>
+        <h2>话题编辑</h2>
+        <span @click="editController('cancelEdit')" class="mid-submit-btn bgc-white cancelEdit">取消编辑</span>
       </div>
     </edit-topic>
+    <!-- 锚点定位快速跳转按钮 -->
+    <div v-show="!eidtWindow" class="anchorBtnWrp">
+      <span @click="anchorPosition('top')" class="fa fa-arrow-circle-up circle-btn bgc-wineRed" title="回到顶部"></span>
+      <span @click="anchorPosition('comments')" class="fa fa-commenting circle-btn bgc-wineRed" title="查看评论"></span>
+    </div>
+    <!-- 页面加载loading -->
+    <loading v-if="loading"></loading>
   </div>
 </template>
 
 <script>
+import {topicTags} from '../../../data/topicClassify.js'
 import vueMarkdown from 'vue-markdown'
 import loading from '../../common/loading.vue'
 import editTopic from './createTopic.vue'
-import request from '../../../util/apiRequest.js'
-import commonUtil from '../../../util/common.js'
 
 export default {
   components: {
@@ -108,16 +126,12 @@ export default {
         create_at: '',
         replies: ''
       },
-      tab: {
-        share: '分享',
-        good: '精华',
-        ask: '问答',
-        job: '招聘',
-        dev: '客户端测试'
-      },
+      articleTag: '',
       collect: '收藏',
       collectBtnActive: false,
       commentContent: '',
+      newCommentContent: '',
+      newLoginname: '',
       loading: true,
       subLoading: {
         collectLoading: false,
@@ -141,7 +155,7 @@ export default {
       } else {
         this.subLoading.likeLoading = true
         // 点赞&取消点赞请求
-        request.commentLike(replyId, {
+        this.$apiRequest.commentLike(replyId, {
           accesstoken: sessionStorage['accesstoken']
         }, (res) => {
           if (res.data.action === 'up') {
@@ -166,7 +180,7 @@ export default {
         if (this.collectBtnActive) {
           this.subLoading.collectLoading = true
           // 文章取消收藏
-          request.deCollectTopic({
+          this.$apiRequest.deCollectTopic({
             accesstoken: sessionStorage['accesstoken'],
             topic_id: articleId
           }, (res) => {
@@ -180,7 +194,7 @@ export default {
         } else {
           this.subLoading.collectLoading = true
           // 文章添加收藏
-          request.collectTopic({
+          this.$apiRequest.collectTopic({
             accesstoken: sessionStorage['accesstoken'],
             topic_id: articleId
           }, (res) => {
@@ -194,7 +208,7 @@ export default {
         }
       } else {
         alert('要添加收藏请先登录')
-        this.openLoginWindow()
+        this.$store.commit('openLoginCard', true)
       }
     },
     // 发表评论
@@ -208,11 +222,11 @@ export default {
           // 提交评论，预处理提交内容中的链接
           this.commentContent = this.commentContent.replace('](www', '](https://www')
           // 给评论末尾添加推广链接
-          this.commentContent = this.commentContent.concat('\n\n来自 [娇羞的CNode社区处女作客户端](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopic)')
+          this.newCommentContent = this.commentContent.concat('\n\n来自 [Vue版CNode客户端](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopics)')
           var topicId = this.$route.path.split('/').pop()
-          request.createComment(topicId, {
+          this.$apiRequest.createComment(topicId, {
             accesstoken: sessionStorage['accesstoken'],
-            content: this.commentContent
+            content: this.newCommentContent
           }, (res) => {
             this.subLoading.commentLoading = false
             alert('评论发布成功')
@@ -229,30 +243,28 @@ export default {
     editController: function (controlType) {
       if (controlType === 'edit') {
         console.log('准备打开编辑组件')
-        commonUtil.exchangePageTitle(this.article.title, 'editArticle')
+        this.$commonUtil.exchangePageTitle(this.article.title, 'editArticle')
         // 隐藏文章主体，显示编辑组件
         this.displayArticleContent = false
         this.eidtWindow = true
       } else if (controlType === 'cancelEdit') {
-        commonUtil.exchangePageTitle(this.article.title, 'article')
+        this.$commonUtil.exchangePageTitle(this.article.title, 'article')
         this.displayArticleContent = true
         this.eidtWindow = false
       } else {
         console.log('未传入正确参数')
       }
     },
-    // 打开登录弹窗
-    openLoginWindow: function () {
-      this.$store.commit('openLoginCard', true)
-    },
     // 锚点定位
     anchorPosition: function (position) {
       if (position === 'comments') {
-        // this.$refs.comments.scrollIntoView()
-        commonUtil.smoothScroll(this.$refs.comments.offsetTop, this.$refs.article)
+        this.$commonUtil.smoothScroll(this.$refs.comments.offsetTop, this.$refs.article)
       } else if (position === 'top') {
-        // this.$refs.article.scrollTop = 0
-        commonUtil.smoothScroll(0, this.$refs.article)
+        if (this.$refs.article.scrollTop === 0) {
+          alert('已经到顶部了哦')
+        } else {
+          this.$commonUtil.smoothScroll(0, this.$refs.article)
+        }
       }
     }
   },
@@ -263,21 +275,37 @@ export default {
   },
   watch: {
     loginStatus: function () {
+      // 登录状态变化时刷新文章组件
       this.$parent.reload()
     }
   },
   created: function () {
     // 获取文章详情(包括文章和评论)
     var articleId = this.$route.path.split('/')[3]
-    request.getTopicDetail(articleId, {
+    this.$apiRequest.getTopicDetail(articleId, {
       mdrender: 'false',
       accesstoken: sessionStorage['accesstoken']
     }, (res) => {
-      for (let i = 0; i < res.data.data.replies.length; i++) {
-        res.data.data.replies[i].create_at = commonUtil.transformTimeInterval(res.data.data.replies[i].create_at)
-      }
       this.article = res.data.data
-      commonUtil.exchangePageTitle(this.article.title, 'article')
+      // 转换文章tab字段为汉字
+      for (let i = 0; i < topicTags.length; i++) {
+        if (topicTags[i].value === this.article.tab) {
+          this.articleTag = topicTags[i].name
+          break
+        }
+      }
+      // 移动端显示时切除过长的用户名
+      if (this.$store.state.isMobile) {
+        this.newLoginname = this.$commonUtil.cutString(this.article.author.loginname, 10)
+      } else {
+        this.newLoginname = this.article.author.loginname
+      }
+      // 转换评论的时间显示模式
+      for (let i = 0; i < this.article.replies.length; i++) {
+        this.article.replies[i].create_at = this.$commonUtil.transformTimeInterval(this.article.replies[i].create_at)
+      }
+      // 更改页面标题
+      this.$commonUtil.exchangePageTitle(this.article.title, 'article')
       this.loading = false
       this.displayArticleContent = true
       if (this.loginStatus) {
@@ -286,7 +314,7 @@ export default {
           this.collectBtnActive = true
         }
       } else {
-        alert('当前尚未登录\n无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
+        console.log('当前不在登录状态，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
       }
     }, (err) => {
       console.log('文章获取失败了，错误信息是：' + err)
@@ -312,271 +340,115 @@ export default {
 </script>
 
 <style scoped>
-/* 通用css设置 */
-a {
-  text-decoration: none;
-  font-weight: bold;
-  color: #c60023;
+/* 文章头部板块布局样式 */
+.nsc-commonBlockWrp .articleHeadBody {
+  padding: 5px;
+  border: 1px solid #eee;
+  box-shadow: 0px 0px 7px #ccc;
+  border-radius: 8px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
-h3 {
-  height: auto;
-  width: 100%;
-  margin: 0px;
-  border-bottom: 1px solid #c4c4c4;
-  font-size: 1.5rem;
-  text-align: center;
-}
-h2 {
-  height: auto;
-  width: 100%;
-  margin: 0px;
-  border-bottom: 1px solid #c4c4c4;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
-}
-.commonBlockWrp {
-  background: #fff;
+/* 文章头部板块作者头像样式 */
+.nsc-commonBlockWrp .articleHeadBody .articleAuthorAvatar {
   border-radius: 5px;
-  box-shadow: 0px 0px 10px #ccc;
+  box-shadow: 0px 0px 10px #999;
+  display: inline-block;
 }
-
-/* 文章组件样式 */
-.articleWrp {
-  padding: 10px;
+/* 文章头部板块基本信息样式 */
+.nsc-commonBlockWrp .articleHeadBody .articleBaseInfo {
+  padding-left: 3px;
+  border-left: 1px solid forestgreen;
+  margin-left: 7px;
+  display: inline-block;
+}
+/* 文章头部板块按钮控制面板样式 */
+.nsc-commonBlockWrp .articleHeadBody .articleControlPanel {
+  height: 80px;
+  padding: 10px 0px 10px 0px;
+  margin-right: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: absolute;
-  top: 0px;
   right: 0px;
-  bottom: 0px;
-  left: 0px;
-  overflow-y: auto;
 }
-.articleBody {
-  max-width: 800px;
-  margin: 0 auto;
-  /* 在恰当的断字点进行换行 */
-  word-break: break-all;
-  z-index: 1;
-}
-.articleBody >>> pre {
-  /* pre-wrap保留空白符序列，但是正常地进行换行,浏览器默认为nowrap */
-  white-space: pre-wrap;
+.nsc-commonBlockWrp .articleHeadBody .articleControlPanel button:nth-child(2) {
+  font-size: 1.3rem;
+  color: #666;
 }
 
-/* 文章题头样式 */
-.articleHead {
-  padding: 10px;
-  overflow: hidden;
-}
-@media only screen and (max-width: 375px) {
-  .articleHead .authorAvatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px #999;
-    margin: 10px 10px 5px 5px;
-    float: left;
-  }
-  .articleHead .authorName {
-    line-height: 4rem;
-    font-size: 0.9rem;
-    display: inline-block;
-  }
-}
-@media only screen and (min-width: 375px) {
-  .articleHead .authorAvatar {
-    width: 5rem;
-    height: 5rem;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px #999;
-    margin: 10px 10px 5px 5px;
-    float: left;
-  }
-  .articleHead .authorName {
-    line-height: 3.4rem;
-    font-size: 1.1rem;
-  }
-}
-.articleHead .collectBtn {
-  width: 70px;
-  height: 35px;
-  line-height: 35px;
-  padding: 0px;
-  border: none;
-  border-radius: 5px;
-  margin: 10px 5px 5px 5px;
-  background: green;
-  text-align: center;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  user-select: none;
-  float: right;
-}
-.articleHead .collectBtnActive {
-  background: #ccc;
-  color: #777;
-}
-.articleHead .editBtn {
-  width: 35px;
-  height: 35px;
-  line-height: 35px;
-  border-radius: 5px;
-  margin: 10px 5px 5px 5px;
-  background: #999;
-  text-align: center;
-  color: #fff;
-  font-size: 1.1rem;
-  cursor: pointer;
-  user-select: none;
-  float: right;
-}
-.articleHead > span {
-  margin-right: 10px;
-}
-
-/* 调整通过markdown渲染出的html的样式 */
-.articleContent {
-  margin-top: 15px;
-  padding: 1px 15px 15px 15px;
-}
-.articleContent >>> ul {
-  list-style: none;
-  padding-left: 1.5rem;
-}
-.articleContent >>> ul:first-child li {
-  padding-left: 0.5rem;
-  border-left: .2rem solid #0099cc;
-  margin-left: 0.5rem;
-}
-.articleContent >>> a {
-  text-decoration: none;
-  color: #0099cc;
-  font-size: 1.1rem;
-  margin-left: 5px;
-}
-.articleContent >>> img {
-  max-width:  80%;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px #ccc;
-  display: block;
-  margin: 0 auto;
-}
-.articleContent >>> ol {
-  padding-left: 20px;
-}
-.articleContent >>> blockquote {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 10px;
-}
-.articleContent >>> pre {
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px #ccc;
-  background: #f6f6f6;
-}
-.articleContent >>> code {
-  color: #336699;
-}
-.articleContent >>> table {
-  border-collapse: collapse;
-  color: #336666;
-}
-.articleContent >>> table th {
-  border: 1px solid #000;
-  text-align: center;
-}
-.articleContent >>> table td {
-  border: 1px solid #000;
-  padding-left: 5px;
-}
-
-/* 评论区样式 */
-.articleComments {
-  padding: 15px;
-  margin: 15px 0px 15px 0px;
-}
-.publishCommnetWrp {
+/* 评论板块编辑区样式 */
+.nsc-commonBlockWrp .publishCommnetWrp {
   width: 100%;
-  padding: 0px 10px 10px 0px;
-  background: #fff;
-  box-sizing: border-box;
   overflow: hidden;
 }
-.publishCommnetWrp .commentArea {
+.nsc-commonBlockWrp .publishCommnetWrp .commentArea {
   width: 100%;
   height: 100px;
+  border-radius: 3px;
   box-shadow: 0px 0px 10px #999;
+  box-sizing: border-box;
+  margin-bottom: 5px;
   resize: none;
   font-size: 1.1rem;
   font-family: '微软雅黑';
   outline: none;
 }
-.publishCommnetWrp .commentBtn {
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 5px;
-  background: green;
-  color: #fff;
-  font-size: 1rem;
-  text-align: center;
-  float: right;
-  cursor: pointer;
-  user-select: none;
-}
-.publishCommnetWrp .unLogin {
+.nsc-commonBlockWrp .publishCommnetWrp .unLogin {
   width: 150px;
   height: 60px;
   margin: 0 auto;
-  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.tipText {
-  padding-top: 10px;
-  margin: 5px 10px 0px 0px;
-  color: #777;
-  float: left;
-  user-select: none;
-}
-.commentCell {
-  margin: 20px 0px 30px 0px;
+
+/* 评论板块评论展示区样式 */
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell {
+  padding-bottom: 5px;
+  margin: 20px 0px 20px 0px;
   border-bottom: 1px solid #eee;
   display: flex;
-  flex-direction: row;
-  /* overflow: hidden; */
+  flex-direction: column;
 }
-.commentAvatar img {
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .commentAvatar {
   display: block;
   width: 3rem;
   height: 3rem;
-  box-shadow: 0px 0px 10px #666;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #999;
 }
-.commentContent {
-  width: 100%;
-  padding-left: 10px;
-}
-.commentUsername {
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .commentUsername {
   height: 1rem;
   line-height: 1rem;
+  padding: 0px 4px 0px 10px;
   display: inline-block;
-  color: orange;
+  color: #3399cc;
   font-size: 1.2rem;
-  font-weight: normal;
 }
-.authorTag {
-  width: 35px;
-  height: 17px;
-  line-height: 17px;
-  border-radius: 3px;
-  background: green;
-  display: inline-block;
-  color: #fff;
-  text-align: center;
-  font-size: .9rem;
-  font-weight: normal;
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .commentContent {
+  width: 100%;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #eee;
+  margin: 10px 0px 5px 0px;
+  background: #fafafa;
 }
-.sofa {
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .like {
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+}
+.nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .likeActive {
+  color: #c60023;
+}
+.nsc-commonBlockWrp .nsc-commonBlockBody .sofa {
   height: 100px;
   width: 100px;
   display: block;
@@ -584,106 +456,46 @@ h2 {
   user-select: none;
 }
 
-/* 强制调整评论内容的css样式 */
-.userComment >>> img {
-  max-width: 80%;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px #ccc;
-  margin: 0 auto;
-  display: block;
-}
-.userComment >>> a {
-  color: #0099cc;
-  text-decoration: none;
-}
-.userComment >>> ul {
-  list-style: square;
-  padding-left: 20px;
-}
-.userComment >>> ol {
-  padding-left: 20px;
-}
-.userComment >>> blockquote {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 10px;
-}
-.userComment >>> pre {
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px #ccc;
-  background: #f6f6f6;
-}
-.userComment >>> code {
-  color: #336699;
-}
-.userComment >>> table {
-  border-collapse: collapse;
-  color: #336666;
-}
-.userComment >>> table th {
-  border: 1px solid #000;
-  text-align: center;
-}
-.userComment >>> table td {
-  border: 1px solid #000;
-  padding-left: 5px;
-}
-
-/* 点赞样式 */
-.like {
-  border: none;
-  background: none;
-  font-size: 1.1rem;
-  float: right;
-  cursor: pointer;
-  outline: none;
-}
-.likeActive {
-  color: #c60023;
-}
-.like[disabled] {
-  color: #000;
-}
-.likeActive[disabled] {
-  color: #c60023;
-}
-
-/* 文章编辑组件css样式 */
+/* 文章编辑组件的"取消编辑按钮"css(校准)样式 */
 .cancelEdit {
-  margin: 3px 10px 0px 0px;
+  position: relative;
+  top: -35px;
   float: right;
-  font-size: 1rem;
-  color: #000;
-  font-weight: normal;
-  cursor: pointer;
-  user-select: none;
-}
-.cancelEdit:hover {
-  color: #c60023;
 }
 
-/* 锚点定位按钮 */
-.anchorPosition {
-  margin-top: -40px;
+/* 文章锚点定位控制板 */
+.anchorBtnWrp {
+  height: 90px;
+  margin-top: -45px;
   position: fixed;
   top: 50%;
   right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
-.anchorPosition span {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 20px;
-  box-shadow: 0px 0px 10px #ccc;
-  margin-top: 10px;
-  background: #c60023;
-  text-align: center;
-  font-size: 1.5rem;
-  color: #fff;
-  display: block;
-  user-select: none;
-  cursor: pointer;
+
+/* 响应式样式 */
+@media only screen and (min-width: 900px) {
+  /* 文章标题响应式样式 */
+  .nsc-commonBlockWrp h2 {
+    font-size: 1.4rem;
+  }
+  /* 作者Avatar响应式样式 */
+  .nsc-commonBlockWrp .articleHeadBody .articleAuthorAvatar {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+@media only screen and (max-width: 900px) {
+  /* 文章标题响应式样式 */
+  .nsc-commonBlockWrp h2 {
+    font-size: 1.2rem;
+  }
+  /* 作者Avatar响应式样式 */
+  .nsc-commonBlockWrp .articleHeadBody .articleAuthorAvatar {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
 }
 </style>

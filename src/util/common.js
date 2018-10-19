@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-12 15:53:42
+ * @Last Modified time: 2018-10-19 17:26:03
  */
 
 export default {
@@ -120,5 +120,13 @@ export default {
     let date = new Date()
     date.setTime(date.getTime() - 12 * 1000 * 3600)
     document.cookie = name + '=' + '' + ';expires=' + date
+  },
+  // 截取过长的字符串，以省略号结尾(传入字符串与允许的字符串显示的最长长度)
+  cutString: function (str, num) {
+    if (str.length > num) {
+      return str.slice(0, num) + '…'
+    } else {
+      return str
+    }
   }
 }

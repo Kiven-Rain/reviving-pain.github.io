@@ -1,25 +1,24 @@
 <template>
-  <div class='cnodeTopicsWrap' ref="cnodeTopics">
+  <div class='nsc-commonWrp' ref="cnodeTopics">
     <!-- cnode主页文章分类导航 -->
-    <div v-show="showTabbar" class="topicTabWrp tabWrpMobileAdjust">
+    <div v-show="showTabbar" class="topicTabWrp topicTabWrp-response">
       <div class="tabBar">
-        <button :disabled="!isTabBarActive" @click="selectTab" v-for="(tab, index) in tabs" :key="index" :id="tab.type" :class="{'tabBarActive': tab.type === currentTab}">
+        <button :disabled="!isTabBarActive" @click="selectTab" :class="{'tabBarBtnActive': tab.type === currentTab}"
+        v-for="(tab, index) in topicTabs" :key="index" :id="tab.type">
           {{tab.name}}
         </button>
       </div>
     </div>
-    <!-- 返回顶部按钮 -->
-    <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
-    <!-- 文章列表 -->
-    <div class='cnodeTopicsBody'>
+    <!-- 整体文章列表 -->
+    <div class='nsc-commonBody cnodeTopicsBody'>
       <!-- 文章条目 -->
-      <div v-for='item of content' :key='item.id' class="topicItem">
-        <router-link v-bind:to='{name: "UserRoute", params: {name: item.author.loginname}}' class="avatarWrp" tag='div'>
-          <img v-bind:src='item.author.avatar_url' v-bind:title='item.author.loginname' />
+      <div v-for='item of content' :key='item.id' class="topicItem a-link-b">
+        <router-link :to='{name: "UserRoute", params: {name: item.author.loginname}}' tag='div'>
+          <img :src='item.author.avatar_url' :title='item.author.loginname' />
         </router-link>
-        <div class='articleTextInfo'>
-          <router-link v-bind:to='{name:"ArticleRoute", params:{id:item.id}}'>
-            <div v-if="item.top" class="topTag">置顶</div>
+        <div class='topicItemTextInfo'>
+          <router-link :to='{name:"ArticleRoute", params:{id:item.id}}'>
+            <div v-if="item.top" class="mark-tag bgc-wineRed">置顶</div>
             {{item.title}}
           </router-link>
           <div class='articleSubInfo'>
@@ -28,19 +27,21 @@
           </div>
         </div>
       </div>
-      <!-- 瀑布流loading块 -->
+      <!-- 瀑布流loading -->
       <div v-show="loadingBlock" class="loadingBlock">
         <span class="fa fa-spinner fa-pulse"></span>
       </div>
     </div>
-    <loading class="loading loadingResponse" v-if="loading"></loading>
+    <!-- 返回顶部按钮 -->
+    <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
+    <!-- 切换tab选项卡时的loading -->
+    <loading v-if="loading" class="loading loadingResponse"></loading>
   </div>
 </template>
 
 <script>
+import {topicTabs} from '../../../data/topicClassify.js'
 import loading from '../../common/loading.vue'
-import request from '../../../util/apiRequest.js'
-import commonUtil from '../../../util/common.js'
 
 export default {
   components: {
@@ -50,16 +51,9 @@ export default {
   data: function () {
     return {
       content: [],
-      tabs: [
-        { type: 'all', name: '全部' },
-        { type: 'good', name: '精华' },
-        { type: 'share', name: '分享' },
-        { type: 'ask', name: '问答' },
-        { type: 'job', name: '招聘' },
-        { type: 'dev', name: '测试' }
-      ],
-      // tab可选的有 all, good, share, ask, job, dev
-      currentTab: 'all',
+      topicTabs: topicTabs,
+      // 页面初次加载时默认的展示分类
+      currentTab: topicTabs[0].type,
       // 初次请求的数据条目数量
       limit: 12,
       loading: false,
@@ -109,14 +103,14 @@ export default {
     getData: function (currentTab, type) {
       this.limit += 3
       // 开始请求cnode社区主页数据
-      request.getCnodeTopics({
+      this.$apiRequest.getCnodeTopics({
         page: 1,
         limit: this.limit,
         tab: currentTab
       }, (res) => {
         // 日期转换
         for (let i = 0; i < res.data.data.length; i++) {
-          res.data.data[i].create_at = commonUtil.transformTimeInterval(res.data.data[i].create_at)
+          res.data.data[i].create_at = this.$commonUtil.transformTimeInterval(res.data.data[i].create_at)
         }
         // 如果是切换tab选项卡操作则将页面拉到顶部
         if (type === 'switch') {
@@ -132,7 +126,7 @@ export default {
     },
     // 将滚动条拉到顶部
     backToTop: function () {
-      commonUtil.smoothScroll(0, this.$refs.cnodeTopics)
+      this.$commonUtil.smoothScroll(0, this.$refs.cnodeTopics)
     },
     // 点击cnode主页头部的浮动tab标签触发的事件
     selectTab: function (e) {
@@ -162,7 +156,7 @@ export default {
     this.getData(this.currentTab)
   },
   mounted: function () {
-    // loadingBlock出现的时候停用监控(发现第三个参数设置为false[冒泡时执行]时,监听就停止了)
+    // loadingBlock出现的时候停用监控(第三个参数设置为false[冒泡时执行]时,监听停止)
     window.addEventListener('scroll', this.scrollMethod, !this.loadingBlock)
   },
   beforeRouteLeave: function (to, from, next) {
@@ -171,9 +165,9 @@ export default {
     next()
   },
   beforeRouteEnter: function (to, from, next) {
-    // 切换至其他路由又切回来时还原上次的浏览位置
-    commonUtil.exchangePageTitle('CNodeJS社区主页')
-    next((vm) => {
+    // 切换至其他路由又切回来时还原上次的浏览位置(beforeRoutEnter无法直接拿到this)
+    next(vm => {
+      vm.$commonUtil.exchangePageTitle('CNodeJS社区主页')
       vm.$refs.cnodeTopics.scrollTop = sessionStorage['scrollPosition']
     })
   }
@@ -181,60 +175,19 @@ export default {
 </script>
 
 <style scoped>
-/* 通用css设置 */
-a {
-  text-decoration: none;
-}
-
-/* cnode主页组件样式 */
-.cnodeTopicsWrap {
-  padding: 10px;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  overflow-y: auto;
-}
-
-/* tab选项卡样式 */
-.topicTabWrp {
+/* 顶部tab选项卡样式 */
+.nsc-commonWrp .topicTabWrp {
   max-width: 900px;
   height: 70px;
   padding: 10px;
+  box-sizing: border-box;
   margin: 0 auto;
   position: fixed;
-  transition: left 0.4s ease;
   top: 60px;
-  right: 0px;
-  box-sizing: border-box;
   z-index: 110;
+  transition: left 0.4s ease;
 }
-@media only screen and (min-width: 900px) {
-  .tabWrpMobileAdjust{
-    left: 250px;
-  }
-  .tabBar > button:hover {
-    background: #c60023;
-    color: #fff;
-  }
-  /* 回到顶部按钮的hover样式 */
-  .backToTopBtn:hover {
-    background: #c60023;
-  }
-  .loadingResponse {
-    left: 260px!important;
-  }
-}
-@media only screen and (max-width: 900px) {
-  .tabWrpMobileAdjust{
-    left: 0px;
-  }
-  .loadingResponse {
-    left: 0px!important;
-  }
-}
-.tabBar {
+.nsc-commonWrp .topicTabWrp .tabBar {
   width: 100%;
   border: 1px solid #bbb;
   margin: 0 auto;
@@ -244,7 +197,7 @@ a {
   position: relative;
   overflow: hidden;
 }
- .tabBar > button {
+ .nsc-commonWrp .topicTabWrp .tabBar button {
   width: 14.66%;
   height: 40px;
   line-height: 40px;
@@ -258,97 +211,54 @@ a {
   user-select: none;
   outline: none;
  }
- .tabBarActive {
+ .nsc-commonWrp .topicTabWrp .tabBar button.tabBarBtnActive {
   background: #c60023!important;
   color: #fff;
  }
 
-/* cnode话题区样式 */
-.cnodeTopicsBody {
-  max-width: 800px;
-  height: auto;
-  margin: 0 auto;
+/* CNode社区文章条目展示区样式 */
+.nsc-commonWrp .cnodeTopicsBody {
   margin-top: 60px;
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
   background: #fff;
   display: flex;
   flex-direction: column;
-  font-size: 1.5rem;
 }
-.cnodeTopicsBody .topicItem {
-  padding: 0.5rem;
-  border-bottom: 1px solid #c4c4c4;
+.nsc-commonWrp .cnodeTopicsBody .topicItem {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
   display: flex;
-  flex-direction: row;    /* flex-direction属性默认是row */
-  align-items: center;    /* flex布局中，子元素中心线(水平or垂直)居中于父容器 */
+  flex-direction: row;
+  align-items: center;
 }
-.cnodeTopicsBody .topicItem .avatarWrp {
-  margin-right: 2rem;
-  margin-bottom: 0.4rem;
-}
-.cnodeTopicsBody .topicItem .avatarWrp img {
-  width: 4rem;
-  height: 4rem;
+.nsc-commonWrp .cnodeTopicsBody .topicItem img {
+  width: 60px;
+  height: 60px;
   border-radius: 5px;
   box-shadow: 0px 0px 10px #ccc;
-  display: block;
+  margin-right: 18px;
   cursor: pointer;
   font-size: 0.8rem;
 }
-
-/* 话题item头像右侧内容区样式 */
-.articleTextInfo {
+.nsc-commonWrp .cnodeTopicsBody .topicItem .topicItemTextInfo {
+  font-size: 1rem;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
-.articleTextInfo a {
-  color: #000;
-  font-size: 1rem;
-  font-weight: bold;
-}
-.articleTextInfo a:hover {
-  color: #175199;
-}
-.articleTextInfo a:visited {
-  color: #999;
-}
-.articleTextInfo .topTag {
-  height: 1.0rem;
-  line-height: 1.1rem;
-  width: 35px;
-  border-radius: 3px;
-  margin: 2px 5px 0px 0px;
-  background: #c60023;
-  font-size: .7rem;
-  color: #fff;
-  text-align: center;
-  float: left;
-}
-.articleTextInfo .articleSubInfo {
+.nsc-commonWrp .cnodeTopicsBody .topicItem .topicItemTextInfo .articleSubInfo {
   font-size: 0.7rem;
   margin-top: 1rem;
   color: #666;
 }
-.articleTextInfo .articleSubInfo span:first-child {
-  margin-right: 1.5rem;
-}
-
-/* 瀑布流加载块的样式 */
-.loadingBlock {
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.loadingBlock span {
-  width: 100%;
-  text-align: center;
-  font-size: 3rem;
+.nsc-commonWrp .cnodeTopicsBody .topicItem .topicItemTextInfo .articleSubInfo span:first-child {
+  width: 80px;
+  display: inline-block;
 }
 
 /* 回到顶部按钮的样式 */
-.backToTopBtn {
+.nsc-commonWrp .backToTopBtn {
   width: 2rem;
   height: 6rem;
   border: 2px solid black;
@@ -363,10 +273,57 @@ a {
   font-size: 1rem;
   cursor: pointer;
 }
-.loading {
+
+/* 瀑布流加载的loading样式 */
+.nsc-commonWrp .loadingBlock {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.nsc-commonWrp .loadingBlock span {
+  width: 100%;
+  text-align: center;
+  font-size: 3rem;
+}
+
+/* 切换tab选项卡时的loading样式 */
+.nsc-commonWrp .loading {
   position: fixed!important;
   top: 60px!important;
   bottom: 50px!important;
   z-index: 99!important;
+}
+
+/* 响应式样式 */
+@media only screen and (min-width: 900px) {
+  /* 顶部tabWrp响应式样式 */
+  .nsc-commonWrp .topicTabWrp.topicTabWrp-response{
+    right: 18px;
+    left: 260px;
+  }
+  /* 顶部tab选项按钮激活样式 */
+  .nsc-commonWrp .topicTabWrp .tabBar button:hover {
+    background: #c60023;
+    color: #fff;
+  }
+  /* 回到顶部按钮的hover样式 */
+  .nsc-commonWrp .backToTopBtn:hover {
+    background: #c60023;
+  }
+  /* 切换Tab时阻止滚动的loading响应式样式 */
+  .nsc-commonWrp .loading.loadingResponse {
+    left: 260px!important;
+  }
+}
+@media only screen and (max-width: 900px) {
+  /* 顶部tabWrp响应式样式 */
+  .nsc-commonWrp .topicTabWrp.topicTabWrp-response{
+    right: 0px;
+    left: 0px;
+  }
+  /* 切换Tab时阻止滚动的loading响应式样式 */
+  .nsc-commonWrp .loading.loadingResponse {
+    left: 0px!important;
+  }
 }
 </style>

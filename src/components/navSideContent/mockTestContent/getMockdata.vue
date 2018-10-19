@@ -1,5 +1,5 @@
 <template>
-  <div class="mockContentWrp">
+  <div class="nsc-commonWrp">
     <span>页面初次加载或刷新页面时，生成一组随机人员</span>
     <div v-for="(person, index) in mock.name" :key="index">
       <span>模拟随机人员{{index + 1}}</span>
@@ -20,8 +20,6 @@
 
 <script>
 import {data} from '../../../mock/mock.js'
-import request from '../../../util/apiRequest.js'
-import commonUtil from '../../../util/common.js'
 
 export default {
   data: function () {
@@ -32,13 +30,13 @@ export default {
   methods: {
     getMockData: function (requestType) {
       if (requestType === 'get') {
-        request.getMockUserInfo((res) => {
+        this.$apiRequest.getMockUserInfo((res) => {
           console.log(JSON.stringify(res.data, null, 2))
         }, (err) => {
           console.log(err)
         })
       } else if (requestType === 'post') {
-        request.postInfoToMock({
+        this.$apiRequest.postInfoToMock({
           dataInfo: 'thisIsDataInfooooooooooooHa'
         }, (res) => {
           console.log(JSON.stringify(res.data, null, 2))
@@ -49,7 +47,7 @@ export default {
     }
   },
   created: function () {
-    commonUtil.exchangePageTitle('Mock数据与请求测试')
+    this.$commonUtil.exchangePageTitle('Mock数据与请求测试')
     // 在控制台打印出mock随机生成的{data}对象信息
     // console.log('模拟随机邮箱' + JSON.stringify(data.list, null, 2))
     // console.log('模拟随机姓名' + JSON.stringify(data.name, null, 2))
@@ -58,19 +56,10 @@ export default {
 </script>
 
 <style scoped>
-.mockContentWrp {
-  padding: 10px;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  overflow-y: auto;
-}
-.mockContentWrp span {
+.nsc-commonWrp span {
   display: block;
 }
-.mockContentWrp > span {
+.nsc-commonWrp > span {
   font-weight: bold;
   color: orange;
 }

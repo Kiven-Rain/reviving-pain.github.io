@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import cnodejsTopic from '../components/navSideContent/cnodeContent/cnodejsTopic.vue'
+import cnodejsTopics from '../components/navSideContent/cnodeContent/cnodejsTopics.vue'
 import user from '../components/navSideContent/cnodeContent/user.vue'
 import article from '../components/navSideContent/cnodeContent/article.vue'
 import createTopic from '../components/navSideContent/cnodeContent/createTopic.vue'
@@ -30,12 +30,12 @@ export default new Router({
     },
     {
       // 这里做自定义path, 要与router-link里拼接出来的path一一对应
-      path: '/cnodeCommunity/cnodejsTopic',
-      // 冒号的前面对应cnodejsTopic里面的router-view里面的name
-      // 冒号后面的cnodejsTopic是引入的cnodejsTopic子组件
+      path: '/cnodeCommunity/cnodejsTopics',
+      // 冒号的前面对应cnodejsTopics里面的router-view里面的name
+      // 冒号后面的cnodejsTopics是引入的cnodejsTopics子组件
       // 如果二者名字相同，写一个就可以
       components: {
-        cnodejsTopic: cnodejsTopic
+        cnodejsTopics: cnodejsTopics
       }
     },
     {
@@ -46,7 +46,7 @@ export default new Router({
       }
     },
     {
-      path: '/cnodeCommunity/cnodejsTopic/:id',
+      path: '/cnodeCommunity/cnodejsTopics/:id',
       name: 'ArticleRoute',
       components: {
         article: article

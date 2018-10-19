@@ -1,15 +1,13 @@
 <template>
-  <div class="notFoundWrp">
+  <div class="nsc-commonWrp">
     <div class="notFoundBody">
-      <img src="../../assets/pageNotFound.svg">
+      <img src="../../assets/img/pageNotFound.svg">
       <h1>页面不见了...</h1>
     </div>
   </div>
 </template>
 
 <script>
-import commonUtil from '../../util/common.js'
-
 export default {
   data: function () {
     return {
@@ -20,26 +18,17 @@ export default {
     // put some function here
   },
   created: function () {
-    commonUtil.exchangePageTitle('页面不见了…')
+    this.$commonUtil.exchangePageTitle('页面不见了…')
   }
 }
 </script>
 
 <style scoped>
-.notFoundWrp {
-  padding: 10px;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  overflow-y: auto;
-}
-.notFoundWrp .notFoundBody {
+.notFoundBody {
   width: 100%;
   height: 100%;
 }
-.notFoundWrp .notFoundBody img {
+.notFoundBody img {
   width: 240px;
   height: 260px;
   position: absolute;
@@ -50,7 +39,7 @@ export default {
   top: 50%;
   user-select: none;
 }
-.notFoundWrp .notFoundBody h1 {
+.notFoundBody h1 {
   margin-top: 120px;
   margin-left: -80px;
   position: absolute;

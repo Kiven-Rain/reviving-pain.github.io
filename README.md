@@ -11,7 +11,7 @@
 
 [[---github源码---]](https://github.com/Reviving-Pain/reviving-pain.github.io) [[---码云源码---]](https://gitee.com/Reviving-Pain/CnodeJS-community)
 
-[[---github在线预览---]](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopic) [[---码云在线预览---]](https://reviving-pain.gitee.io/cnodejs-community/#/cnodeCommunity/cnodejsTopic)
+[[---github在线预览---]](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopics) [[---码云在线预览---]](https://reviving-pain.gitee.io/cnodejs-community/#/cnodeCommunity/cnodejsTopics)
 
 ## 技术栈
 

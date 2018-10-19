@@ -1,0 +1,68 @@
+/* 处理用vue-markdown插件渲染出来的html的样式 */
+
+/* 以 md-content 为基础样式 */
+.md-content {
+  font-family: '微软雅黑';
+  color: #333;
+}
+.md-content ul {
+  padding-left: 1.5rem;
+}
+.md-content p {
+  margin: 5px 0px 10px 0px;
+}
+.md-content a {
+  margin: 0px;
+  text-decoration: none;
+  color: #0099cc;
+  font-size: 1rem;
+  margin-left: 5px;
+}
+.md-content img {
+  max-width:  90%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  display: block;
+  margin: 0 auto;
+}
+.md-content ol {
+  padding-left: 20px;
+}
+.md-content blockquote {
+  padding: 5px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  margin: 5px;
+}
+.md-content pre {
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px #ccc;
+  background: #f6f6f6;
+  /* pre-wrap保留空白符序列且正常地进行换行,默认为nowrap */
+  white-space: pre-wrap;
+}
+.md-content code {
+  color: #336699;
+}
+/* table(表格)样式更改 */
+.md-content table {
+  border-collapse: collapse;
+  color: #336666;
+}
+.md-content table th {
+  border: 1px solid #000;
+  text-align: center;
+}
+.md-content table td {
+  border: 1px solid #000;
+  padding-left: 5px;
+}
+.md-content h1 {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ccc;
+  font-size: 1.8rem;
+}
+.md-content h2 {
+  border: none!important;
+}

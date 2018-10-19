@@ -1,15 +1,15 @@
 <template>
-  <div class="userMsgWrp">
+  <div class="nsc-commonWrp">
     <loading v-if="loading"></loading>
-    <div v-show="!loading" class="userMsgBody">
-      <div class="commonBlockWrp">
+    <div v-show="!loading" class="nsc-commonBody">
+      <div class="nsc-commonBlockWrp">
         <h2>未读消息</h2>
-        <div v-if="msgData.hasnotReadMsgs.length">
-          <button class="selectMsgBtn" @click="markMsg">
+        <div v-if="msgData.hasnotReadMsgs.length" class="nsc-commonBlockBody">
+          <button @click="markMsg" class="mid-submit-btn-ato bgc-lGray">
             <span v-if="!this.isCheckedAll">全选</span>
             <span v-if="this.isCheckedAll">取消全选</span>
           </button>
-          <button class="selectMsgBtn" @click="markHasReadMsg">标记选中为已读</button>
+          <button @click="markHasReadMsg" class="mid-submit-btn-ato bgc-lGray">标记选中为已读</button>
           <div v-for="(notReadMsg, notReadMsgIndex) in msgData.hasnotReadMsgs" :key="notReadMsgIndex" class="msgItem">
             <!-- 展示未读消息 -->
             <input ref="checkMsg" @click="markMsg(notReadMsgIndex)" type="checkbox" v-model="checkedMsg[notReadMsgIndex]">
@@ -25,20 +25,22 @@
         </div>
         <span v-if="!msgData.hasnotReadMsgs.length">暂无消息</span>
       </div>
-      <div class="commonBlockWrp">
+      <div class="nsc-commonBlockWrp">
         <h2>已读消息</h2>
-        <div v-if="msgData.hasReadMsgs.length"
-        v-for="(readMsg, readMsgIndex) in msgData.hasReadMsgs" :key="readMsgIndex" class="msgItem">
-          <!-- 展示已读消息 -->
-          <router-link :to='{name: "UserRoute", params: {name: readMsg.author.loginname}}'>
-            {{readMsg.author.loginname}}
-          </router-link>
-          <span v-if="readMsg.type === 'reply'">回复了你的话题</span>
-          <span v-if="readMsg.type === 'at'">在话题</span>
-          <router-link :to='{name: "ArticleRoute", params: {id: readMsg.topic.id}}'>{{readMsg.topic.title}}</router-link>
-          <span v-if="readMsg.type === 'at'">中@了你</span>
+        <div class="nsc-commonBlockBody">
+          <div v-if="msgData.hasReadMsgs.length"
+          v-for="(readMsg, readMsgIndex) in msgData.hasReadMsgs" :key="readMsgIndex" class="msgItem">
+            <!-- 展示已读消息 -->
+            <router-link :to='{name: "UserRoute", params: {name: readMsg.author.loginname}}'>
+              {{readMsg.author.loginname}}
+            </router-link>
+            <span v-if="readMsg.type === 'reply'">回复了你的话题</span>
+            <span v-if="readMsg.type === 'at'">在话题</span>
+            <router-link :to='{name: "ArticleRoute", params: {id: readMsg.topic.id}}'>{{readMsg.topic.title}}</router-link>
+            <span v-if="readMsg.type === 'at'">中@了你</span>
+          </div>
+          <span v-if="!msgData.hasReadMsgs.length">暂无消息</span>
         </div>
-        <span v-if="!msgData.hasReadMsgs.length">暂无消息</span>
       </div>
     </div>
   </div>
@@ -46,8 +48,6 @@
 
 <script>
 import loading from '../../common/loading.vue'
-import request from '../../../util/apiRequest.js'
-import commonUtil from '../../../util/common.js'
 
 export default {
   components: {
@@ -102,7 +102,7 @@ export default {
         if (this.isCheckedAll) {
           // 发送全选标记请求
           this.loading = true
-          request.markAllMsgToRead({
+          this.$apiRequest.markAllMsgToRead({
             accesstoken: sessionStorage['accesstoken']
           }, (res) => {
             alert('操作成功')
@@ -138,7 +138,7 @@ export default {
     },
     // 发送单条消息标记请求
     markOneMsgToRead: function (msgIndex) {
-      request.markOneMsgToRead(this.msgData.hasnotReadMsgs[msgIndex].id, {
+      this.$apiRequest.markOneMsgToRead(this.msgData.hasnotReadMsgs[msgIndex].id, {
         accesstoken: sessionStorage['accesstoken']
       }, (res) => {
         // 调用header的消息数量请求，刷新数量显示
@@ -149,9 +149,9 @@ export default {
     }
   },
   created: function () {
-    commonUtil.exchangePageTitle('我的社区消息')
+    this.$commonUtil.exchangePageTitle('我的社区消息')
     this.loading = true
-    request.getUserMsg({
+    this.$apiRequest.getUserMsg({
       accesstoken: sessionStorage['accesstoken']
     }, (res) => {
       this.loading = false
@@ -169,73 +169,28 @@ export default {
 </script>
 
 <style scoped>
-/* 通用css设置 */
-h2 {
-  height: auto;
-  width: 100%;
-  margin: 0px;
-  border-bottom: 1px solid #c4c4c4;
-  margin-bottom: 10px;
-  font-size: 1.5rem;
-  color: #333;
-}
-.commonBlockWrp {
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #ccc;
-  margin-bottom: 20px;
-  background: #fff;
-  /* div中文本超出时自动换行 */
-  word-break: break-all;
+/* 处理未读消息的操作按钮(修正)样式 */
+.nsc-commonBlockBody button {
+  height: 30px;
+  line-height: 30px;
+  margin-right: 5px;
 }
 
-/* 用户消息组件样式 */
-.userMsgWrp {
-  padding: 10px;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  overflow-y: auto;
-}
-.userMsgBody {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-/* 区分移动模式与pc模式的css样式 */
-@media only screen and (min-width: 900px) {
-  .selectMsgBtn:hover {
-    background: #c60023;
-    color: #fff;
-  }
-  .msgItem a:hover {
-    text-decoration: underline;
-  }
-}
-.selectMsgBtn {
-  height: 2rem;
-  line-height: 2rem;
-  padding: 0px 15px 0px 15px;
-  border: none;
-  border-radius: 3px;
-  margin: 0px 10px 10px 0px;
-  background: #eee;
-  font-size: 1rem;
-  color: #444;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-}
-.msgItem {
+/* 消息item样式 */
+.nsc-commonBlockBody .msgItem {
   padding: 10px 0px 10px 0px;
   border-bottom: 1px solid #eee;
 }
-.msgItem a {
+.nsc-commonBlockBody .msgItem a {
   text-decoration: none;
   color: #0099cc;
+}
+
+/* 响应式样式 */
+@media only screen and (min-width: 900px) {
+  /* 消息item的hover样式 */
+  .nsc-commonBlockBody .msgItem a:hover {
+    text-decoration: underline;
+  }
 }
 </style>

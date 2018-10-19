@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-09 15:46:13
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-11 23:57:16
+ * @Last Modified time: 2018-10-18 16:48:32
  */
 
 import Vue from 'vue'
@@ -15,7 +15,8 @@ const state = {
   loginUsername: '',
   loginAvatarUrl: '',
   openLoginCard: false,
-  showNavside: false
+  showNavside: false,
+  isMobile: false
 }
 
 const mutations = {
@@ -38,6 +39,10 @@ const mutations = {
   // 管理侧边栏导航的显示与隐藏
   navSideController (state, order) {
     state.showNavside = order
+  },
+  // 控制当前平台是否是移动端
+  mobileController (state, isMobile) {
+    state.isMobile = isMobile
   }
 }
 

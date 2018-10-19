@@ -1,0 +1,251 @@
+/* this is common css */
+
+/* **********navSideContent(nsc) public style********** */
+.nsc-commonWrp {
+  padding: 10px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  overflow-y: auto;
+}
+.nsc-commonWrp .nsc-commonBody {
+  max-width: 800px;
+  margin: 0 auto;
+  /* 在恰当的断字点进行换行(可继承) */
+  word-break: break-all;
+}
+.nsc-commonWrp .nsc-commonBody .nsc-commonBlockWrp {
+  width: 100%;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #ccc;
+  /* box-sizing属性不可继承(算入border和padding) */
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  background: #fff;
+}
+.nsc-commonWrp .nsc-commonBody .nsc-commonBlockWrp h2 {
+  width: 100%;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #c4c4c4;
+  margin: 0px;
+  color: #333;
+  user-select: none;
+}
+.nsc-commonWrp .nsc-commonBody .nsc-commonBlockWrp a {
+  /* text-decoration属性不继承 */
+  text-decoration: none;
+}
+.nsc-commonWrp .nsc-commonBody .nsc-commonBlockWrp .nsc-commonBlockBody {
+  width: 100%;
+  padding-top: 7px;
+}
+
+
+/* **********块级元素居中********** */
+.block-center {
+  margin: 0 auto;
+  text-align: center;
+  display: block;
+}
+
+/* **********flex布局快捷样式********** */
+/* 父容器 */
+.flex-box-row {
+  display: flex;
+  align-items: center;
+}
+.flex-box-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* **********浮动样式********** */
+.float-r {
+  float: right;
+}
+.float-l {
+  float: left;
+}
+.c-float {
+  overflow: hidden;
+}
+
+/* **********常用a链接样式********** */
+/* 黑色粗体 */
+.a-link-b a {
+  color: #444;
+  font-weight: bold;
+  text-decoration: none;
+}
+.a-link-b a:hover {
+  color: #175199;
+}
+.a-link-b a:visited {
+  color: #999;
+}
+/* 红色粗体(wr即wineRed) */
+.a-link-b-wr a {
+  color: #c60023;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+/* **********常用字体颜色********** */
+.font-green {
+  color: green;
+}
+.font-wineRed {
+  color: #c60023;
+}
+.font-lGray {
+  color: #ccc;
+}
+.font-gray {
+  color: gray;
+}
+.font-dGray {
+  color: #444;
+}
+.font-white {
+  color: #fff;
+}
+
+
+/* **********常用用背景颜色********** */
+.bgc-green {
+  background: green;
+  color: #fff;
+  text-align: center;
+}
+.bgc-wineRed {
+  background: #c60023;
+  color: #fff;
+  text-align: center;
+}
+.bgc-lGray {
+  background: #eee;
+  color: #999;
+  text-align: center;
+}
+.bgc-gray {
+  background: gray;
+  color: #fff;
+  text-align: center;
+}
+.gbc-white {
+  background: #fff;
+  color: #333;
+  text-align: center;
+}
+
+/* **********文本提示信息********** */
+.tip-text {
+  color: #777;
+  user-select: none;
+}
+
+
+/* **********文章与评论的标记标签********** */
+.mark-tag {
+  height: 15px;
+  line-height: 17px;
+  width: 35px;
+  border-radius: 3px;
+  font-size: .8rem;
+  display: inline-block;
+}
+
+/* **********按钮通用样式********** */
+/* 宽大型提交按钮 */
+.big-submit-btn {
+  width: 100%;
+  max-width: 600px;
+  height: 50px;
+  line-height: 50px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1.3rem;
+  display: block;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+/* 中型提交按钮(限制宽) */
+.mid-submit-btn {
+  width: 75px;
+  height: 35px;
+  line-height: 35px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+/* 中型提交按钮(自动宽度) */
+.mid-submit-btn-ato {
+  height: 35px;
+  line-height: 35px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+/* 圆形特殊按钮 */
+.circle-btn {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px #ccc;
+  text-align: center;
+  font-size: 1.5rem;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* **********按钮对应颜色的hover样式********** */
+@media only screen and (min-width: 900px) {
+  /* 宽大型按钮 */
+  .big-submit-btn.bgc-wineRed:hover {
+    background: #cc3355;
+  }
+  /* 中型按钮 */
+  .mid-submit-btn.bgc-wineRed:hover {
+    background: #cc3355;
+  }
+  .mid-submit-btn.bgc-green:hover {
+    background: #339955;
+  }
+  .mid-submit-btn.bgc-lGray:hover {
+    background: #ccc;
+  }
+  .mid-submit-btn.bgc-white:hover {
+    color: #c60023;
+  }
+  /* 中型宽度自适应按钮 */
+  .mid-submit-btn-ato.bgc-lGray:hover {
+    background: #c60023;
+    color: #fff;
+  }
+  .mid-submit-btn-ato.bgc-green:hover {
+    background: #339955;
+  }
+  /* 圆形特殊按钮 */
+  .circle-btn.bgc-wineRed:hover {
+    background: #cc3355;
+  }
+}

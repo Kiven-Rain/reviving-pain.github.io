@@ -1,14 +1,18 @@
 <template>
   <div class="loginWrp">
-    <div @click="closeLoginCard" class="loginCardMask"></div>
-    <div class="loginCard">
+    <!-- 登录面板 -->
+    <div class="loginCard loginCard-response">
+      <!-- 登录面板关闭按钮 -->
       <div @click="closeLoginCard" class="close">×</div>
+      <!-- 登录面板头部选项卡 -->
       <div class="loginCardTitle">
         <div @click="loginTab" :class="['titleCell', {'titleCellActive': loginTabActive}]">登录</div>
         <b class="titlePoint">·</b>
         <div @click="registerTab" :class="['titleCell', {'titleCellActive': registerTabActive}]">注册</div>
       </div>
+      <!-- 登录面板头部选项卡对应的内容区 -->
       <div class="loginCardBody">
+        <!-- 登录内容区 -->
         <div v-show="loginTabActive">
           请输入认证码<br>
           <input @keyup.enter="verifyIdentifyInfo" placeholder="cnode社区token" class="identityInfo" v-model.trim="accesstoken" type="password">
@@ -17,11 +21,13 @@
             <input type="checkbox" id="rememberToken" v-model="storeToekn">
             <label for="rememberToken">十天免登陆</label>
           </div>
+          <!-- 登录提交按钮 -->
           <button :disabled="loading" @click="verifyIdentifyInfo" class="submitIdentifyInfo">
             <span v-if="!loading">检测认证信息</span>
             <span v-if="loading"><span class="fa fa-spinner fa-spin"></span> 正在登录，请稍候…</span>
           </button>
         </div>
+        <!-- 注册内容区 -->
         <div v-show="registerTabActive">
           <span>使用第三方CNode社区服务</span><br><br>
           <span>点击下方链接注册，需要github账号</span><br><br>
@@ -29,12 +35,12 @@
         </div>
       </div>
     </div>
+    <!-- 登录面板底部遮罩层 -->
+    <div @click="closeLoginCard" class="loginCardMask"></div>
   </div>
 </template>
 
 <script>
-import commonUtil from '../util/common.js'
-
 export default {
   data: function () {
     return {
@@ -67,7 +73,7 @@ export default {
         this.loading = true
         if (this.storeToekn === true) {
           // 确认存储token，执行setCookie方法
-          commonUtil.setCookie('accesstoken', this.accesstoken, 240)
+          this.$commonUtil.setCookie('accesstoken', this.accesstoken, 240)
         }
         // 存储token并验证
         sessionStorage['accesstoken'] = this.accesstoken
@@ -94,96 +100,75 @@ export default {
 
 <style scoped>
 .loginWrp {
+  position: absolute;
   top: 0px;
+  right: 0px;
   bottom: 0px;
   left: 0px;
-  right: 0px;
-  position: absolute;
   z-index: 290;
   user-select: none;
 }
-.loginCardMask {
+
+/* 登录面板样式 */
+.loginWrp .loginCard {
+  background: #fff;
+  position: absolute;
+  z-index: 1;
+}
+
+/* 登录面板底部遮罩层样式 */
+.loginWrp .loginCardMask {
   width: 100%;
   height: 100%;
   background: #ccc;
   opacity: 0.5;
-  position: absolute;
 }
-@media only screen and (max-width: 900px) {
-  .loginCard {
-  padding: 50px 30px 0px 30px;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  position: absolute;
-  background: white;
-  position: absolute;
-  }
-}
-@media only screen and (min-width: 900px) {
-  .loginCard {
-  width: 300px;
-  height: 400px;
-  padding: 50px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px #333;
-  margin-left: -200px;
-  margin-top: -250px;
-  left: 50%;
-  top: 50%;
-  position: absolute;
-  background: #fff;
-  }
-}
-.close {
+
+/* 登录面板关闭按钮样式 */
+.loginWrp .loginCard .close {
   height: 4rem;
   width: 4rem;
+  position: absolute;
   top: 0px;
   right: 0px;
-  position: absolute;
   font-size: 4rem;
   color: #ddd;
   cursor: pointer;
 }
-.close:hover {
-  color: #c60023;
-}
-.loginCardTitle {
+
+/* 登录面板头部选项卡样式 */
+.loginWrp .loginCard .loginCardTitle {
   width: 200px;
   height: 50px;
   margin: 0 auto;
 }
-.titleCell {
+.loginWrp .loginCard .loginCardTitle .titleCell {
   width: 80px;
   height: 45px;
   line-height: 45px;
   border-bottom: 5px solid #fff;
-  float: left;
   font-size: 1.2rem;
   cursor: pointer;
+  float: left;
 }
-.titleCell:hover {
-  font-weight: bold;
-  color: #c60023;
-
-}
-.titleCellActive {
+.loginWrp .loginCard .loginCardTitle .titleCell.titleCellActive {
   border-bottom:  5px solid #c60023;
   font-weight: bold;
   color: #c60023;
 }
-.titlePoint {
+.loginWrp .loginCard .loginCardTitle .titlePoint {
   width: 40px;
   height: 45px;
   line-height: 45px;
   text-align: center;
   float: left;
 }
-.loginCardBody{
+
+/* 登录面板头部选项卡对应的内容区域样式 */
+.loginWrp .loginCard .loginCardBody {
   margin-top: 30px;
 }
-.identityInfo {
+.loginWrp .loginCard .loginCardBody .identityInfo {
   width: 100%;
   height: 30px;
   margin-top: 10px;
@@ -192,21 +177,17 @@ export default {
   font-size: 1.2rem;
   text-align: center;
 }
-.loginTips {
+.loginWrp .loginCard .loginCardBody .loginTips {
   margin-top: 5px;
+  color: #777;
   float: left;
   cursor: pointer;
-  color: #777;
 }
-.loginTips:hover {
-  color: #000;
-  text-decoration: underline;
-}
-.rememberToken {
+.loginWrp .loginCard .loginCardBody .rememberToken {
   margin-top: 5px;
   float: right;
 }
-.submitIdentifyInfo {
+.loginWrp .loginCard .loginCardBody .submitIdentifyInfo {
   width: 100%;
   height: 35px;
   margin-top: 10px;
@@ -216,5 +197,45 @@ export default {
   color: #fff;
   font-size: 1.1rem;
   cursor: pointer;
+}
+
+/* 响应式样式 */
+@media only screen and (max-width: 900px) {
+  /* 登录面板响应式样式 */
+  .loginWrp .loginCard.loginCard-response {
+    padding: 50px 30px 0px 30px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }
+}
+@media only screen and (min-width: 900px) {
+  /* 登录面板响应式样式 */
+  .loginWrp .loginCard.loginCard-response {
+    width: 300px;
+    height: 400px;
+    padding: 50px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #333;
+    margin-left: -200px;
+    margin-top: -250px;
+    left: 50%;
+    top: 50%;
+  }
+  /* 登录面板关闭按钮hover样式 */
+  .loginWrp .loginCard .close:hover {
+    color: #c60023;
+  }
+  /* 登录面板头部选项卡hover样式 */
+  .loginWrp .loginCard .loginCardTitle .titleCell:hover {
+    font-weight: bold;
+    color: #c60023;
+  }
+  /* 登录输入框下方tips的hover样式 */
+  .loginWrp .loginCard .loginCardBody .loginTips:hover {
+    color: #000;
+    text-decoration: underline;
+  }
 }
 </style>

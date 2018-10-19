@@ -1,9 +1,11 @@
 <template>
-  <div class="content-wrap">
-    <div v-show="this.$store.state.showNavside" @click="hideMobilSidebar" class="content-mask"></div>
+  <div class="content-wrap content-wrap-response">
+    <!-- 宽度小于900px且移动侧边栏展开时的遮罩层 -->
+    <div v-show="this.$store.state.showNavside" @click="hideMobileSidebar" class="content-mask"></div>
     <router-view name="defaultContent"></router-view>
+    <!-- 避免重复渲染的组件放在这里 -->
     <keep-alive>
-      <router-view name="cnodejsTopic"></router-view>
+      <router-view name="cnodejsTopics"></router-view>
     </keep-alive>
     <router-view name="user"></router-view>
     <router-view name="article" v-if="isRouterAlive"></router-view>
@@ -39,7 +41,7 @@ export default {
     }
   },
   methods: {
-    hideMobilSidebar: function () {
+    hideMobileSidebar: function () {
       // 点击遮罩层之后，隐藏侧边导航
       this.$store.commit('navSideController', !(this.$store.state.showNavside))
     },
@@ -61,7 +63,7 @@ export default {
             alert('您尚未登录，请先登录')
           } else if (changeType === 'statusChange') {
             // 如果当前页面必须登录才能查看，失去登录状态后跳转到主页
-            this.$router.push({path: '/cnodeCommunity/cnodejsTopic'})
+            this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
           }
           this.$store.commit('openLoginCard', true)
         } else {
@@ -104,48 +106,47 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .content-wrap {
-  top:0px;
-  bottom: 0px;
-  left: 260px;
-  right: 0px;
-  background: url(../assets/pub_background.jpg);
+  background: url(../assets/img/pub_background.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   text-align: left;
   position: absolute;
+  top:0px;
+  right: 0px;
+  bottom: 0px;
   overflow-y: auto;
   overflow-x: hidden;
+  transition: left 0.4s ease;
 }
 
-/*运用媒体查询检测宽度，比window.onresize方法效率高一点*/
+/* 响应式样式 */
 @media only screen and (max-width: 900px) {
-  .content-wrap {
-    transition: left 0.4s ease;
+  /* contentWrp响应式样式 */
+  .content-wrap-response {
     left: 0px;
   }
-  /* 当设备宽度小于900px的时候遮罩层才会出现 */
+  /* 移动侧边栏遮罩层响应式样式 */
   .content-mask {
-    top: 60px;
-    bottom: 50px;
-    left:0px;
-    right: 0px;
+    background: #aaa;
     opacity: 0.2;
-    background: #ccc;
-    position: fixed;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
     z-index: 140;
   }
 }
 @media only screen and (min-width: 900px) {
-  /* 当宽度大于900时，遮罩层消失 */
+  /* contentWrp响应式样式 */
+  .content-wrap-response {
+    left: 260px;
+  }
+  /* 移动侧边栏遮罩层响应式样式 */
   .content-mask {
     display: none;
-  }
-  .content-wrap {
-    transition: left 0.4s ease;
-    left: 260px;
   }
 }
 </style>
