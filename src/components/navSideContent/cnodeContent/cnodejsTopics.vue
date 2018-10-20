@@ -13,7 +13,7 @@
     <div class='nsc-commonBody cnodeTopicsBody'>
       <!-- 文章条目 -->
       <div v-for='item of content' :key='item.id' class="topicItem a-link-b">
-        <router-link  class="authorAvatar" :to='{name: "UserRoute", params: {name: item.author.loginname}}' tag='div'>
+        <router-link :to='{name: "UserRoute", params: {name: item.author.loginname}}' tag='div' class="authorAvatarWrp">
           <img :src='item.author.avatar_url' :title='item.author.loginname'/>
         </router-link>
         <div class='topicItemTextInfo'>
@@ -119,7 +119,10 @@ export default {
         this.content = res.data.data
         this.loading = false
         this.loadingBlock = false
-        this.isTabBarActive = true
+        // 请求成功后，稍等0.5秒释放按钮disabled(预防出现刚请求完成时点击过快而内容不切换的问题)
+        setTimeout(() => {
+          this.isTabBarActive = true
+        }, 500)
       }, (err) => {
         console.log(err.response.data.success)
       })
@@ -232,7 +235,7 @@ export default {
   flex-direction: row;
   align-items: center;
 }
-.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatar {
+.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatarWrp {
   width: 60px;
   height: 60px;
   border-radius: 5px;
@@ -242,9 +245,10 @@ export default {
   font-size: 0.8rem;
   flex: 0 0 auto;
 }
-.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatar img {
+.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatarWrp img {
   width: 100%;
   height: 100%;
+  border-radius: 5px;
 }
 .nsc-commonWrp .cnodeTopicsBody .topicItem .topicItemTextInfo {
   font-size: 1rem;
