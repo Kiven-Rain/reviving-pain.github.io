@@ -13,8 +13,8 @@
     <div class='nsc-commonBody cnodeTopicsBody'>
       <!-- 文章条目 -->
       <div v-for='item of content' :key='item.id' class="topicItem a-link-b">
-        <router-link :to='{name: "UserRoute", params: {name: item.author.loginname}}' tag='div'>
-          <img :src='item.author.avatar_url' :title='item.author.loginname' />
+        <router-link  class="authorAvatar" :to='{name: "UserRoute", params: {name: item.author.loginname}}' tag='div'>
+          <img :src='item.author.avatar_url' :title='item.author.loginname'/>
         </router-link>
         <div class='topicItemTextInfo'>
           <router-link :to='{name:"ArticleRoute", params:{id:item.id}}'>
@@ -232,7 +232,7 @@ export default {
   flex-direction: row;
   align-items: center;
 }
-.nsc-commonWrp .cnodeTopicsBody .topicItem img {
+.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatar {
   width: 60px;
   height: 60px;
   border-radius: 5px;
@@ -240,6 +240,11 @@ export default {
   margin-right: 18px;
   cursor: pointer;
   font-size: 0.8rem;
+  flex: 0 0 auto;
+}
+.nsc-commonWrp .cnodeTopicsBody .topicItem .authorAvatar img {
+  width: 100%;
+  height: 100%;
 }
 .nsc-commonWrp .cnodeTopicsBody .topicItem .topicItemTextInfo {
   font-size: 1rem;

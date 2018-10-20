@@ -1,16 +1,40 @@
 /* 处理用vue-markdown插件渲染出来的html的样式 */
 
-/* 以 md-content 为基础样式 */
+/* **********以 md-content 为基础样式********** */
 .md-content {
   font-family: '微软雅黑';
   color: #333;
 }
+
+/* **********列表********** */
+/* 无序列表 */
 .md-content ul {
-  padding-left: 1.5rem;
+  padding: 5px 5px 5px 25px;
+  border: 1px solid #e5e5e5;
+  border-radius: 5px;
+  margin: 10px 0px 10px 0px;
 }
+.md-content ul li {
+  padding-bottom: 5px;
+}
+/* 有序列表 */
+.md-content ol {
+  padding: 5px 5px 5px 20px;
+  border: 1px dotted #ccc;
+  border-radius: 5px;
+  margin: 5px 5px 5px 10px;
+  background: #fafafa;
+}
+.md-content ol li {
+  padding-bottom: 5px;
+}
+
+/* **********段落********** */
 .md-content p {
   margin: 5px 0px 10px 0px;
 }
+
+/* **********链接********** */
 .md-content a {
   margin: 0px;
   text-decoration: none;
@@ -18,6 +42,11 @@
   font-size: 1rem;
   margin-left: 5px;
 }
+.md-content a:hover {
+  color: #00cccc;
+}
+
+/* **********图片********** */
 .md-content img {
   max-width:  90%;
   border-radius: 5px;
@@ -25,39 +54,62 @@
   display: block;
   margin: 0 auto;
 }
-.md-content ol {
-  padding-left: 20px;
-}
+
+/* **********标记长引用********** */
 .md-content blockquote {
-  padding: 5px;
-  border: 1px solid #eee;
-  border-radius: 5px;
+  padding: 0px 10px 0px 10px;
+  border-left: 3px solid #0099cc;
   margin: 5px;
+  background: #f6f6f6;
+  font-style: italic;
+  overflow: hidden;
 }
+
+/* **********预格式化文本(保留空格和换行符)********** */
 .md-content pre {
   padding: 5px;
   border-radius: 5px;
   box-shadow: 0px 0px 5px #ccc;
   background: #f6f6f6;
-  /* pre-wrap保留空白符序列且正常地进行换行,默认为nowrap */
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */ /* pre-wrap保留空白符序列且正常地进行换行,默认为nowrap */
+  overflow-x: auto;
 }
+
+/* **********代码********** */
 .md-content code {
   color: #336699;
+  font-family: Menlo,Monaco,Consolas,"Andale Mono","lucida console","Courier New",monospace;
 }
-/* table(表格)样式更改 */
+
+/* **********table(表格)样式更改********** */
 .md-content table {
   border-collapse: collapse;
-  color: #336666;
+  color: #666;
 }
+/* 修改表头单元格样式 */
 .md-content table th {
   border: 1px solid #000;
+  background: #8abeb2;
+  text-align: center;
+  color: #fff;
+}
+/* 修改非表头单元格样式 */
+.md-content table td {
+  padding-left: 5px;
+  border: 1px solid #000;
+  background: #fafafa;
+}
+/* 修改每个tr(行)中的第一个td(单元)的样式 */
+.md-content table tr td:first-child {
+  min-width: 50px;
   text-align: center;
 }
-.md-content table td {
-  border: 1px solid #000;
-  padding-left: 5px;
+/* 修改每个tr(行)中的最后一个td(单元)的样式 */
+.md-content table tr td:nth-last-child(1) {
+  min-width: 50px;
 }
+
+/* ********** h1 h2 … hn 标签的样式矫正********** */
 .md-content h1 {
   padding-bottom: 5px;
   border-bottom: 1px solid #ccc;
