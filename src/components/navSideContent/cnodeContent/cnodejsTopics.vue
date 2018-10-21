@@ -1,7 +1,7 @@
 <template>
   <div class='nsc-commonWrp' ref="cnodeTopics">
     <!-- cnode主页文章分类导航 -->
-    <div v-show="showTabbar" class="topicTabWrp topicTabWrp-response">
+    <div :class="['topicTabWrp', 'topicTabWrp-response', {'topicTabWrp-control': !showTabbar}]">
       <div class="tabBar">
         <button :disabled="!isTabBarActive" @click="selectTab" :class="{'tabBarBtnActive': tab.type === currentTab}"
         v-for="(tab, index) in topicTabs" :key="index" :id="tab.type">
@@ -33,9 +33,13 @@
       </div>
     </div>
     <!-- 返回顶部按钮 -->
-    <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
+    <transition name="fade">
+      <button v-show="backToTopBtn" @click="backToTop" class="backToTopBtn">回到顶部</button>
+    </transition>
     <!-- 切换tab选项卡时的loading -->
-    <loading v-if="loading" class="loading loadingResponse"></loading>
+    <transition name="fade">
+      <loading v-if="loading" class="loading loadingResponse"></loading>
+    </transition>
   </div>
 </template>
 
@@ -92,8 +96,10 @@ export default {
       }
       // 瀑布流底部请求,路由跳转之后高度会变为0,滚动事件依然触发,不参与此判定
       if ((viewHeight + scrollTop >= totalHeight) && (viewHeight !== 0)) {
-        // 半透明loading出现时阻止瀑布流loadingBlock加载
+        // 半透明loading出现时阻止瀑布流loadingBlock加载(一般出现在点进文章=>刷新=>返回的时候)
         if (!this.loading) {
+          // 同时底部loadingblock出现的时候不允许切换选项卡(避免切换之后在新选项卡中不断的还原上一个选项卡中的scrollTop)
+          this.isTabBarActive = false
           this.loadingBlock = true
         }
         this.getData(this.currentTab)
@@ -188,7 +194,10 @@ export default {
   position: fixed;
   top: 60px;
   z-index: 110;
-  transition: left 0.4s ease;
+  transition: all 0.4s ease;
+}
+.nsc-commonWrp .topicTabWrp.topicTabWrp-control {
+  opacity: 0;
 }
 .nsc-commonWrp .topicTabWrp .tabBar {
   width: 100%;
@@ -213,6 +222,7 @@ export default {
   cursor: pointer;
   user-select: none;
   outline: none;
+  transition: all 0.3s ease;
  }
  .nsc-commonWrp .topicTabWrp .tabBar button.tabBarBtnActive {
   background: #c60023!important;
@@ -306,14 +316,13 @@ export default {
 /* 响应式样式 */
 @media only screen and (min-width: 900px) {
   /* 顶部tabWrp响应式样式 */
-  .nsc-commonWrp .topicTabWrp.topicTabWrp-response{
+  .nsc-commonWrp .topicTabWrp.topicTabWrp-response {
     right: 18px;
     left: 260px;
   }
   /* 顶部tab选项按钮激活样式 */
   .nsc-commonWrp .topicTabWrp .tabBar button:hover {
-    background: #c60023;
-    color: #fff;
+    background: #e5e5e5;
   }
   /* 回到顶部按钮的hover样式 */
   .nsc-commonWrp .backToTopBtn:hover {
@@ -326,7 +335,7 @@ export default {
 }
 @media only screen and (max-width: 900px) {
   /* 顶部tabWrp响应式样式 */
-  .nsc-commonWrp .topicTabWrp.topicTabWrp-response{
+  .nsc-commonWrp .topicTabWrp.topicTabWrp-response {
     right: 0px;
     left: 0px;
   }

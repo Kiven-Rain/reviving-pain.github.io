@@ -249,3 +249,13 @@
     background: #cc3355;
   }
 }
+
+/* **********transition标签过渡动画********** */
+/* transition标签中name属性为fade的标签对应的过渡动画 */
+.fade-enter-active, .fade-leave-active {
+  opacity: 1;
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to{
+  opacity: 0;
+}

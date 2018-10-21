@@ -149,9 +149,11 @@ export default {
   cursor: pointer;
   user-select: none;
 }
-.header .userAvatar > img {
+.header .userAvatar img {
   width: 100%;
   height: 100%;
+  font-size: 0.8rem;
+  word-break: break-all;
   border-radius: 4px;
 }
 .header .userAvatar .defalutAvatar {
