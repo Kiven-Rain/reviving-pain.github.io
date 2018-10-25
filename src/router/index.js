@@ -29,11 +29,7 @@ export default new Router({
       }
     },
     {
-      // 这里做自定义path, 要与router-link里拼接出来的path一一对应
       path: '/cnodeCommunity/cnodejsTopics',
-      // 冒号的前面对应cnodejsTopics里面的router-view里面的name
-      // 冒号后面的cnodejsTopics是引入的cnodejsTopics子组件
-      // 如果二者名字相同，写一个就可以
       components: {
         cnodejsTopics: cnodejsTopics
       }

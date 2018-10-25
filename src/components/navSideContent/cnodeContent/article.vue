@@ -420,6 +420,7 @@ export default {
   height: 3rem;
   border-radius: 5px;
   box-shadow: 0px 0px 5px #999;
+  font-size: 0.8rem;
 }
 .nsc-commonBlockWrp .nsc-commonBlockBody .commentCell .commentUsername {
   height: 1rem;

@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-20 10:08:15
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-09-25 21:23:48
+ * @Last Modified time: 2018-10-25 18:13:15
  */
 import axios from 'axios'
 
@@ -11,14 +11,17 @@ import axios from 'axios'
 axios.defaults.headers = {
   'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
 }
-// 配置data对象里的数据格式(将JSON转化为键值对)
+// 将data对象转化为多个键值对中间用&连接的形式
 axios.defaults.transformRequest = [function (data) {
-  let ret = ''
-  for (let it in data) {
-    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+  let newData = ''
+  for (let propName in data) {
+    newData += encodeURIComponent(propName) + '=' + encodeURIComponent(data[propName]) + '&'
   }
-  return ret
+  return newData
 }]
+// 配置axios相应超时时间(5s)
+axios.defaults.timeout = 5000
+
 // 配置默认的基础url
 axios.defaults.baseURL = 'https://cnodejs.org/api/v1'
 

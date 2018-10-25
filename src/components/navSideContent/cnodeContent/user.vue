@@ -5,13 +5,14 @@
       <div class="nsc-commonBlockWrp">
         <img :src='userInfo.avatar_url' class="author-avatar author-avatar-response" :title='userInfo.loginname'>
         <div class="basicProfileText">
-          <span class="fa fa-user"> 用户名：{{userInfo.loginname}}</span><br>
-          <span class="fa fa-gg-circle"></span>
+          <i class="fa fa-user fa-fw"></i>
+          <span> 用户名：{{userInfo.loginname}}</span><br>
+          <i class="fa fa-gg-circle fa-fw"></i>
           <span>积分：{{userInfo.score}}</span><br>
-          <span class="fa fa-github"></span>
+          <i class="fa fa-github fa-fw"></i>
           <span>GitHub：</span>
           <a class="user-github" :href="'https://github.com/' + userInfo.githubUsername" target="_blank" title="点击进入github">{{userInfo.githubUsername}}</a><br>
-          <span class="fa fa-clock-o"></span>
+          <i class="fa fa-clock-o fa-fw"></i>
           <span>注册时间：{{(userInfo.create_at).slice(0,10)}}</span>
         </div>
       </div>
@@ -166,6 +167,7 @@ export default {
   height: 3rem;
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px #ccc;
+  font-size: 0.8rem;
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: auto;
