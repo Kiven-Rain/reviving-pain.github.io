@@ -123,7 +123,9 @@ export default {
         this.hasPublishTopic = false
       }
     }, (err) => {
-      console.log('请求个人信息出错了，错误信息是：' + err)
+      alert('用户信息请求失败')
+      this.$commonUtil.netErrorTips(err)
+      this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
     })
     // 请求用户收藏的文章
     this.$apiRequest.getUserCollectedTopic(userName, (res) => {
@@ -133,7 +135,9 @@ export default {
         this.hasCollect = false
       }
     }, (err) => {
-      console.log('无法获取用户收藏，错误信息是：' + err)
+      console.log('无法获取用户收藏')
+      this.$commonUtil.netErrorTips(err)
+      this.collectLoading = false
     })
   }
 }

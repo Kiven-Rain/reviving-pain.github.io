@@ -77,7 +77,7 @@ export default {
         }
         // 存储token并验证
         sessionStorage['accesstoken'] = this.accesstoken
-        this.$parent.verifyToken()
+        this.$root.$children[0].verifyToken()
       }
     }
   },
@@ -100,11 +100,12 @@ export default {
 
 <style scoped>
 .loginWrp {
-  position: absolute;
+  position: fixed;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
+  text-align: center;
   z-index: 290;
   user-select: none;
 }
@@ -160,7 +161,6 @@ export default {
   width: 40px;
   height: 45px;
   line-height: 45px;
-  text-align: center;
   float: left;
 }
 

@@ -2,11 +2,12 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-09 15:46:13
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-18 16:48:32
+ * @Last Modified time: 2018-10-28 23:49:38
  */
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import 'babel-polyfill'
 
 Vue.use(Vuex)
 

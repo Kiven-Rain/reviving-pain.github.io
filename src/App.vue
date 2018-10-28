@@ -4,13 +4,12 @@
       <rw-head></rw-head>
     </div>
     <div class="rw-wrapper">
-      <nav-side></nav-side>
+      <nav-side v-if="isRouterAlive"></nav-side>
       <rw-content></rw-content>
     </div>
     <div v-show="showFooter" class="rw-footer">
       <rw-footer></rw-footer>
     </div>
-    <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- github的fork标签 -->
     <a v-show="showFooter" href="https://github.com/Reviving-Pain/reviving-pain.github.io" target="_blank" title="fork me, thanks">
       <fork-me class="fork-me"></fork-me>
@@ -24,7 +23,6 @@ import header from './components/header.vue'
 import navSide from './components/navSide.vue'
 import content from './components/content.vue'
 import footer from './components/footer.vue'
-import cnodeLogin from './components/cnodeLogin.vue'
 import loading from './components/common/loading.vue'
 import forkMe from './components/common/forkMe.vue'
 
@@ -34,7 +32,6 @@ export default {
     'nav-side': navSide,
     'rw-content': content,
     'rw-footer': footer,
-    'cnode-login': cnodeLogin,
     'loading': loading,
     'fork-me': forkMe
   },
@@ -49,7 +46,8 @@ export default {
       loading: false,
       // 存储本次触发onresize事件时的平台，用于下次判断使用
       isMobile: true,
-      mobileDirection: 0
+      mobileDirection: 0,
+      isRouterAlive: true
     }
   },
   methods: {
@@ -93,6 +91,12 @@ export default {
       }, (res) => {
         this.loading = false
         this.$store.commit('changeLoginStatus', res.data)
+        // 登录成功后，回到上次需要登录的页面，同时清空lastOpenPath存储记录
+        if (sessionStorage['lastOpenPath']) {
+          this.$router.push({path: sessionStorage['lastOpenPath']})
+          sessionStorage['lastOpenPath'] = ''
+          this.reloadComponent()
+        }
       }, (err) => {
         this.$store.commit('changeLoginStatus', {
           success: false
@@ -102,12 +106,19 @@ export default {
           this.$commonUtil.removeCookie('accesstoken')
         }
         alert('认证失败，' + err.response.data.error_msg)
+        this.loading = false
         // 重新加载一下登录组件
         this.$store.commit('openLoginCard', false)
         this.$nextTick(() => {
           this.$store.commit('openLoginCard', true)
         })
         sessionStorage['accesstoken'] = ''
+      })
+    },
+    reloadComponent: function () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
       })
     }
   },

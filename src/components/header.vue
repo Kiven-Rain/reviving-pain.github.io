@@ -21,12 +21,12 @@
     <!-- 头像展开菜单遮罩层 -->
     <div @click="hidemenu" v-show="showMenuMask" class="avataMenuMask"></div>
     <!-- CNode社区消息提醒 -->
-    <router-link :to="{path: '/cnodeCommunity/messages'}" class="messageTipsWrp" title="我的消息">
+    <div @click="loadMsgPage" class="messageTipsWrp" title="我的消息">
       <span v-if="hasMsg" class="tipsNum">{{msgNum}}</span>
       <span v-if="hasMsg" class="fa fa-envelope"></span>
       <span v-if="!loginStatus" class="fa fa-envelope"></span>
       <span v-if="!hasMsg & loginStatus" class="fa fa-envelope-open"></span>
-    </router-link>
+    </div>
   </div>
 </template>
 
@@ -100,6 +100,16 @@ export default {
       }, (err) => {
         console.log(err)
       })
+    },
+    // 加载用户消息列表
+    loadMsgPage: function () {
+      if (this.$store.state.loginStatus) {
+        this.$router.push({path: '/cnodeCommunity/messages'})
+      } else {
+        alert('您尚未登陆，请先登录')
+        sessionStorage['lastOpenPath'] = '/cnodeCommunity/messages'
+        this.$store.commit('openLoginCard', true)
+      }
     }
   },
   computed: {
@@ -113,7 +123,7 @@ export default {
       if (this.loginStatus) {
         // 当取得登录状态后先获取一次消息数量
         this.getUserMsgNum()
-        // 当接收到来自于根组件的用户信息时，挂载定时请求方法,定时接收消息
+        // 挂载定时请求方法,定时接收消息
         this.timer = setInterval(() => {
           // 每1分钟请求一次
           this.getUserMsgNum()

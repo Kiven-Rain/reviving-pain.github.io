@@ -135,7 +135,8 @@ export default {
           this.$parent.reload()
         }
       }, (err) => {
-        alert(err.response.data.error_msg)
+        this.$commonUtil.netErrorTips(err)
+        this.subLoading = false
       })
     },
     // 修改好的文章提交请求与相关逻辑
@@ -150,9 +151,9 @@ export default {
       }, (res) => {
         this.subLoading = false
         this.$parent.$parent.reload()
-        console.log()
       }, (err) => {
-        alert(err)
+        this.$commonUtil.netErrorTips(err)
+        this.subLoading = false
       })
     },
     switchCard: function (type) {

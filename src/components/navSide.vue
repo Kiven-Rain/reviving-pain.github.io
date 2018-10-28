@@ -8,12 +8,11 @@
         <span v-if="tab.subTabs" :class="['fa', 'fa-chevron-right', {'chevron-right-rotate': index+1 === selectedTabNum}]"></span>
         <!-- 二级菜单选项 -->
         <ul v-if="tab.subTabs" :class="['subTabs', {'subTabsOpen': index+1 === selectedTabNum}]">
-          <router-link @click.native.stop="selectSubtabItem" class="subTabs-item" tag="li"
-          v-for="(subTab, subIndex) in tab.subTabs" :key="subIndex"
-          :to="{path: tab.path + subTab.path}">
+          <li @click.stop="selectSubtabItem(tab.path, subTab.path)" :class="['subTabs-item', {'subTab-active': subTab.path === selectedSubTabPath}]"
+          v-for="(subTab, subIndex) in tab.subTabs" :key="subIndex">
             <span :class="['fa', subTab.iconMark, ' fa-fw']">&nbsp;</span>
             {{subTab.subMenu}}
-          </router-link>
+          </li>
         </ul>
       </li>
     </transition-group>
@@ -28,10 +27,16 @@ export default {
     return {
       // 记录当前选中的侧边栏一级菜单的序号
       selectedTabNum: 0,
+      // 记录当前选中的侧边栏二级菜单的路由
+      selectedSubTabPath: '/cnodejsTopics',
       // 侧边导航菜单的数据
       tabs: navSidebarData,
       // 点击二级菜单选项时设为true，让路由变化遵循手动操作
-      isClick: false
+      isClick: false,
+      shouldLoginComponents: [
+        'createTopic',
+        'profile'
+      ]
     }
   },
   methods: {
@@ -45,13 +50,29 @@ export default {
       } else {
         this.$router.push({path: tab.path})
         this.selectedTabNum = tabNum
+        this.selectedSubTabPath = ''
       }
     },
     // 选中二级菜单时(阻止事件冒泡导致导致的一级菜单收起问题)
-    selectSubtabItem: function () {
+    selectSubtabItem: function (tabPath, subTabPath) {
       this.isClick = true
+      let shouldLogin = this.shouldLoginComponents.indexOf(subTabPath.slice(1)) + 1
+      if (this.loginStatus) {
+        this.$router.push({path: tabPath + subTabPath})
+        this.activeSubTab()
+      } else {
+        if (shouldLogin) {
+          sessionStorage['lastOpenPath'] = tabPath + subTabPath
+          this.$store.commit('openLoginCard', true)
+          // 先提示需要登录，然后记录当前点的菜单，如果用用户登录了，则转回来
+          alert('查看此内容需要登录哦~')
+        } else {
+          this.$router.push({path: tabPath + subTabPath})
+          this.activeSubTab()
+        }
+      }
     },
-    // 选择性展开一级菜单
+    // 选择性展开一级菜单并做二级菜单选中样式的回填
     openTabMenu: function () {
       for (let i = 0; i < this.tabs.length; i++) {
         if (this.tabs[i].path === this.currentTabPath) {
@@ -59,12 +80,21 @@ export default {
           break
         }
       }
+    },
+    // 回填二级菜单选中样式
+    activeSubTab: function () {
+      if (this.$route.path.split('/')[2]) {
+        this.selectedSubTabPath = '/' + this.$route.path.split('/')[2]
+      }
     }
   },
   computed: {
     // 计算当前一级菜单路径
     currentTabPath: function () {
       return '/' + this.$route.path.split('/')[1]
+    },
+    loginStatus: function () {
+      return this.$store.state.loginStatus
     }
   },
   watch: {
@@ -82,8 +112,10 @@ export default {
     }
   },
   mounted: function () {
-    // 初次加载或者刷新页面时选择性展开一级菜单
+    // 选择性展开一级菜单
     this.openTabMenu()
+    // 回填二级菜单选中样式
+    this.activeSubTab()
   }
 }
 </script>
@@ -161,8 +193,8 @@ export default {
   float: left;
 }
 
-/* 二级菜单选项router-link激活后的样式 */
-.router-link-active {
+/* 二级菜单选项激活后的样式 */
+.subTab-active {
   background-color: #bbb;
   color: #fff;
 }

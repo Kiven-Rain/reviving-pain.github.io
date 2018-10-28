@@ -189,7 +189,8 @@ export default {
             this.collect = '收藏'
             this.collectBtnActive = false
           }, (err) => {
-            console.log(err.response.data.error_msg)
+            this.$commonUtil.netErrorTips(err)
+            this.subLoading.collectLoading = false
           })
         } else {
           this.subLoading.collectLoading = true
@@ -203,7 +204,8 @@ export default {
             this.collect = '取消收藏'
             this.collectBtnActive = true
           }, (err) => {
-            console.log(err.response.data.error_msg)
+            this.$commonUtil.netErrorTips(err)
+            this.subLoading.collectLoading = false
           })
         }
       } else {
@@ -234,7 +236,8 @@ export default {
             // 调用父组件contentWrp的reload方法
             this.$parent.reload()
           }, (err) => {
-            console.log(err.response.data.error_msg)
+            this.$commonUtil.netErrorTips(err)
+            this.subLoading.commentLoading = false
           })
         }
       }
@@ -317,7 +320,8 @@ export default {
         console.log('当前不在登录状态，无法发表评论，无法获取文章收藏与点赞状态，也无法判断是否可编辑')
       }
     }, (err) => {
-      console.log('文章获取失败了，错误信息是：' + err)
+      this.$commonUtil.netErrorTips(err)
+      this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
     })
     // 解析当前url，替换文章与评论中出现的@用户链接
     var tempUrlPart = window.location.href

@@ -130,7 +130,8 @@ export default {
           this.isTabBarActive = true
         }, 500)
       }, (err) => {
-        console.log(err.response.data.success)
+        this.$commonUtil.netErrorTips(err)
+        this.isTabBarActive = true
       })
     },
     // 将滚动条拉到顶部

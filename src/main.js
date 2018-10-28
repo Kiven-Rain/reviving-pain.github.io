@@ -3,6 +3,7 @@ import Vue from 'vue'
 // 这里引入App.vue是因为进行根组件注册的时候要在冒号的右边引用组件的选项对象配置
 import app from './App.vue'
 import router from './router/index.js'
+import 'babel-polyfill'
 import store from './store/index.js'
 import 'font-awesome/css/font-awesome.css'
 import './assets/css/common.css'

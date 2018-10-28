@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-10-05 10:10:50
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-19 17:26:03
+ * @Last Modified time: 2018-10-28 23:24:00
  */
 
 export default {
@@ -127,6 +127,14 @@ export default {
       return str.slice(0, num) + '…'
     } else {
       return str
+    }
+  },
+  // 处理网络连接失败问题
+  netErrorTips: function (err) {
+    if (err.response) {
+      alert(err.response.data.error_msg)
+    } else {
+      alert('网络连接失败，请检查网络连接')
     }
   }
 }

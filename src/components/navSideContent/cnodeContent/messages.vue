@@ -111,7 +111,8 @@ export default {
             // 请求header的获取消息数量的方法刷新剩余未读消息数量
             this.$parent.$parent.$children[0].getUserMsgNum()
           }, (err) => {
-            console.log(err)
+            this.$commonUtil.netErrorTips(err)
+            this.loading = false
           })
         } else {
           // 循环标记
@@ -144,7 +145,7 @@ export default {
         // 调用header的消息数量请求，刷新数量显示
         this.$parent.$parent.$children[0].getUserMsgNum()
       }, (err) => {
-        console.log(err)
+        this.$commonUtil.netErrorTips(err)
       })
     }
   },
@@ -162,7 +163,8 @@ export default {
         this.checkedMsg[i] = false
       }
     }, (err) => {
-      console.log(err)
+      this.$commonUtil.netErrorTips(err)
+      this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
     })
   }
 }
