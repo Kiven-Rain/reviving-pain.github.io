@@ -71,38 +71,41 @@ export default {
   },
   methods: {
     scrollMethod: function () {
-      var viewHeight = this.$refs.cnodeTopics.offsetHeight
-      var scrollTop = this.$refs.cnodeTopics.scrollTop
-      var totalHeight = this.$refs.cnodeTopics.scrollHeight
-      // 判断向上或者向下的滚动事件
-      if (this.scrollTopBefore < scrollTop) {
-        // 向下滚动时
-        this.showTabbar = true
-      } else {
-        // 向上滚动时
-        if (scrollTop < 150) {
-          // 快接近顶部时显示(如果判断scrollTop=0则出现的很突兀，体验不好)
+      // 存在指定dom节点的时候再进行参数获取
+      if (this.$refs.cnodeTopics) {
+        let viewHeight = this.$refs.cnodeTopics.offsetHeight
+        let scrollTop = this.$refs.cnodeTopics.scrollTop
+        let totalHeight = this.$refs.cnodeTopics.scrollHeight
+        // 判断向上或者向下的滚动事件
+        if (this.scrollTopBefore < scrollTop) {
+          // 向下滚动时
           this.showTabbar = true
         } else {
-          this.showTabbar = false
+          // 向上滚动时
+          if (scrollTop < 150) {
+            // 快接近顶部时显示(如果判断scrollTop=0则出现的很突兀，体验不好)
+            this.showTabbar = true
+          } else {
+            this.showTabbar = false
+          }
         }
-      }
-      this.scrollTopBefore = scrollTop
-      // 向下滚动距离大于500显示回到顶部按钮
-      if (scrollTop > 500) {
-        this.backToTopBtn = true
-      } else {
-        this.backToTopBtn = false
-      }
-      // 瀑布流底部请求,路由跳转之后高度会变为0,滚动事件依然触发,不参与此判定
-      if ((viewHeight + scrollTop >= totalHeight) && (viewHeight !== 0)) {
-        // 半透明loading出现时阻止瀑布流loadingBlock加载(一般出现在点进文章=>刷新=>返回的时候)
-        if (!this.loading) {
-          // 同时底部loadingblock出现的时候不允许切换选项卡(避免切换之后在新选项卡中不断的还原上一个选项卡中的scrollTop)
-          this.isTabBarActive = false
-          this.loadingBlock = true
+        this.scrollTopBefore = scrollTop
+        // 向下滚动距离大于500显示回到顶部按钮
+        if (scrollTop > 500) {
+          this.backToTopBtn = true
+        } else {
+          this.backToTopBtn = false
         }
-        this.getData(this.currentTab)
+        // 瀑布流底部请求,路由跳转之后高度会变为0,滚动事件依然触发,不参与此判定
+        if ((viewHeight + scrollTop >= totalHeight) && (viewHeight !== 0)) {
+          // 半透明loading出现时阻止瀑布流loadingBlock加载(一般出现在点进文章=>刷新=>返回的时候)
+          if (!this.loading) {
+            // 同时底部loadingblock出现的时候不允许切换选项卡(避免切换之后在新选项卡中不断的还原上一个选项卡中的scrollTop)
+            this.isTabBarActive = false
+            this.loadingBlock = true
+          }
+          this.getData(this.currentTab)
+        }
       }
     },
     // 发送接口请求，获取返回数据
@@ -187,7 +190,6 @@ export default {
 <style scoped>
 /* 顶部tab选项卡样式 */
 .nsc-commonWrp .topicTabWrp {
-  max-width: 900px;
   height: 70px;
   padding: 10px;
   box-sizing: border-box;
@@ -201,7 +203,7 @@ export default {
   opacity: 0;
 }
 .nsc-commonWrp .topicTabWrp .tabBar {
-  width: 100%;
+  max-width: 900px;
   border: 1px solid #bbb;
   margin: 0 auto;
   box-shadow: 0px 0px 10px #ccc;
@@ -281,6 +283,7 @@ export default {
 .nsc-commonWrp .backToTopBtn {
   width: 2rem;
   height: 6rem;
+  padding: 0px;
   border: 2px solid black;
   border-radius: 5px;
   background: rgba(85, 85, 85, 0.5);

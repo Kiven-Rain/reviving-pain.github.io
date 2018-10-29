@@ -178,8 +178,9 @@
 }
 /* 中型提交按钮(限制宽) */
 .mid-submit-btn {
-  width: 75px;
+  width: 76px;
   height: 35px;
+  padding: 0px;
   line-height: 35px;
   border: none;
   border-radius: 5px;

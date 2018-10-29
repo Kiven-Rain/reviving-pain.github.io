@@ -2,7 +2,7 @@
  * @Author: Reviving-Pain-Laptop
  * @Date: 2018-09-20 10:08:15
  * @Last Modified by: Reviving-Pain-Laptop
- * @Last Modified time: 2018-10-28 11:34:30
+ * @Last Modified time: 2018-10-29 11:35:49
  */
 import axios from 'axios'
 
@@ -20,7 +20,7 @@ axios.defaults.transformRequest = [function (data) {
   return newData
 }]
 // 配置axios相应超时时间(5s)
-// axios.defaults.timeout = 5000
+axios.defaults.timeout = 5000
 
 // 配置默认的基础url
 axios.defaults.baseURL = 'https://cnodejs.org/api/v1'

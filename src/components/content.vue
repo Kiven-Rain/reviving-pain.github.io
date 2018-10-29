@@ -4,13 +4,19 @@
     <router-view name="mockWrp"></router-view>
     <router-view name="defaultContent"></router-view>
     <router-view name="notFoundComponent"></router-view>
+    <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
     <!-- 宽度小于900px且移动侧边栏展开时的遮罩层 -->
     <div v-show="this.$store.state.showNavside" @click="hideMobileSidebar" class="content-mask"></div>
   </div>
 </template>
 
 <script>
+import cnodeLogin from './navSideContent/cnodeContent/cnodeLogin.vue'
+
 export default {
+  components: {
+    'cnode-login': cnodeLogin
+  },
   data: function () {
     return {
       // some data here

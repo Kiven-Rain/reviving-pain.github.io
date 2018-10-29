@@ -28,7 +28,7 @@ export default {
       // 记录当前选中的侧边栏一级菜单的序号
       selectedTabNum: 0,
       // 记录当前选中的侧边栏二级菜单的路由
-      selectedSubTabPath: '/cnodejsTopics',
+      selectedSubTabPath: '',
       // 侧边导航菜单的数据
       tabs: navSidebarData,
       // 点击二级菜单选项时设为true，让路由变化遵循手动操作
@@ -65,7 +65,7 @@ export default {
           sessionStorage['lastOpenPath'] = tabPath + subTabPath
           this.$store.commit('openLoginCard', true)
           // 先提示需要登录，然后记录当前点的菜单，如果用用户登录了，则转回来
-          alert('查看此内容需要登录哦~')
+          alert('您尚未登陆，请先登录')
         } else {
           this.$router.push({path: tabPath + subTabPath})
           this.activeSubTab()

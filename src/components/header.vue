@@ -61,7 +61,10 @@ export default {
           break
         case 'userCenter':
           console.log('前往个人中心')
-          this.$router.push({path: '/cnodeCommunity/profile'})
+          if (this.$route.path !== '/cnodeCommunity/profile') {
+            this.$router.push({path: '/cnodeCommunity/profile'})
+            this.$parent.reloadComponent()
+          }
           break
         case 'logout':
           var logout = confirm('确认要注销登录吗？')
@@ -104,7 +107,10 @@ export default {
     // 加载用户消息列表
     loadMsgPage: function () {
       if (this.$store.state.loginStatus) {
-        this.$router.push({path: '/cnodeCommunity/messages'})
+        if (this.$route.path !== '/cnodeCommunity/messages') {
+          this.$router.push({path: '/cnodeCommunity/messages'})
+          this.$parent.reloadComponent()
+        }
       } else {
         alert('您尚未登陆，请先登录')
         sessionStorage['lastOpenPath'] = '/cnodeCommunity/messages'
@@ -181,7 +187,7 @@ export default {
   display: inline-block;
   position: absolute;
   top: 52px;
-  z-index: 1;
+  z-index: 200;
 }
 .header .avatarMenu .menuHead {
   height: 0px;

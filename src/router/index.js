@@ -25,7 +25,7 @@ export default new Router({
         defaultContent: defaultContent
       }
     },
-    // 除以配置路由之外的路由配置
+    // 除已配置路由之外的路由配置
     {
       path: '*',
       components: {
@@ -61,12 +61,12 @@ export default new Router({
           createTopic: createTopic
         }
       }, {
-        path: '/cnodeCommunity/profile',
+        path: 'profile',
         components: {
           cnodeProfile: cnodeProfile
         }
       }, {
-        path: '/cnodeCommunity/messages',
+        path: 'messages',
         components: {
           messages: messages
         }

@@ -377,6 +377,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   position: absolute;
+  top: 0px;
   right: 0px;
 }
 .nsc-commonBlockWrp .articleHeadBody .articleControlPanel button:nth-child(2) {

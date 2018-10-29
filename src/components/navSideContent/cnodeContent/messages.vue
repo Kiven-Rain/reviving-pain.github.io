@@ -165,6 +165,7 @@ export default {
     }, (err) => {
       this.$commonUtil.netErrorTips(err)
       this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
+      this.$root.$children[0].reloadComponent()
     })
   }
 }

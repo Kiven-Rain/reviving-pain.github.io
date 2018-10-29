@@ -87,7 +87,8 @@ export default {
       collectLoading: true,
       publishTopicShowNum: 5,
       collectShowNum: 5,
-      loading: true
+      loading: true,
+      userName: ''
     }
   },
   methods: {
@@ -105,40 +106,61 @@ export default {
           this.publishTopicShowNum = 5
         }
       }
+    },
+    // 请求用户基本信息
+    getUserInfo: function (userName) {
+      this.$apiRequest.getUserInfo(userName, (res) => {
+        this.userInfo = res.data.data
+        this.loading = false
+        if (!this.userInfo.recent_topics.length) {
+          this.hasPublishTopic = false
+        }
+      }, (err) => {
+        alert('用户信息请求失败')
+        this.$commonUtil.netErrorTips(err)
+        this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
+        this.$root.$children[0].reloadComponent()
+      })
+    },
+    // 请求用户收藏的文章
+    getUserCollectedTopic: function (userName) {
+      this.$apiRequest.getUserCollectedTopic(userName, (res) => {
+        this.collectLoading = false
+        this.userCollect = res.data.data
+        if (!this.userCollect.length) {
+          this.hasCollect = false
+        }
+      }, (err) => {
+        console.log('无法获取用户收藏')
+        this.$commonUtil.netErrorTips(err)
+        this.collectLoading = false
+      })
+    },
+    requestUserInfo: function (userName) {
+      this.getUserInfo(userName)
+      this.getUserCollectedTopic(userName)
+    }
+  },
+  computed: {
+    loginStatus: function () {
+      return this.$store.state.loginStatus
+    }
+  },
+  watch: {
+    loginStatus: function () {
+      if (this.loginStatus) {
+        this.requestUserInfo(this.$store.state.loginUsername)
+      }
     }
   },
   created: function () {
-    let userName = (this.$route.path).split('/').pop()
-    if (userName === 'profile') {
-      this.$commonUtil.exchangePageTitle(userName, 'profile')
-      userName = this.$store.state.loginUsername
-    } else {
-      this.$commonUtil.exchangePageTitle(userName, 'userCenter')
+    this.userName = (this.$route.path).split('/').pop()
+    this.$commonUtil.exchangePageTitle(this.userName, 'userCenter')
+    if (this.userName !== 'profile') {
+      this.requestUserInfo(this.userName)
+    } else if (this.loginStatus) {
+      this.requestUserInfo(this.$store.state.loginUsername)
     }
-    // 请求用户基本信息
-    this.$apiRequest.getUserInfo(userName, (res) => {
-      this.userInfo = res.data.data
-      this.loading = false
-      if (!this.userInfo.recent_topics.length) {
-        this.hasPublishTopic = false
-      }
-    }, (err) => {
-      alert('用户信息请求失败')
-      this.$commonUtil.netErrorTips(err)
-      this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
-    })
-    // 请求用户收藏的文章
-    this.$apiRequest.getUserCollectedTopic(userName, (res) => {
-      this.collectLoading = false
-      this.userCollect = res.data.data
-      if (!this.userCollect.length) {
-        this.hasCollect = false
-      }
-    }, (err) => {
-      console.log('无法获取用户收藏')
-      this.$commonUtil.netErrorTips(err)
-      this.collectLoading = false
-    })
   }
 }
 </script>

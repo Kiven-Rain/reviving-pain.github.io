@@ -9,17 +9,11 @@
     <router-view name="createTopic" v-if="isRouterAlive"></router-view>
     <router-view name="cnodeProfile"></router-view>
     <router-view name="messages" v-if="isRouterAlive"></router-view>
-    <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
   </div>
 </template>
 
 <script>
-import cnodeLogin from './cnodeContent/cnodeLogin.vue'
-
 export default {
-  components: {
-    'cnode-login': cnodeLogin
-  },
   data: function () {
     return {
       isRouterAlive: true,
@@ -56,9 +50,6 @@ export default {
         }
       }
     }
-  },
-  mounted: function () {
-  // do sth
   }
 }
 </script>

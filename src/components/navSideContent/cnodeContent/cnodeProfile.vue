@@ -13,6 +13,9 @@ export default {
     return {
       // some data here
     }
+  },
+  mounted: function () {
+    this.$commonUtil.exchangePageTitle('', 'profile')
   }
 }
 </script>
