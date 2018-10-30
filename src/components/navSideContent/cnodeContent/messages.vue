@@ -109,7 +109,7 @@ export default {
             this.loading = false
             this.$parent.reload()
             // 请求header的获取消息数量的方法刷新剩余未读消息数量
-            this.$parent.$parent.$children[0].getUserMsgNum()
+            this.$root.$children[0].$children[0].getUserMsgNum()
           }, (err) => {
             this.$commonUtil.netErrorTips(err)
             this.loading = false
@@ -143,7 +143,7 @@ export default {
         accesstoken: sessionStorage['accesstoken']
       }, (res) => {
         // 调用header的消息数量请求，刷新数量显示
-        this.$parent.$parent.$children[0].getUserMsgNum()
+        this.$root.$children[0].$children[0].getUserMsgNum()
       }, (err) => {
         this.$commonUtil.netErrorTips(err)
       })
