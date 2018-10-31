@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrap content-wrap-response">
     <router-view name="cnodeWrp"></router-view>
-    <router-view name="mockWrp"></router-view>
+    <router-view name="aboutCnode"></router-view>
     <router-view name="defaultContent"></router-view>
     <router-view name="notFoundComponent"></router-view>
     <cnode-login v-show="$store.state.openLoginCard" v-if="isLoginAlive"></cnode-login>

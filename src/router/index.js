@@ -7,15 +7,14 @@ import article from '../components/navSideContent/cnodeContent/article.vue'
 import createTopic from '../components/navSideContent/cnodeContent/createTopic.vue'
 import cnodeProfile from '../components/navSideContent/cnodeContent/cnodeProfile.vue'
 import messages from '../components/navSideContent/cnodeContent/messages.vue'
-import mockWrp from '../components/navSideContent/mockWrp.vue'
-import getMockdata from '../components/navSideContent/mockTestContent/getMockdata.vue'
+import aboutCnode from '../components/navSideContent/about.vue'
 import defaultContent from '../components/navSideContent/defaultContent.vue'
 import notFoundComponent from '../components/navSideContent/notFoundComponent.vue'
 
 Vue.use(Router)
 
 export default new Router({
-  // 打开此模式之后，由于没有服务端支持，打包的项目运行时刷新可能会出现404错误
+  // 由于无法配置服务端，打开history模式之后，打包的项目运行时刷新可能会出现404错误
   // mode: 'history',
   routes: [
     // (欢迎页)根路由配置
@@ -72,18 +71,12 @@ export default new Router({
         }
       }]
     },
-    // Mock数据测试子菜单路由配置
+    // 关于cnodejs社区
     {
-      path: '/mockDataTest',
+      path: '/about-community',
       components: {
-        mockWrp: mockWrp
-      },
-      children: [{
-        path: 'getMockdata',
-        components: {
-          getMockdata: getMockdata
-        }
-      }]
+        aboutCnode: aboutCnode
+      }
     }
   ]
 })

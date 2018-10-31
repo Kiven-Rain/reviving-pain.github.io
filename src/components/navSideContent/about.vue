@@ -1,0 +1,64 @@
+<template>
+  <div class="nsc-commonWrp">
+    <vue-markdown source="
+    # 使用vue构建的第三方社区网站
+    ## 功能介绍
+    这是一个国内的nodejs技术交流社区，可以适应移动端和PC端，主要包含以下功能:
+    1、【分类浏览】分类浏览社区中各种类型的话题，包括技术分享，问题讨论，招聘信息等等板块
+    2、【个人中心】用户个人中心查看用户最近参与的话题，发表的话题，以及收藏的话题
+    3、【文章互动】可在各类话题中发表自己的评论，为他人的评论点赞，以及收藏自己喜欢的话题
+    4、【话题发表】可以发表自己的话题，编辑自己已经发表的话题，在发表话题与编辑话题的过程中可以实时预览发表后的格式排版
+    5、【接收消息】当有其他用户@你或者在你的话题下方添加评论的时候，可以接收到相应的消息提醒(消息提醒60秒刷新一次)
+
+    [[---github源码---]](https://github.com/Reviving-Pain/reviving-pain.github.io) [[---码云源码---]](https://gitee.com/Reviving-Pain/CnodeJS-community)
+    ## 技术栈
+
+    [Vue.js](https://cn.vuejs.org/)
+
+    [Vue-router](https://router.vuejs.org/zh/)
+
+    [Vuex](https://vuex.vuejs.org/zh/)
+
+    [Vue-markdown](https://www.npmjs.com/package/vue-markdown)
+
+    [Axios](https://www.jianshu.com/p/7a9fbcbb1114)
+
+    [CnodeJS社区 API](https://cnodejs.org/api)
+
+    ## 关于项目运行起来之后如何登录的问题
+    > 在这里说明一下，由于cnode社区没有提供用户名密码登录返回token的登录形式接口，所以,这里只能直接使用token进行登录，请保存好自己的token
+
+    1. 用自己的github账号在CnodeJS社区进行注册，具体网址是https://cnodejs.org/ ,如果注册后登录失败，请点击自己的github页面右上角头像打开setting，将setting页面中的Profile选项卡中的Public email设置好，同时取消勾选在Emails选项卡中下方的'Keep my email address private'选项。
+
+    2. 注册并登录成功之后点击右上角的设置，在页面的最下方找到自己的 Access Token 字符串
+
+    3. 在项目主页的登录弹窗中输入自己的token码，检测认证信息(没有弹窗可以点击页面顶部的头像在弹出菜单中选择进行登录)
+    " class="md-content"></vue-markdown>
+  </div>
+</template>
+
+<script>
+import vueMarkdown from 'vue-markdown'
+
+export default {
+  components: {
+    'vue-markdown': vueMarkdown
+  },
+  data: function () {
+    return {
+      aboutContent: ''
+    }
+  },
+  methods: {
+    // put some function here
+  },
+  mounted: function () {
+    this.$commonUtil.exchangePageTitle('关于CNodeJS社区')
+    this.aboutContent = ''
+  }
+}
+</script>
+
+<style scoped>
+/* some css here */
+</style>
