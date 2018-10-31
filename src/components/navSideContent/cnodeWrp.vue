@@ -43,9 +43,7 @@ export default {
       if (!this.loginStatus) {
         let shouldLogin = this.pageShouldLogin.indexOf(this.$route.path.split('/').pop()) + 1
         if (shouldLogin) {
-          sessionStorage['lastOpenPath'] = this.$route.path
           this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
-          this.$root.$children[0].reloadComponent()
           this.$store.commit('openLoginCard', true)
         }
       }

@@ -63,7 +63,6 @@ export default {
           console.log('前往个人中心')
           if (this.$route.path !== '/cnodeCommunity/profile') {
             this.$router.push({path: '/cnodeCommunity/profile'})
-            this.$parent.reloadComponent()
           }
           break
         case 'logout':
@@ -77,7 +76,6 @@ export default {
             if (this.$commonUtil.getCookie('accesstoken')) {
               this.$commonUtil.removeCookie('accesstoken')
             }
-            sessionStorage['accesstoken'] = ''
             alert('您已注销登录')
           } else {
             console.log('注销登陆操作已取消')
@@ -88,7 +86,7 @@ export default {
     // 获取用户未读消息数量
     getUserMsgNum: function () {
       this.$apiRequest.getUserMsgNum({
-        accesstoken: sessionStorage['accesstoken']
+        accesstoken: this.$commonUtil.getCookie('accesstoken')
       }, (res) => {
         if (res.data.data > 9) {
           this.msgNum = '9+'
@@ -101,7 +99,8 @@ export default {
           this.hasMsg = false
         }
       }, (err) => {
-        console.log(err)
+        console.log(err.response.data.error_msg)
+        this.$parent.verifyToken()
       })
     },
     // 加载用户消息列表
@@ -109,11 +108,9 @@ export default {
       if (this.$store.state.loginStatus) {
         if (this.$route.path !== '/cnodeCommunity/messages') {
           this.$router.push({path: '/cnodeCommunity/messages'})
-          this.$parent.reloadComponent()
         }
       } else {
         alert('您尚未登陆，请先登录')
-        sessionStorage['lastOpenPath'] = '/cnodeCommunity/messages'
         this.$store.commit('openLoginCard', true)
       }
     }

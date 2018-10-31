@@ -87,48 +87,27 @@ export default {
     // accesstoken验证
     verifyToken: function () {
       this.$apiRequest.verifyAccesstoken({
-        accesstoken: sessionStorage['accesstoken']
+        accesstoken: this.$commonUtil.getCookie('accesstoken')
       }, (res) => {
         this.loading = false
         this.$store.commit('changeLoginStatus', res.data)
-        // 登录成功后，回到上次需要登录的页面，同时清空lastOpenPath存储记录
-        if (sessionStorage['lastOpenPath']) {
-          this.$router.push({path: sessionStorage['lastOpenPath']})
-          sessionStorage['lastOpenPath'] = ''
-          this.reloadComponent()
-        }
       }, (err) => {
         this.$store.commit('changeLoginStatus', {
           success: false
         })
-        // 如果在登录时选择了记住密码，密码验证错误时清除错误的cookie存储
-        if (this.$commonUtil.getCookie('accesstoken')) {
-          this.$commonUtil.removeCookie('accesstoken')
-        }
-        alert('认证失败，' + err.response.data.error_msg)
+        // 密码验证错误时清除错误的cookie存储
+        this.$commonUtil.removeCookie('accesstoken')
+        this.$commonUtil.netErrorTips(err)
         this.loading = false
         // 重新加载一下登录组件
-        this.$store.commit('openLoginCard', false)
-        this.$nextTick(() => {
-          this.$store.commit('openLoginCard', true)
-        })
-        sessionStorage['accesstoken'] = ''
-      })
-    },
-    reloadComponent: function () {
-      this.isRouterAlive = false
-      this.$nextTick(() => {
-        this.isRouterAlive = true
+        this.$children[2].reload()
       })
     }
   },
   created: function () {
     // 验证是否有token存储
-    if (sessionStorage['accesstoken']) {
-      this.loading = true
-      this.verifyToken()
-    } else if (this.$commonUtil.getCookie('accesstoken')) {
-      sessionStorage['accesstoken'] = this.$commonUtil.getCookie('accesstoken')
+    if (this.$commonUtil.getCookie('accesstoken')) {
+      sessionStorage['isAutoLogin'] = 'true'
       this.loading = true
       this.verifyToken()
     } else {

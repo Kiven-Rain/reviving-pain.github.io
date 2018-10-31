@@ -122,7 +122,7 @@ export default {
     // 新文章发布请求与相关逻辑
     createTopic: function () {
       this.$apiRequest.createTopic({
-        accesstoken: sessionStorage['accesstoken'],
+        accesstoken: this.$commonUtil.getCookie('accesstoken'),
         title: this.publishData.topicTitle,
         tab: this.publishData.topicTag,
         content: this.newTopicContent
@@ -143,7 +143,7 @@ export default {
     modifyTopic: function () {
       var topicId = this.$route.path.split('/').pop()
       this.$apiRequest.modifyTopic({
-        accesstoken: sessionStorage['accesstoken'],
+        accesstoken: this.$commonUtil.getCookie('accesstoken'),
         topic_id: topicId,
         title: this.publishData.topicTitle,
         tab: this.publishData.topicTag,

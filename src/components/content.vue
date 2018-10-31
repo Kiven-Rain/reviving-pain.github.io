@@ -4,7 +4,7 @@
     <router-view name="mockWrp"></router-view>
     <router-view name="defaultContent"></router-view>
     <router-view name="notFoundComponent"></router-view>
-    <cnode-login v-if="$store.state.openLoginCard"></cnode-login>
+    <cnode-login v-show="$store.state.openLoginCard" v-if="isLoginAlive"></cnode-login>
     <!-- 宽度小于900px且移动侧边栏展开时的遮罩层 -->
     <div v-show="this.$store.state.showNavside" @click="hideMobileSidebar" class="content-mask"></div>
   </div>
@@ -19,13 +19,20 @@ export default {
   },
   data: function () {
     return {
-      // some data here
+      isLoginAlive: true
     }
   },
   methods: {
     hideMobileSidebar: function () {
       // 点击遮罩层之后，隐藏侧边导航
       this.$store.commit('navSideController', !(this.$store.state.showNavside))
+    },
+    // 重新加载登录组件
+    reload: function () {
+      this.isLoginAlive = false
+      this.$nextTick(() => {
+        this.isLoginAlive = true
+      })
     }
   }
 }

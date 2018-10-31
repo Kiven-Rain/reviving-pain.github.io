@@ -156,7 +156,7 @@ export default {
         this.subLoading.likeLoading = true
         // 点赞&取消点赞请求
         this.$apiRequest.commentLike(replyId, {
-          accesstoken: sessionStorage['accesstoken']
+          accesstoken: this.$commonUtil.getCookie('accesstoken')
         }, (res) => {
           if (res.data.action === 'up') {
             this.article.replies[replyIndex].is_uped = true
@@ -181,7 +181,7 @@ export default {
           this.subLoading.collectLoading = true
           // 文章取消收藏
           this.$apiRequest.deCollectTopic({
-            accesstoken: sessionStorage['accesstoken'],
+            accesstoken: this.$commonUtil.getCookie('accesstoken'),
             topic_id: articleId
           }, (res) => {
             this.subLoading.collectLoading = false
@@ -196,7 +196,7 @@ export default {
           this.subLoading.collectLoading = true
           // 文章添加收藏
           this.$apiRequest.collectTopic({
-            accesstoken: sessionStorage['accesstoken'],
+            accesstoken: this.$commonUtil.getCookie('accesstoken'),
             topic_id: articleId
           }, (res) => {
             this.subLoading.collectLoading = false
@@ -227,7 +227,7 @@ export default {
           this.newCommentContent = this.commentContent.concat('\n\n来自 [Vue版CNode客户端](https://reviving-pain.github.io/dist/#/cnodeCommunity/cnodejsTopics)')
           var topicId = this.$route.path.split('/').pop()
           this.$apiRequest.createComment(topicId, {
-            accesstoken: sessionStorage['accesstoken'],
+            accesstoken: this.$commonUtil.getCookie('accesstoken'),
             content: this.newCommentContent
           }, (res) => {
             this.subLoading.commentLoading = false
@@ -287,7 +287,7 @@ export default {
     var articleId = this.$route.path.split('/')[3]
     this.$apiRequest.getTopicDetail(articleId, {
       mdrender: 'false',
-      accesstoken: sessionStorage['accesstoken']
+      accesstoken: this.$commonUtil.getCookie('accesstoken')
     }, (res) => {
       this.article = res.data.data
       // 转换文章tab字段为汉字

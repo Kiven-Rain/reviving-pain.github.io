@@ -119,7 +119,6 @@ export default {
         alert('用户信息请求失败')
         this.$commonUtil.netErrorTips(err)
         this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
-        this.$root.$children[0].reloadComponent()
       })
     },
     // 请求用户收藏的文章

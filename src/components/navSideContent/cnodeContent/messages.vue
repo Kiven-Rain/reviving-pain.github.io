@@ -103,7 +103,7 @@ export default {
           // 发送全选标记请求
           this.loading = true
           this.$apiRequest.markAllMsgToRead({
-            accesstoken: sessionStorage['accesstoken']
+            accesstoken: this.$commonUtil.getCookie('accesstoken')
           }, (res) => {
             alert('操作成功')
             this.loading = false
@@ -140,7 +140,7 @@ export default {
     // 发送单条消息标记请求
     markOneMsgToRead: function (msgIndex) {
       this.$apiRequest.markOneMsgToRead(this.msgData.hasnotReadMsgs[msgIndex].id, {
-        accesstoken: sessionStorage['accesstoken']
+        accesstoken: this.$commonUtil.getCookie('accesstoken')
       }, (res) => {
         // 调用header的消息数量请求，刷新数量显示
         this.$root.$children[0].$children[0].getUserMsgNum()
@@ -149,11 +149,23 @@ export default {
       })
     }
   },
+  computed: {
+    loginStatus: function () {
+      return this.$store.state.loginStatus
+    }
+  },
+  watch: {
+    loginStatus: function () {
+      if (!this.loginStatus) {
+        this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
+      }
+    }
+  },
   created: function () {
     this.$commonUtil.exchangePageTitle('我的社区消息')
     this.loading = true
     this.$apiRequest.getUserMsg({
-      accesstoken: sessionStorage['accesstoken']
+      accesstoken: this.$commonUtil.getCookie('accesstoken')
     }, (res) => {
       this.loading = false
       this.msgData.hasReadMsgs = res.data.data.has_read_messages
@@ -165,7 +177,6 @@ export default {
     }, (err) => {
       this.$commonUtil.netErrorTips(err)
       this.$router.push({path: '/cnodeCommunity/cnodejsTopics'})
-      this.$root.$children[0].reloadComponent()
     })
   }
 }

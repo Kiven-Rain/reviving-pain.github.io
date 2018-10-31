@@ -72,11 +72,13 @@ export default {
       } else {
         this.loading = true
         if (this.storeToekn === true) {
-          // 确认存储token，执行setCookie方法
+          // 勾选了10天免登陆选项(240小时)，执行setCookie方法
           this.$commonUtil.setCookie('accesstoken', this.accesstoken, 240)
+        } else {
+          // 普通登陆则设定token在cookie中存储的时限为半小时
+          this.$commonUtil.setCookie('accesstoken', this.accesstoken, 0.5)
         }
-        // 存储token并验证
-        sessionStorage['accesstoken'] = this.accesstoken
+        sessionStorage['isAutoLogin'] = 'false'
         this.$root.$children[0].verifyToken()
       }
     }
@@ -88,7 +90,7 @@ export default {
   },
   watch: {
     loginStatus: function () {
-      if (this.loginStatus) {
+      if (this.loginStatus && sessionStorage['isAutoLogin'] === 'false') {
         alert('认证成功，欢迎' + this.$store.state.loginUsername)
         this.loading = false
         this.$store.commit('openLoginCard', false)
